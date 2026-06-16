@@ -27,10 +27,8 @@ const KaggleIcon = ({ size = 20 }) => (
   </svg>
 );
 
-const HuggingFaceIcon = ({ size = 20 }) => (
-  <svg viewBox="0 0 24 24" width={size} height={size} fill="currentColor">
-    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm-.5 3.5c.828 0 1.5.895 1.5 2s-.672 2-1.5 2S10 8.605 10 7.5s.672-2 1.5-2zm-4 2c.828 0 1.5.672 1.5 1.5S8.328 10.5 7.5 10.5 6 9.828 6 9s.672-1.5 1.5-1.5zm9 0c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5S15 9.828 15 9s.672-1.5 1.5-1.5zM12 19c-3.314 0-6-2.015-6-4.5 0-.828.672-1.5 1.5-1.5.418 0 .797.171 1.07.447C9.338 14.573 10.586 15.5 12 15.5s2.662-.927 3.43-2.053A1.494 1.494 0 0116.5 13c.828 0 1.5.672 1.5 1.5 0 2.485-2.686 4.5-6 4.5z" />
-  </svg>
+const HuggingFaceIcon = ({ size = 28 }) => (
+  <span style={{ fontSize: size, lineHeight: 1 }}>🤗</span>
 );
 
 const customIcons = {
@@ -81,6 +79,17 @@ const Hero = () => {
           </span>
         </motion.div>
 
+        {/* Profile Picture */}
+        <motion.div variants={itemVariants} className="mb-8">
+          <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto">
+            <img 
+              src="/my-picture.png" 
+              alt="Pundarikaksh Narayan Tripathi" 
+              className="w-full h-full object-cover object-top rounded-full border-4 border-border shadow-[4px_4px_0px_var(--color-border)]"
+            />
+          </div>
+        </motion.div>
+
         {/* Name */}
         <motion.h1
           variants={itemVariants}
@@ -115,9 +124,9 @@ const Hero = () => {
                 aria-label={link.label}
               >
                 {link.Icon ? (
-                  <link.Icon size={18} />
+                  <link.Icon size={28} />
                 ) : CustomIcon ? (
-                  <CustomIcon size={18} />
+                  <CustomIcon size={28} />
                 ) : null}
                 {/* Tooltip */}
                 <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-mono text-lavender bg-bg-secondary/90 border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">

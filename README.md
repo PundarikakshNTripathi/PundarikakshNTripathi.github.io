@@ -2,7 +2,7 @@
 
 A lightning-fast, responsive static personal portfolio built to bridge foundational Artificial Intelligence research with High-Performance Computing infrastructure.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework**: React 19 + Vite
 - **Styling**: Tailwind CSS v4
@@ -11,7 +11,7 @@ A lightning-fast, responsive static personal portfolio built to bridge foundatio
 - **Typography**: Inter (Sans) + JetBrains Mono (Monospace)
 - **Design System**: Custom glassmorphism components with soft pastel accents (Lavender, Pink, Mauve) over a deep dark background.
 
-## 🚀 Local Development & Testing
+## Local Development & Testing
 
 1. **Clone the repository** (if you haven't already):
    ```bash
@@ -38,7 +38,7 @@ A lightning-fast, responsive static personal portfolio built to bridge foundatio
    npm run preview
    ```
 
-## 🏗 Git Strategy
+## Git Strategy
 
 This repository strictly follows a Trunk-Based Feature Flow branching strategy combined with Conventional Commits:
 
@@ -46,7 +46,7 @@ This repository strictly follows a Trunk-Based Feature Flow branching strategy c
 - `develop`: Integration and staging branch.
 - Supporting branches (`feat/*`, `fix/*`, `chore/*`, `docs/*`): Branched off `develop` and merged back into `develop` before cutting releases to `main`.
 
-## 🌐 Deployment
+## Deployment
 
 This is a fully static website and can be deployed entirely for free on platforms like **Vercel**, **Netlify**, or **GitHub Pages**.
 

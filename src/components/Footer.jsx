@@ -89,7 +89,7 @@ const Footer = () => {
                     id={`footer-social-${link.id}`}
                     aria-label={link.label}
                   >
-                    {IconComp && <IconComp size={16} />}
+                    {IconComp && <IconComp size={24} />}
                   </a>
                 );
               })}
