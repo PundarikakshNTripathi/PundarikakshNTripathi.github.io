@@ -127,6 +127,21 @@ const Hero = () => {
             );
           })}
         </motion.div>
+
+        {/* Decorative terminal snippet */}
+        <motion.div
+          variants={itemVariants}
+          className="mt-12 px-5 py-3 rounded-xl border border-border/50 bg-bg-card/30 backdrop-blur-sm"
+        >
+          <p className="font-mono text-xs text-text-muted">
+            <span className="text-lavender">$</span>{' '}
+            <span className="text-text-secondary">systems</span>{' '}
+            <span className="text-pink">--stack</span>{' '}
+            <span className="text-text-muted">C++ CUDA Go Python</span>{' '}
+            <span className="text-lavender">--target</span>{' '}
+            <span className="text-text-muted">production</span>
+          </p>
+        </motion.div>
       </motion.div>
 
       {/* Scroll Indicator */}
