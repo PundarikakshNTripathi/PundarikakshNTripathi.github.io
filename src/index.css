@@ -27,61 +27,53 @@
 
 @layer base {
   :root {
-    /* Light Theme (Pixel Art Cozy Pastel) */
-    --bg-primary: #ffebf0; /* Warm pinkish background */
-    --bg-secondary: #fcd4e4;
-    --bg-card: rgba(255, 255, 255, 0.85);
+    /* Light Theme (Lighter, warmer, more pink) */
+    --bg-primary: #fff0f5; /* Lavender blush / very light warm pink */
+    --bg-secondary: #ffe4e1; /* Misty rose */
+    --bg-card: rgba(255, 255, 255, 0.9);
     --bg-card-hover: rgba(255, 255, 255, 1);
     
-    --lavender: #b08bf8;
-    --lavender-dim: #9263eb;
-    --lavender-bright: #d1bbf9;
-    --pink: #f472b6;
-    --pink-dim: #db2777;
-    --mauve: #d946ef;
-    --rose: #fb7185;
-    --peach: #fb923c;
+    --lavender: #d8b4fe;
+    --lavender-dim: #c084fc;
+    --lavender-bright: #e9d5ff;
+    --pink: #fbcfe8;
+    --pink-dim: #f472b6;
+    --mauve: #e879f9;
+    --rose: #fda4af;
+    --peach: #ffedd5;
     
-    --text-primary: #4c1d95; /* Dark Purple */
+    --text-primary: #4c1d95; /* Deep purple text for readability */
     --text-secondary: #6b21a8;
     --text-muted: #9333ea;
-    --border: #d1bbf9;
-    --border-hover: #b08bf8;
+    --border: #f3e8ff;
+    --border-hover: #d8b4fe;
   }
 
-  /* Dark Theme */
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg-primary: #1e1b4b; /* Deep dark purple */
-      --bg-secondary: #2e1065;
-      --bg-card: rgba(46, 16, 101, 0.75);
-      --bg-card-hover: rgba(76, 29, 149, 0.95);
-      
-      --lavender: #c4a7e7;
-      --lavender-dim: #9d7cbf;
-      --lavender-bright: #d9c4f0;
-      --pink: #f5c2e7;
-      --pink-dim: #d4a0c4;
-      --mauve: #cba6f7;
-      --rose: #f2cddc;
-      --peach: #fab387;
-      
-      --text-primary: #fdf4ff;
-      --text-secondary: #f3e8ff;
-      --text-muted: #d8b4fe;
-      --border: #7e22ce;
-      --border-hover: #a855f7;
-    }
+  /* Dark Theme manually toggled */
+  .dark {
+    --bg-primary: #1e1b4b; /* Deep dark purple */
+    --bg-secondary: #2e1065;
+    --bg-card: rgba(46, 16, 101, 0.75);
+    --bg-card-hover: rgba(76, 29, 149, 0.95);
+    
+    --lavender: #c4a7e7;
+    --lavender-dim: #9d7cbf;
+    --lavender-bright: #d9c4f0;
+    --pink: #f5c2e7;
+    --pink-dim: #d4a0c4;
+    --mauve: #cba6f7;
+    --rose: #f2cddc;
+    --peach: #fab387;
+    
+    --text-primary: #fdf4ff;
+    --text-secondary: #f3e8ff;
+    --text-muted: #d8b4fe;
+    --border: #7e22ce;
+    --border-hover: #a855f7;
   }
 }
 
 /* ─── Base Styles ─── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
@@ -93,19 +85,18 @@ body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
   overflow-x: hidden;
-  -webkit-font-smoothing: none; /* Good for pixel fonts */
-  image-rendering: pixelated; /* Ensures assets render crispy */
+  -webkit-font-smoothing: none;
+  image-rendering: pixelated;
   background-image: url('/mock-up.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  background-blend-mode: overlay; /* Blends the image softly with the primary bg color */
+  background-blend-mode: overlay;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-blend-mode: multiply;
-  }
+.dark body {
+  background-blend-mode: multiply;
 }
 
 ::-webkit-scrollbar {

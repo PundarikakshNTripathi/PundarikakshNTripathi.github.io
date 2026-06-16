@@ -1,12 +1,30 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { navItems } from '../data/content';
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
+  const [theme, setTheme] = useState('light');
+
+  useEffect(() => {
+    // Check initial theme
+    if (document.documentElement.classList.contains('dark')) {
+      setTheme('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    if (theme === 'light') {
+      document.documentElement.classList.add('dark');
+      setTheme('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      setTheme('light');
+    }
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -87,6 +105,15 @@ const Navbar = () => {
                 </button>
               </li>
             ))}
+            <li className="ml-2 pl-2 border-l border-border">
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-colors cursor-pointer"
+                aria-label="Toggle theme"
+              >
+                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+              </button>
+            </li>
           </ul>
 
           {/* Mobile Toggle */}
@@ -128,6 +155,20 @@ const Navbar = () => {
                   </button>
                 </motion.li>
               ))}
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navItems.length * 0.1 }}
+                className="pt-4 mt-2 border-t border-border"
+              >
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center gap-3 w-full text-left px-4 py-3 text-lg font-medium text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-all cursor-pointer"
+                >
+                  {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
+                  <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
+                </button>
+              </motion.li>
             </ul>
           </motion.div>
         )}
