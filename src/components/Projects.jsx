@@ -1,3 +1,4 @@
+import ScrollReveal from './ScrollReveal';
 import SectionHeading from './SectionHeading';
 import ProjectCard from './ProjectCard';
 import { projects } from '../data/content';
@@ -17,6 +18,17 @@ const Projects = () => {
             <ProjectCard key={project.id} project={project} index={i} />
           ))}
         </div>
+
+        {/* Bottom decorative */}
+        <ScrollReveal delay={0.4}>
+          <div className="mt-12 flex items-center justify-center gap-4">
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+            <span className="font-mono text-xs text-text-muted px-3 py-1 rounded-full border border-border bg-bg-card/30">
+              {projects.length} systems engineered
+            </span>
+            <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
