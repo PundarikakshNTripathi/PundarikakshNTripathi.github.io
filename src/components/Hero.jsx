@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { ArrowDown } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowDown, FileText, Send, Download, X } from 'lucide-react';
 import { socialLinks } from '../data/content';
 
 // Custom SVG icons for all social platforms
@@ -62,6 +63,12 @@ const itemVariants = {
 };
 
 const Hero = () => {
+  const [activeMenu, setActiveMenu] = useState(null); // 'resume', 'contact', or null
+
+  const handleMenuToggle = (menu) => {
+    setActiveMenu(activeMenu === menu ? null : menu);
+  };
+
   return (
     <section
       id="hero"
@@ -111,46 +118,151 @@ const Hero = () => {
           infrastructure.
         </motion.p>
 
-        {/* Social Links */}
-        <motion.div variants={itemVariants} className="flex items-center gap-3">
-          {socialLinks.map((link) => {
-            const CustomIcon = link.customSvg ? customIcons[link.id] : null;
-            return (
-              <a
-                key={link.id}
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative p-3 rounded-xl border border-border bg-bg-card/50 backdrop-blur-sm text-text-secondary hover:text-lavender hover:border-lavender/30 hover:bg-lavender/5 transition-all duration-300"
-                id={`social-${link.id}`}
-                aria-label={link.label}
+        {/* Social Links & Action Buttons */}
+        <motion.div variants={itemVariants} className="flex flex-col items-center gap-6">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {socialLinks.map((link) => {
+              const CustomIcon = link.customSvg ? customIcons[link.id] : null;
+              return (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative p-3 rounded-xl border border-border bg-bg-card/50 backdrop-blur-sm text-text-secondary hover:text-lavender hover:border-lavender/30 hover:bg-lavender/5 transition-all duration-300"
+                  id={`social-${link.id}`}
+                  aria-label={link.label}
+                >
+                  {link.Icon ? (
+                    <link.Icon size={28} />
+                  ) : CustomIcon ? (
+                    <CustomIcon size={28} />
+                  ) : null}
+                  {/* Tooltip */}
+                  <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-mono text-lavender bg-bg-secondary/90 border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
+                    {link.label}
+                  </span>
+                </a>
+              );
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+            <button
+              onClick={() => handleMenuToggle('resume')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-card text-text-primary hover:text-lavender hover:border-lavender/50 hover:bg-lavender/10 transition-all font-medium text-sm sm:text-base cursor-pointer"
+            >
+              <Download size={18} />
+              Download Resume
+            </button>
+            <button
+              onClick={() => handleMenuToggle('contact')}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl border border-transparent bg-text-primary text-bg-primary hover:bg-lavender transition-all font-medium text-sm sm:text-base cursor-pointer"
+            >
+              <Send size={18} />
+              Contact Me
+            </button>
+          </div>
+
+          {/* Expandable Menus */}
+          <AnimatePresence>
+            {activeMenu === 'resume' && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                className="w-full max-w-sm overflow-hidden"
               >
-                {link.Icon ? (
-                  <link.Icon size={28} />
-                ) : CustomIcon ? (
-                  <CustomIcon size={28} />
-                ) : null}
-                {/* Tooltip */}
-                <span className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded text-[10px] font-mono text-lavender bg-bg-secondary/90 border border-border opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
-                  {link.label}
-                </span>
-              </a>
-            );
-          })}
+                <div className="mt-4 p-4 rounded-xl border border-border bg-bg-card/80 backdrop-blur-md flex flex-col gap-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-semibold text-text-primary">Select Resume Version</span>
+                    <button onClick={() => setActiveMenu(null)} className="text-text-muted hover:text-pink transition-colors cursor-pointer">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <a
+                    href="/resume/Pundarikaksh_Narayan_Tripathi_Research_Resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-lavender/50 hover:bg-lavender/5 transition-colors group text-left"
+                  >
+                    <div className="p-2 rounded bg-lavender/10 text-lavender group-hover:bg-lavender group-hover:text-white transition-colors">
+                      <FileText size={20} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-text-primary group-hover:text-lavender transition-colors">Research Resume</div>
+                      <div className="text-xs text-text-muted">Focus on publications & academic work</div>
+                    </div>
+                  </a>
+                  <a
+                    href="/resume/Pundarikaksh_Narayan_Tripathi_Corporate_Resume.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-pink/50 hover:bg-pink/5 transition-colors group text-left"
+                  >
+                    <div className="p-2 rounded bg-pink/10 text-pink group-hover:bg-pink group-hover:text-white transition-colors">
+                      <FileText size={20} />
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium text-text-primary group-hover:text-pink transition-colors">Corporate Resume</div>
+                      <div className="text-xs text-text-muted">Focus on engineering & development</div>
+                    </div>
+                  </a>
+                </div>
+              </motion.div>
+            )}
+
+            {activeMenu === 'contact' && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, y: -10, height: 0 }}
+                className="w-full max-w-sm overflow-hidden"
+              >
+                <form
+                  className="mt-4 p-5 rounded-xl border border-border bg-bg-card/80 backdrop-blur-md flex flex-col gap-4 text-left"
+                  onSubmit={(e) => { e.preventDefault(); alert('Message sent!'); setActiveMenu(null); }}
+                >
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-semibold text-text-primary">Send me a message</span>
+                    <button type="button" onClick={() => setActiveMenu(null)} className="text-text-muted hover:text-pink transition-colors cursor-pointer">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div>
+                    <label htmlFor="name" className="block text-xs font-medium text-text-secondary mb-1">Name</label>
+                    <input type="text" id="name" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="John Doe" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="block text-xs font-medium text-text-secondary mb-1">Email</label>
+                    <input type="email" id="email" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="john@example.com" />
+                  </div>
+                  <div>
+                    <label htmlFor="message" className="block text-xs font-medium text-text-secondary mb-1">Message</label>
+                    <textarea id="message" required rows={3} className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all resize-none" placeholder="Hello..." />
+                  </div>
+                  <button type="submit" className="w-full py-2.5 rounded-lg bg-text-primary text-bg-primary hover:bg-lavender transition-colors text-sm font-medium cursor-pointer">
+                    Send Message
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* Decorative terminal snippet */}
         <motion.div
           variants={itemVariants}
-          className="mt-12 px-5 py-3 rounded-xl border border-border/50 bg-bg-card/30 backdrop-blur-sm"
+          className="mt-16 px-5 py-3 rounded-xl border border-border/50 bg-bg-card/30 backdrop-blur-sm"
         >
-          <p className="font-mono text-xs text-text-muted">
-            <span className="text-lavender">$</span>{' '}
-            <span className="text-text-secondary">systems</span>{' '}
-            <span className="text-pink">--stack</span>{' '}
-            <span className="text-text-muted">C++ CUDA Go Python</span>{' '}
-            <span className="text-lavender">--target</span>{' '}
-            <span className="text-text-muted">production</span>
+          <p className="font-mono text-xs text-text-muted text-left">
+            <span className="text-lavender">❯</span>{' '}
+            <span className="text-pink">python</span>{' '}
+            <span className="text-text-secondary">-m</span>{' '}
+            <span className="text-text-primary">torch.distributed.run</span>{' '}
+            <span className="text-lavender">--nproc_per_node=8</span>{' '}
+            <span className="text-mauve">train.py</span>
           </p>
         </motion.div>
       </motion.div>

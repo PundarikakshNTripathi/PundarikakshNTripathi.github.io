@@ -29,9 +29,9 @@ const Milestones = () => {
     <section id="milestones" className="relative py-32 px-6">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          label="// Milestones"
-          title="Validated Results"
-          subtitle="Translating theoretical knowledge into competitive and leadership execution."
+          label="// Recognition"
+          title="Achievements, Leadership and Collaboration"
+          subtitle="Demonstrating impact through competitive hacking, community building, and leading initiatives."
         />
 
         <div className="grid gap-6 md:grid-cols-3">
@@ -69,10 +69,10 @@ const Milestones = () => {
                   )}
 
                   {/* Title & Description */}
-                  <h3 className="text-lg font-semibold text-text-primary mb-3">
+                  <h3 className="text-xl font-semibold text-text-primary mb-3">
                     {milestone.title}
                   </h3>
-                  <p className="text-sm text-text-secondary leading-relaxed flex-1">
+                  <p className="text-base text-text-secondary leading-relaxed flex-1">
                     {milestone.description}
                   </p>
                 </div>
