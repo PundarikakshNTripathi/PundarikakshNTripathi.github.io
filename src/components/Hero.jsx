@@ -131,7 +131,7 @@ const Hero = () => {
         <motion.div variants={itemVariants} className="mb-8">
           <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto">
             <img 
-              src="/my-picture.png" 
+              src={`${import.meta.env.BASE_URL}my-picture.png`} 
               alt="Pundarikaksh Narayan Tripathi" 
               className="w-full h-full object-cover object-top rounded-full border-4 border-border shadow-[4px_4px_0px_var(--color-border)]"
             />
@@ -221,7 +221,7 @@ const Hero = () => {
                     </button>
                   </div>
                   <a
-                    href="/resume/Pundarikaksh_Narayan_Tripathi_Research_Resume.pdf"
+                    href={`${import.meta.env.BASE_URL}resume/Pundarikaksh_Narayan_Tripathi_Research_Resume.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-lavender/50 hover:bg-lavender/5 transition-colors group text-left"
@@ -235,7 +235,7 @@ const Hero = () => {
                     </div>
                   </a>
                   <a
-                    href="/resume/Pundarikaksh_Narayan_Tripathi_Corporate_Resume.pdf"
+                    href={`${import.meta.env.BASE_URL}resume/Pundarikaksh_Narayan_Tripathi_Corporate_Resume.pdf`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-pink/50 hover:bg-pink/5 transition-colors group text-left"

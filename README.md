@@ -27,7 +27,3 @@ This project was built from the ground up using a modern frontend ecosystem:
 ## Contributing
 
 While this is a personal portfolio, I'm always open to feedback on the design, architecture, or the projects showcased within. Feel free to open an issue or reach out directly if you have any thoughts or suggestions!
-
-## License
-
-This project is licensed under the MIT License.
