@@ -68,6 +68,48 @@ This is a fully static website and can be deployed entirely for free on platform
    - Publish directory: `dist`
 5. Click **Deploy site**.
 
+### Deploying to GitHub Pages (Free Subdomain)
+You can deploy your portfolio directly from this repository to `https://yourusername.github.io/portfolio`.
+1. In `vite.config.js`, add `base: '/portfolio/'` to the configuration.
+2. Go to your GitHub repository **Settings** -> **Pages**.
+3. Under **Build and deployment**, select **GitHub Actions** as the source.
+4. GitHub will suggest a "Static HTML" or "Node.js" workflow. Instead, create a new file `.github/workflows/deploy.yml` with the Vite deployment action:
+   ```yaml
+   name: Deploy static content to Pages
+   on:
+     push:
+       branches: ['main']
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+   jobs:
+     deploy:
+       environment:
+         name: github-pages
+         url: ${{ steps.deployment.outputs.page_url }}
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout
+           uses: actions/checkout@v4
+         - name: Setup Node
+           uses: actions/setup-node@v4
+           with:
+             node-version: 20
+         - name: Install dependencies
+           run: npm ci
+         - name: Build
+           run: npm run build
+         - name: Upload artifact
+           uses: actions/upload-pages-artifact@v3
+           with:
+             path: './dist'
+         - name: Deploy to GitHub Pages
+           id: deployment
+           uses: actions/deploy-pages@v4
+   ```
+5. Commit and push this file. GitHub Actions will build and deploy your site automatically!
+
 ### Adding a Custom Domain
 Once deployed on Vercel or Netlify, you can attach a custom domain (e.g., `pundarikakshnarayantripathi.com`):
 1. Purchase your domain from a registrar (e.g., GoDaddy, Namecheap, Google Domains).
@@ -85,8 +127,7 @@ The resume download feature does **not** require a database or backend. The resu
 - When a user clicks download, the browser simply fetches the static PDF file.
 
 ### Contact Form
-The "Contact Me" form currently triggers a UI alert without a backend. To make it functional without setting up a database or server:
-- Use a free service like **Formspree** or **EmailJS**.
-- Change the `<form>` tag in `src/components/Hero.jsx` to point to the URL provided by Formspree:
-  `<form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">`
-- This will route form submissions directly to your email inbox, keeping the portfolio 100% static and free to host.
+The "Contact Me" form uses [EmailJS](https://www.emailjs.com/) to send emails directly to your inbox without requiring a backend server or database.
+- The `src/components/Hero.jsx` component is already integrated with the `@emailjs/browser` SDK.
+- You simply need to provide your `SERVICE_ID`, `TEMPLATE_ID`, and `PUBLIC_KEY`.
+- This ensures the website remains 100% static, fast, and free to host!
