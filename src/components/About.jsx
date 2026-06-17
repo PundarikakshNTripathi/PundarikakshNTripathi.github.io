@@ -86,22 +86,7 @@ const About = () => {
                 ))}
               </div>
 
-              {/* Decorative element */}
-              <div className="mt-8 pt-6 border-t border-border">
-                <p className="font-mono text-xs text-text-muted">
-                  <span className="text-lavender">import</span>{' '}
-                  <span className="text-pink">torch</span>
-                  {'; '}
-                  <span className="text-text-primary">torch</span>
-                  {'.'}
-                  <span className="text-mauve">compile</span>
-                  {'(model, '}
-                  <span className="text-pink">mode</span>
-                  {'='}
-                  <span className="text-lavender">"reduce-overhead"</span>
-                  {')'}
-                </p>
-              </div>
+
             </div>
           </ScrollReveal>
         </div>

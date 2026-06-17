@@ -251,20 +251,7 @@ const Hero = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Decorative terminal snippet */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-16 px-5 py-3 rounded-xl border border-border/50 bg-bg-card/30 backdrop-blur-sm"
-        >
-          <p className="font-mono text-xs text-text-muted text-left">
-            <span className="text-lavender">❯</span>{' '}
-            <span className="text-pink">python</span>{' '}
-            <span className="text-text-secondary">-m</span>{' '}
-            <span className="text-text-primary">torch.distributed.run</span>{' '}
-            <span className="text-lavender">--nproc_per_node=8</span>{' '}
-            <span className="text-mauve">train.py</span>
-          </p>
-        </motion.div>
+
       </motion.div>
 
       {/* Scroll Indicator */}
