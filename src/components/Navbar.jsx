@@ -73,7 +73,7 @@ const Navbar = () => {
             className="group flex items-center gap-2 cursor-pointer"
             id="nav-logo"
           >
-            <img src="/favicon.png" alt="Logo" className="h-8 w-8 object-contain rounded-lg shadow-sm" />
+            <img src="/favicon.png" alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105" />
           </button>
 
           {/* Desktop Nav */}
