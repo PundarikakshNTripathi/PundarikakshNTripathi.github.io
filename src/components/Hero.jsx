@@ -82,7 +82,7 @@ const Hero = () => {
       >
         {/* Eyebrow */}
         <motion.div variants={itemVariants} className="mb-6">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-lavender/20 bg-lavender/5 font-mono text-xs tracking-widest uppercase text-lavender">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-lavender/20 bg-lavender/5 font-mono text-sm font-semibold tracking-widest uppercase text-lavender">
             <span className="h-1.5 w-1.5 rounded-full bg-lavender animate-pulse" />
             AI & HPC Research
           </span>

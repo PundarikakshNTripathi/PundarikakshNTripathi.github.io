@@ -33,20 +33,20 @@
     --bg-card: rgba(255, 255, 255, 0.9);
     --bg-card-hover: rgba(255, 255, 255, 1);
     
-    --lavender: #d8b4fe;
-    --lavender-dim: #c084fc;
-    --lavender-bright: #e9d5ff;
-    --pink: #e11d48;
-    --pink-dim: #be123c;
-    --mauve: #e879f9;
-    --rose: #fda4af;
-    --peach: #ffedd5;
+    --lavender: #9333ea;
+    --lavender-dim: #7e22ce;
+    --lavender-bright: #a855f7;
+    --pink: #be123c;
+    --pink-dim: #9f1239;
+    --mauve: #c026d3;
+    --rose: #e11d48;
+    --peach: #ea580c;
     
     --text-primary: #4c1d95; /* Deep purple text for readability */
     --text-secondary: #6b21a8;
     --text-muted: #9333ea;
-    --border: #f3e8ff;
-    --border-hover: #d8b4fe;
+    --border: #c084fc;
+    --border-hover: #9333ea;
   }
 
   /* Dark Theme manually toggled */

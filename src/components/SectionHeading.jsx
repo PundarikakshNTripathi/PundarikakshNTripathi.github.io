@@ -9,7 +9,7 @@ const SectionHeading = ({ label, title, subtitle, align = 'center' }) => {
   return (
     <ScrollReveal className={`flex flex-col gap-4 mb-16 ${alignClasses[align]}`}>
       {label && (
-        <span className="font-mono text-xs font-medium tracking-[0.2em] uppercase text-lavender/80">
+        <span className="font-mono text-sm font-semibold tracking-[0.2em] uppercase text-lavender">
           {label}
         </span>
       )}

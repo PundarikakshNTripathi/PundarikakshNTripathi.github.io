@@ -27,7 +27,7 @@ const About = () => {
               <div className="glass-card gradient-border p-8 h-full flex flex-col">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-2 w-2 rounded-full bg-lavender" />
-                  <span className="font-mono text-xs tracking-widest uppercase text-lavender/70">
+                  <span className="font-mono text-sm tracking-widest uppercase text-lavender font-semibold">
                     About Me
                   </span>
                 </div>
@@ -50,7 +50,7 @@ const About = () => {
               <div className="glass-card gradient-border p-8 h-full flex flex-col">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-2 w-2 rounded-full bg-pink" />
-                  <span className="font-mono text-xs tracking-widest uppercase text-pink/70">
+                  <span className="font-mono text-sm tracking-widest uppercase text-pink font-semibold">
                     Research Focus
                   </span>
                 </div>
@@ -68,7 +68,7 @@ const About = () => {
             <div className="glass-card gradient-border p-8">
               <div className="flex items-center gap-3 mb-6">
                 <div className="h-2 w-2 rounded-full bg-mauve" />
-                <span className="font-mono text-xs tracking-widest uppercase text-mauve/70">
+                <span className="font-mono text-sm tracking-widest uppercase text-mauve font-semibold">
                   Core Stack
                 </span>
               </div>
