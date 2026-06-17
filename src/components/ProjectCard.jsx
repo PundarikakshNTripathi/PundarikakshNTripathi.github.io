@@ -60,7 +60,7 @@ const ProjectCard = ({ project, index }) => {
             <h3 className={`font-mono text-lg font-bold text-text-primary ${accent.hover} transition-colors`}>
               {project.title}
             </h3>
-            <span className="font-mono text-[10px] tracking-wider uppercase text-text-muted">
+            <span className="font-mono text-xs tracking-wider uppercase text-text-muted font-semibold">
               {project.category}
             </span>
           </div>
@@ -81,7 +81,7 @@ const ProjectCard = ({ project, index }) => {
         {project.tags.map((tag) => (
           <span
             key={tag}
-            className={`inline-flex items-center px-2.5 py-1 rounded-full font-mono text-[10px] font-medium border ${accent.tag} transition-colors`}
+            className={`inline-flex items-center px-2.5 py-1 rounded-full font-mono text-xs font-semibold border ${accent.tag} transition-colors`}
           >
             {tag}
           </span>

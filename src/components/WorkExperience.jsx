@@ -13,7 +13,7 @@ const WorkExperience = () => {
         
         <ScrollReveal delay={0.1}>
           <div className="glass-card gradient-border p-8 h-full flex flex-col items-center justify-center text-center min-h-[300px]">
-            <span className="font-mono text-xs tracking-widest uppercase text-lavender/70 mb-4">
+            <span className="font-mono text-sm tracking-widest uppercase text-lavender font-semibold mb-4">
               Coming Soon
             </span>
             <h3 className="text-xl font-bold text-text-primary mb-2">

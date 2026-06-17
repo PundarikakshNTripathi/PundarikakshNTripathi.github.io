@@ -82,7 +82,7 @@ const Hero = () => {
       >
         {/* Eyebrow */}
         <motion.div variants={itemVariants} className="mb-6">
-          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-lavender/20 bg-lavender/5 font-mono text-xs tracking-widest uppercase text-lavender">
+          <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-lavender/20 bg-lavender/5 font-mono text-sm font-semibold tracking-widest uppercase text-lavender">
             <span className="h-1.5 w-1.5 rounded-full bg-lavender animate-pulse" />
             AI & HPC Research
           </span>
@@ -251,42 +251,10 @@ const Hero = () => {
           </AnimatePresence>
         </motion.div>
 
-        {/* Decorative terminal snippet */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-16 px-5 py-3 rounded-xl border border-border/50 bg-bg-card/30 backdrop-blur-sm"
-        >
-          <p className="font-mono text-xs text-text-muted text-left">
-            <span className="text-lavender">❯</span>{' '}
-            <span className="text-pink">python</span>{' '}
-            <span className="text-text-secondary">-m</span>{' '}
-            <span className="text-text-primary">torch.distributed.run</span>{' '}
-            <span className="text-lavender">--nproc_per_node=8</span>{' '}
-            <span className="text-mauve">train.py</span>
-          </p>
-        </motion.div>
+
       </motion.div>
 
-      {/* Scroll Indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
-        onClick={() =>
-          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-        }
-        className="absolute bottom-10 flex flex-col items-center gap-2 text-text-muted hover:text-lavender transition-colors cursor-pointer"
-        id="scroll-indicator"
-        aria-label="Scroll to about section"
-      >
-        <span className="font-mono text-[10px] tracking-widest uppercase">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <ArrowDown size={16} />
-        </motion.div>
-      </motion.button>
+
     </section>
   );
 };
