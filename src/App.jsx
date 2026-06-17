@@ -7,6 +7,7 @@ import Research from './components/Research';
 import Projects from './components/Projects';
 import Milestones from './components/Milestones';
 import Footer from './components/Footer';
+import ScrollIndicator from './components/ScrollIndicator';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Milestones />
       </main>
       <Footer />
+      <ScrollIndicator />
     </>
   );
 }

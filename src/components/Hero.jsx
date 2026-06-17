@@ -254,26 +254,7 @@ const Hero = () => {
 
       </motion.div>
 
-      {/* Scroll Indicator */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5, duration: 0.6 }}
-        onClick={() =>
-          document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-        }
-        className="absolute bottom-10 flex flex-col items-center gap-2 text-text-muted hover:text-lavender transition-colors cursor-pointer"
-        id="scroll-indicator"
-        aria-label="Scroll to about section"
-      >
-        <span className="font-mono text-[10px] tracking-widest uppercase">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 6, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-        >
-          <ArrowDown size={16} />
-        </motion.div>
-      </motion.button>
+
     </section>
   );
 };
