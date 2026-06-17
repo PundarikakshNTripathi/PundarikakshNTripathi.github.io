@@ -8,9 +8,9 @@ const Projects = () => {
     <section id="projects" className="relative py-32 px-6">
       <div className="mx-auto max-w-6xl">
         <SectionHeading
-          label="// Infrastructure"
-          title="Core Systems"
-          subtitle="Hardcore systems engineering — from SIMD-accelerated inference to distributed training frameworks."
+          label="// Research & Systems"
+          title="Architecting at the Frontier"
+          subtitle="Building high-performance systems and algorithms that bridge mathematical theory and production scale."
         />
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -24,7 +24,7 @@ const Projects = () => {
           <div className="mt-12 flex items-center justify-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
             <span className="font-mono text-xs text-text-muted px-3 py-1 rounded-full border border-border bg-bg-card/30">
-              {projects.length} systems engineered
+              Select Open Source Contributions
             </span>
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
           </div>
