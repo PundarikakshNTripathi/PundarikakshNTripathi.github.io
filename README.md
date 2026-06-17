@@ -48,75 +48,39 @@ This repository strictly follows a Trunk-Based Feature Flow branching strategy c
 
 ## Deployment
 
-This is a fully static website and can be deployed entirely for free on platforms like **Vercel**, **Netlify**, or **GitHub Pages**.
-
-### Deploying to Vercel (Recommended)
-1. Go to [Vercel](https://vercel.com/) and sign in with GitHub.
-2. Click **Add New Project**.
-3. Import your `portfolio` repository.
-4. Vercel will automatically detect Vite. Leave the default build settings:
-   - Build Command: `npm run build`
-   - Output Directory: `dist`
-5. Click **Deploy**. Your site will be live on a free `.vercel.app` domain with an SSL certificate.
-
-### Deploying to Netlify
-1. Go to [Netlify](https://www.netlify.com/) and log in with GitHub.
-2. Click **Add new site** -> **Import an existing project**.
-3. Select your `portfolio` repository.
-4. Build settings:
-   - Build command: `npm run build`
-   - Publish directory: `dist`
-5. Click **Deploy site**.
+This is a fully static website and is configured to be deployed entirely for free on **GitHub Pages**.
 
 ### Deploying to GitHub Pages (Free Subdomain)
-You can deploy your portfolio directly from this repository to `https://yourusername.github.io/portfolio`.
-1. In `vite.config.js`, add `base: '/portfolio/'` to the configuration.
-2. Go to your GitHub repository **Settings** -> **Pages**.
-3. Under **Build and deployment**, select **GitHub Actions** as the source.
-4. GitHub will suggest a "Static HTML" or "Node.js" workflow. Instead, create a new file `.github/workflows/deploy.yml` with the Vite deployment action:
-   ```yaml
-   name: Deploy static content to Pages
-   on:
-     push:
-       branches: ['main']
-   permissions:
-     contents: read
-     pages: write
-     id-token: write
-   jobs:
-     deploy:
-       environment:
-         name: github-pages
-         url: ${{ steps.deployment.outputs.page_url }}
-       runs-on: ubuntu-latest
-       steps:
-         - name: Checkout
-           uses: actions/checkout@v4
-         - name: Setup Node
-           uses: actions/setup-node@v4
-           with:
-             node-version: 20
-         - name: Install dependencies
-           run: npm ci
-         - name: Build
-           run: npm run build
-         - name: Upload artifact
-           uses: actions/upload-pages-artifact@v3
-           with:
-             path: './dist'
-         - name: Deploy to GitHub Pages
-           id: deployment
-           uses: actions/deploy-pages@v4
-   ```
-5. Commit and push this file. GitHub Actions will build and deploy your site automatically!
+You can deploy your portfolio directly from this repository. Your site will be hosted at `https://pundarikakshntripathi.github.io/portfolio/`.
 
-### Adding a Custom Domain
-Once deployed on Vercel or Netlify, you can attach a custom domain (e.g., `pundarikakshnarayantripathi.com`):
-1. Purchase your domain from a registrar (e.g., GoDaddy, Namecheap, Google Domains).
-2. In your Vercel or Netlify project settings, go to **Domain Management**.
-3. Add your custom domain.
-4. The dashboard will provide you with DNS records (typically an `A` record or a `CNAME`). Add these records to your domain registrar's DNS settings.
-5. Vercel/Netlify will automatically provision a free SSL certificate for your custom domain.
+Because the `.github/workflows/deploy.yml` file is already fully set up and configured for Vite, deploying is incredibly simple:
+
+1. Go to your GitHub repository on the web.
+2. Click on **Settings**.
+3. On the left sidebar, scroll down and click on **Pages**.
+4. Under **Build and deployment**, look for the **Source** dropdown.
+5. Change the source from "Deploy from a branch" to **GitHub Actions**.
+6. **That's it!** You do **not** need to click on "Jekyll" or "Static HTML" or configure anything else. GitHub will automatically detect the `deploy.yml` file I created and start building your site.
+7. Wait a couple of minutes, and your site will be live.
+8. **Note on Custom Domains and HTTPS:** You do not need to add a custom domain (leave it blank), and GitHub automatically enforces HTTPS encryption for you.
+
+## Security Features
+
+To ensure you can develop on this project safely from any device without worrying about dependency vulnerabilities or malicious scripts, several strict security measures have been configured:
+
+1. **Husky Pre-commit Hooks (`.husky/pre-commit`)**: 
+   - Every time you attempt to run `git commit`, Husky intercepts it and runs `npm audit --audit-level=high`.
+   - If any high-severity vulnerabilities are found in your installed packages, the commit will be blocked, protecting you from pushing vulnerable code.
+   - *Note: Because `.husky/` is tracked in Git, this protection works on any device you clone the repo to.*
+
+2. **Strict NPM Configuration (`.npmrc`)**:
+   - `audit=true`: Forces NPM to automatically audit packages every time you install something.
+   - `strict-peer-deps=true`: Prevents NPM from installing incompatible or conflicting package versions.
+   - `save-exact=true`: Forces NPM to save exact version numbers in `package.json` (e.g., `1.2.3` instead of `^1.2.3`). This prevents unexpected malware from sneaking in via automatic minor/patch updates.
+
+3. **Automated Dependabot (`.github/dependabot.yml`)**:
+   - GitHub will automatically scan your `package.json` and GitHub Actions weekly.
+   - If a security patch is released for any of your dependencies, GitHub will automatically create a Pull Request to update it safely.
 
 ## Features & Architecture
 

@@ -87,16 +87,7 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: none;
   image-rendering: pixelated;
-  background-image: url('/mock-up.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  background-blend-mode: overlay;
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dark body {
-  background-blend-mode: multiply;
 }
 
 ::-webkit-scrollbar {
