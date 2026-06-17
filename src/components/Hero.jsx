@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowDown, FileText, Send, Download, X } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { socialLinks } from '../data/content';
 
 // Custom SVG icons for all social platforms
@@ -64,9 +65,47 @@ const itemVariants = {
 
 const Hero = () => {
   const [activeMenu, setActiveMenu] = useState(null); // 'resume', 'contact', or null
+  const formRef = useRef();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState(null);
 
   const handleMenuToggle = (menu) => {
     setActiveMenu(activeMenu === menu ? null : menu);
+    if (menu !== 'contact') {
+      setSubmitStatus(null);
+    }
+  };
+
+  const sendEmail = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus(null);
+
+    // IMPORTANT: Replace these with your actual EmailJS credentials
+    const serviceID = 'YOUR_SERVICE_ID';
+    const templateID = 'YOUR_TEMPLATE_ID';
+    const publicKey = 'YOUR_PUBLIC_KEY';
+
+    if (serviceID === 'YOUR_SERVICE_ID') {
+      alert('Please configure your EmailJS credentials in Hero.jsx');
+      setIsSubmitting(false);
+      return;
+    }
+
+    emailjs.sendForm(serviceID, templateID, formRef.current, publicKey)
+      .then((result) => {
+          setSubmitStatus('success');
+          setIsSubmitting(false);
+          setTimeout(() => {
+            setActiveMenu(null);
+            setSubmitStatus(null);
+            e.target.reset();
+          }, 2000);
+      }, (error) => {
+          console.error(error.text);
+          setSubmitStatus('error');
+          setIsSubmitting(false);
+      });
   };
 
   return (
@@ -221,8 +260,9 @@ const Hero = () => {
                 className="w-full max-w-sm overflow-hidden"
               >
                 <form
+                  ref={formRef}
                   className="mt-4 p-5 rounded-xl border border-border bg-bg-card/80 backdrop-blur-md flex flex-col gap-4 text-left"
-                  onSubmit={(e) => { e.preventDefault(); alert('Message sent!'); setActiveMenu(null); }}
+                  onSubmit={sendEmail}
                 >
                   <div className="flex justify-between items-center mb-1">
                     <span className="text-sm font-semibold text-text-primary">Send me a message</span>
@@ -231,19 +271,30 @@ const Hero = () => {
                     </button>
                   </div>
                   <div>
-                    <label htmlFor="name" className="block text-xs font-medium text-text-secondary mb-1">Name</label>
-                    <input type="text" id="name" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="John Doe" />
+                    <label htmlFor="user_name" className="block text-xs font-medium text-text-secondary mb-1">Name</label>
+                    <input type="text" name="user_name" id="user_name" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="John Doe" />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-xs font-medium text-text-secondary mb-1">Email</label>
-                    <input type="email" id="email" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="john@example.com" />
+                    <label htmlFor="user_email" className="block text-xs font-medium text-text-secondary mb-1">Email</label>
+                    <input type="email" name="user_email" id="user_email" required className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="john@example.com" />
                   </div>
                   <div>
                     <label htmlFor="message" className="block text-xs font-medium text-text-secondary mb-1">Message</label>
-                    <textarea id="message" required rows={3} className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all resize-none" placeholder="Hello..." />
+                    <textarea name="message" id="message" required rows={3} className="w-full px-3 py-2 rounded-lg border border-border bg-bg-primary text-sm text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all resize-none" placeholder="Hello..." />
                   </div>
-                  <button type="submit" className="w-full py-2.5 rounded-lg bg-text-primary text-bg-primary hover:bg-lavender transition-colors text-sm font-medium cursor-pointer">
-                    Send Message
+                  {submitStatus === 'error' && (
+                    <p className="text-xs text-pink">Something went wrong. Please try again.</p>
+                  )}
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting || submitStatus === 'success'} 
+                    className={`w-full py-2.5 rounded-lg transition-colors text-sm font-medium cursor-pointer ${
+                      submitStatus === 'success' 
+                        ? 'bg-lavender text-white' 
+                        : 'bg-text-primary text-bg-primary hover:bg-lavender disabled:opacity-70 disabled:cursor-not-allowed'
+                    }`}
+                  >
+                    {isSubmitting ? 'Sending...' : submitStatus === 'success' ? 'Message Sent!' : 'Send Message'}
                   </button>
                 </form>
               </motion.div>
