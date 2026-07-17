@@ -40,8 +40,8 @@ const Footer = () => {
           <div>
             <div className="flex items-center gap-2 mb-4">
               <div className="relative h-8 w-8 rounded-lg overflow-hidden border border-border/50 shadow-sm">
-                <img src="/favicon-light-v4.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
-                <img src="/favicon-dark-v4.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
+                <img src="/favicon-light-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
+                <img src="/favicon-dark-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
               </div>
               <span className="font-mono text-sm font-semibold text-text-primary">
                 Pundarikaksh N. Tripathi

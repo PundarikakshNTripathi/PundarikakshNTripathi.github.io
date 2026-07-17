@@ -2,12 +2,12 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link id="dynamic-favicon" rel="icon" type="image/png" href="/favicon-dark-v4.png" />
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="/favicon-dark-v5.png" />
     <script>
       (function() {
         var link = document.getElementById('dynamic-favicon');
         var updateFavicon = function(e) {
-          link.href = e.matches ? '/favicon-dark-v4.png' : '/favicon-light-v4.png';
+          link.href = e.matches ? '/favicon-dark-v5.png' : '/favicon-light-v5.png';
         };
         var mql = window.matchMedia('(prefers-color-scheme: dark)');
         mql.addEventListener('change', updateFavicon);

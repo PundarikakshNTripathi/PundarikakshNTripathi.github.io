@@ -96,8 +96,8 @@ const Navbar = () => {
             id="nav-logo"
           >
             <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl overflow-hidden drop-shadow-sm transition-transform duration-300 group-hover:scale-105">
-              <img src="/favicon-light-v4.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
-              <img src="/favicon-dark-v4.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
+              <img src="/favicon-light-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
+              <img src="/favicon-dark-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
             </div>
           </button>
 
