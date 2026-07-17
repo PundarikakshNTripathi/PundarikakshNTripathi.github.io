@@ -1,40 +1,18 @@
-import { useState, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import { useState, useEffect, useMemo, useRef } from 'react';
+import JoditEditor from 'jodit-react';
 import katex from "katex";
 import "katex/dist/katex.min.css";
-import hljs from 'highlight.js/lib/common';
-import 'highlight.js/styles/atom-one-dark.css';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus } from 'lucide-react';
 
 window.katex = katex;
-window.hljs = hljs;
-
-const modules = {
-  syntax: true,
-  toolbar: [
-    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-    ['link', 'image', 'video', 'formula', 'code-block'],
-    [{ 'color': [] }, { 'background': [] }],
-    [{ 'align': [] }],
-    ['clean']
-  ],
-};
-
-const formats = [
-  'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
-  'list', 'bullet', 'indent', 'link', 'image', 'video', 'formula', 'code-block',
-  'color', 'background', 'align'
-];
 
 export default function BlogAdmin() {
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const editor = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('portfolio_blogs');
@@ -42,6 +20,17 @@ export default function BlogAdmin() {
     const auth = localStorage.getItem('admin_auth');
     if (auth === 'true') setIsAuthenticated(true);
   }, []);
+
+  const config = useMemo(() => ({
+    readonly: false,
+    placeholder: 'Write your blog post here...',
+    theme: 'dark',
+    minHeight: 500,
+    style: {
+      background: 'rgba(255, 255, 255, 0.05)',
+      color: '#fff',
+    },
+  }), []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -125,15 +114,12 @@ export default function BlogAdmin() {
             <input type="checkbox" checked={currentPost.pinned || false} onChange={e => setCurrentPost({...currentPost, pinned: e.target.checked})} className="accent-lavender" />
             Pin this post
           </label>
-          <div className="flex-1 overflow-y-auto bg-bg-secondary/50 rounded-lg text-text-primary quill-container">
-            <ReactQuill 
-              theme="snow"
-              value={currentPost.content}
-              onChange={(content) => setCurrentPost({...currentPost, content})}
-              modules={modules}
-              formats={formats}
-              className="h-full flex flex-col"
-              placeholder="Write your blog post here... Use the toolbar to add media, LaTeX math, or code blocks!"
+          <div className="flex-1 overflow-y-auto bg-bg-secondary/50 rounded-lg text-text-primary">
+            <JoditEditor
+              ref={editor}
+              value={currentPost.content || ''}
+              config={config}
+              onBlur={newContent => setCurrentPost({...currentPost, content: newContent})}
             />
           </div>
         </div>

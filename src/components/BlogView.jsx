@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import 'react-quill/dist/quill.snow.css';
 import katex from "katex";
 import "katex/dist/katex.min.css";
-import hljs from 'highlight.js/lib/common';
-import 'highlight.js/styles/atom-one-dark.css';
 import { ArrowLeft } from 'lucide-react';
 
 window.katex = katex;
-window.hljs = hljs;
 
 export default function BlogView() {
   const { id } = useParams();
@@ -45,9 +41,9 @@ export default function BlogView() {
           Published on {new Date(parseInt(post.id)).toLocaleDateString()}
         </div>
         
-        {/* Render Quill HTML safely */}
+        {/* Render HTML safely */}
         <div 
-          className="ql-editor p-0"
+          className="p-0"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </article>
