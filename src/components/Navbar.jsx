@@ -116,6 +116,16 @@ const Navbar = () => {
                 </button>
               </li>
             ))}
+            <li>
+              <button
+                onClick={() => navigate('/admin')}
+                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
+                  location.pathname === '/admin' ? 'text-lavender' : 'text-text-secondary hover:text-text-primary'
+                }`}
+              >
+                <span className="relative z-10">Admin</span>
+              </button>
+            </li>
             <li className="ml-2 pl-2 border-l border-border">
               <button
                 onClick={toggleTheme}
@@ -166,6 +176,21 @@ const Navbar = () => {
                   </button>
                 </motion.li>
               ))}
+              <motion.li
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: navItems.length * 0.1 }}
+              >
+                <button
+                  onClick={() => {
+                    navigate('/admin');
+                    setMobileOpen(false);
+                  }}
+                  className="w-full text-left px-4 py-3 text-lg font-medium text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-all cursor-pointer"
+                >
+                  Admin
+                </button>
+              </motion.li>
               <motion.li
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}

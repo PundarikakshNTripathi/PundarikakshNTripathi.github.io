@@ -22,9 +22,15 @@ export default function BlogAdmin() {
     if (auth === 'true') setIsAuthenticated(true);
   }, []);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (password === import.meta.env.VITE_ADMIN_SECRET) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(password);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    
+    if (hashHex === import.meta.env.VITE_ADMIN_HASH) {
       setIsAuthenticated(true);
       localStorage.setItem('admin_auth', 'true');
     } else {
