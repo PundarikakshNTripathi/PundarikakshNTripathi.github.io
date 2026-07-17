@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import 'react-quill/dist/quill.snow.css';
+import katex from "katex";
+import "katex/dist/katex.min.css";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 import { ArrowLeft } from 'lucide-react';
+
+window.katex = katex;
+window.hljs = hljs;
 
 export default function BlogView() {
   const { id } = useParams();
@@ -38,34 +39,17 @@ export default function BlogView() {
         <ArrowLeft size={20} /> Back to Portfolio
       </Link>
       
-      <article className="prose prose-invert prose-lg max-w-none prose-pre:bg-[#1E1E1E] prose-pre:border prose-pre:border-border">
+      <article className="prose prose-invert prose-lg max-w-none">
         <h1 className="text-4xl md:text-5xl font-bold mb-4 text-text-primary">{post.title}</h1>
         <div className="text-sm text-text-muted mb-12 font-mono">
           Published on {new Date(parseInt(post.id)).toLocaleDateString()}
         </div>
         
-        <ReactMarkdown 
-          remarkPlugins={[remarkGfm, remarkMath]} 
-          rehypePlugins={[rehypeKatex]}
-          components={{
-            code({node, inline, className, children, ...props}) {
-              const match = /language-(\w+)/.exec(className || '')
-              return !inline && match ? (
-                <SyntaxHighlighter style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
-                  {String(children).replace(/\n$/, '')}
-                </SyntaxHighlighter>
-              ) : (
-                <code className="bg-bg-secondary px-1.5 py-0.5 rounded text-lavender font-mono text-sm" {...props}>
-                  {children}
-                </code>
-              )
-            },
-            img: ({node, ...props}) => <img className="rounded-xl border border-border shadow-lg" {...props} />,
-            a: ({node, ...props}) => <a className="text-lavender hover:text-pink transition-colors no-underline border-b border-lavender/30 hover:border-pink" target="_blank" rel="noopener noreferrer" {...props} />
-          }}
-        >
-          {post.content}
-        </ReactMarkdown>
+        {/* Render Quill HTML safely */}
+        <div 
+          className="ql-editor p-0"
+          dangerouslySetInnerHTML={{ __html: post.content }}
+        />
       </article>
     </div>
   );

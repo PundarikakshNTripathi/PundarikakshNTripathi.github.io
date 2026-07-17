@@ -1,13 +1,34 @@
 import { useState, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import remarkMath from 'remark-math';
-import rehypeKatex from 'rehype-katex';
-import 'katex/dist/katex.min.css';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import katex from "katex";
+import "katex/dist/katex.min.css";
+import hljs from 'highlight.js';
+import 'highlight.js/styles/atom-one-dark.css';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus } from 'lucide-react';
+
+window.katex = katex;
+window.hljs = hljs;
+
+const modules = {
+  syntax: true,
+  toolbar: [
+    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote'],
+    [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+    ['link', 'image', 'video', 'formula', 'code-block'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'align': [] }],
+    ['clean']
+  ],
+};
+
+const formats = [
+  'header', 'bold', 'italic', 'underline', 'strike', 'blockquote',
+  'list', 'bullet', 'indent', 'link', 'image', 'video', 'formula', 'code-block',
+  'color', 'background', 'align'
+];
 
 export default function BlogAdmin() {
   const [posts, setPosts] = useState([]);
@@ -64,8 +85,8 @@ export default function BlogAdmin() {
   }
 
   return (
-    <div className="min-h-screen pt-24 px-6 max-w-7xl mx-auto flex flex-col h-screen pb-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="min-h-screen pt-24 px-6 max-w-5xl mx-auto flex flex-col h-screen pb-6">
+      <div className="flex items-center justify-between mb-6 shrink-0">
         <Link to="/" className="flex items-center gap-2 text-text-secondary hover:text-lavender transition-colors">
           <ArrowLeft size={20} /> Back to Site
         </Link>
@@ -82,7 +103,7 @@ export default function BlogAdmin() {
       </div>
 
       {!currentPost ? (
-        <div className="grid gap-4">
+        <div className="grid gap-4 overflow-y-auto">
           <h2 className="text-2xl font-bold mb-4 text-text-primary">Manage Posts</h2>
           {posts.map(post => (
             <div key={post.id} onClick={() => setCurrentPost(post)} className="glass-card p-4 cursor-pointer hover:border-lavender border border-transparent transition-colors">
@@ -92,50 +113,28 @@ export default function BlogAdmin() {
           ))}
         </div>
       ) : (
-        <div className="flex-1 grid md:grid-cols-2 gap-6 overflow-hidden">
-          <div className="flex flex-col gap-4 overflow-y-auto">
-            <input 
-              type="text" 
-              value={currentPost.title}
-              onChange={e => setCurrentPost({...currentPost, title: e.target.value})}
-              placeholder="Post Title..."
-              className="text-2xl font-bold bg-transparent border-b border-border p-2 outline-none text-text-primary"
-            />
-            <label className="flex items-center gap-2 text-sm text-text-secondary">
-              <input type="checkbox" checked={currentPost.pinned || false} onChange={e => setCurrentPost({...currentPost, pinned: e.target.checked})} className="accent-lavender" />
-              Pin this post
-            </label>
-            <textarea 
+        <div className="flex flex-col gap-4 flex-1 overflow-hidden">
+          <input 
+            type="text" 
+            value={currentPost.title}
+            onChange={e => setCurrentPost({...currentPost, title: e.target.value})}
+            placeholder="Post Title..."
+            className="text-4xl font-bold bg-transparent border-b border-border p-2 outline-none text-text-primary shrink-0"
+          />
+          <label className="flex items-center gap-2 text-sm text-text-secondary shrink-0">
+            <input type="checkbox" checked={currentPost.pinned || false} onChange={e => setCurrentPost({...currentPost, pinned: e.target.checked})} className="accent-lavender" />
+            Pin this post
+          </label>
+          <div className="flex-1 overflow-y-auto bg-bg-secondary/50 rounded-lg text-text-primary quill-container">
+            <ReactQuill 
+              theme="snow"
               value={currentPost.content}
-              onChange={e => setCurrentPost({...currentPost, content: e.target.value})}
-              placeholder="Write in Markdown... Supports LaTeX equations: $E=mc^2$ or $$E=mc^2$$, Code Snippets, and image embedding ![](url)"
-              className="flex-1 bg-bg-secondary/50 p-4 rounded-lg resize-none outline-none font-mono text-sm text-text-secondary"
+              onChange={(content) => setCurrentPost({...currentPost, content})}
+              modules={modules}
+              formats={formats}
+              className="h-full flex flex-col"
+              placeholder="Write your blog post here... Use the toolbar to add media, LaTeX math, or code blocks!"
             />
-          </div>
-          <div className="glass-card p-6 overflow-y-auto prose prose-invert max-w-none prose-pre:bg-[#1E1E1E] prose-pre:border prose-pre:border-border">
-            <h1 className="text-3xl font-bold mb-6 text-text-primary">{currentPost.title}</h1>
-            <ReactMarkdown 
-              remarkPlugins={[remarkGfm, remarkMath]} 
-              rehypePlugins={[rehypeKatex]}
-              components={{
-                code({node, inline, className, children, ...props}) {
-                  const match = /language-(\w+)/.exec(className || '')
-                  return !inline && match ? (
-                    <SyntaxHighlighter style={vscDarkPlus} language={match[1]} PreTag="div" {...props}>
-                      {String(children).replace(/\n$/, '')}
-                    </SyntaxHighlighter>
-                  ) : (
-                    <code className="bg-bg-secondary px-1.5 py-0.5 rounded text-lavender font-mono text-sm" {...props}>
-                      {children}
-                    </code>
-                  )
-                },
-                img: ({node, ...props}) => <img className="rounded-xl border border-border shadow-lg" {...props} />,
-                a: ({node, ...props}) => <a className="text-lavender hover:text-pink transition-colors no-underline border-b border-lavender/30 hover:border-pink" target="_blank" rel="noopener noreferrer" {...props} />
-              }}
-            >
-              {currentPost.content}
-            </ReactMarkdown>
           </div>
         </div>
       )}

@@ -186,3 +186,27 @@ section {
   transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0px var(--border-hover);
 }
+
+/* React-Quill Dark Mode Overrides */
+.quill-container .ql-toolbar {
+  background: var(--bg-card);
+  border-color: var(--border) !important;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+}
+.quill-container .ql-container {
+  border-color: var(--border) !important;
+  border-bottom-left-radius: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  font-family: inherit;
+}
+.quill-container .ql-editor {
+  min-height: 60vh;
+  font-size: 1.125rem;
+}
+.ql-snow .ql-stroke { stroke: var(--text-primary) !important; }
+.ql-snow .ql-fill, .ql-snow .ql-stroke.ql-fill { fill: var(--text-primary) !important; }
+.ql-snow .ql-picker { color: var(--text-primary) !important; }
+.ql-snow .ql-picker-options { background-color: var(--bg-card) !important; border-color: var(--border) !important; }
+.ql-tooltip { background-color: var(--bg-card) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
+.ql-tooltip input[type=text] { background-color: var(--bg-secondary) !important; color: var(--text-primary) !important; border-color: var(--border) !important; }
