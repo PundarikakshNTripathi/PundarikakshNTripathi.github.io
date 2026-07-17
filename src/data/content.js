@@ -108,16 +108,6 @@ export const projects = [
     link: 'https://github.com/PundarikakshNTripathi/LumaSort-Engine',
   },
   {
-    id: 'aether',
-    title: 'Aether (In Development)',
-    category: 'Distributed Systems & Search',
-    description: 'Architecting a distributed multimodal search engine utilizing a Go/Redis asynchronous crawling cluster. Designing the C++ core for BM25 inverted-indexing and HNSW vector retrieval, integrating a custom Vision-Language Model (VLM) inference backend via gRPC.',
-    tags: ['C++20', 'Go', 'Distributed Systems', 'gRPC'],
-    Icon: Bot,
-    accentColor: 'pink',
-    link: 'https://github.com/PundarikakshNTripathi/Aether',
-  },
-  {
     id: 'voltasplat',
     title: 'VoltaSplat (Active Research)',
     category: 'Graphics & Hardware-Optimized Inference',
@@ -136,40 +126,10 @@ export const projects = [
     Icon: Cpu,
     accentColor: 'peach',
     link: 'https://github.com/PundarikakshNTripathi/TernixEngine',
-  },
-  {
-    id: 'caissa',
-    title: 'Caissa - Chess Engine (In Development)',
-    category: 'Algorithms & AI',
-    description: 'Built a dependency-free chess engine from scratch featuring custom Alpha-Beta search algorithms, transposition tables, and Magic Bitboards. Integrated machine learning via Texel Tuning (gradient descent) to optimize static evaluation heuristics and maximize node evaluation throughput.',
-    tags: ['C', 'Algorithmic Optimization', 'Machine Learning'],
-    Icon: Trophy,
-    accentColor: 'lavender',
-    link: 'https://github.com/PundarikakshNTripathi/Caissa',
-  },
-  {
-    id: 'veilid',
-    title: 'VeilID: Zero-Knowledge Identity Provider',
-    category: 'Cryptography & Systems',
-    description: 'Developed a trustless identity bridge (zk-IdP) utilizing device-bound hardware passkeys (FIDO2) for passwordless authentication. Implemented dynamic zk-SNARK circuits using Consensys gnark to cryptographically verify human uniqueness while isolating PII via mathematically variable nullifiers.',
-    tags: ['Go', 'zk-SNARKs', 'WebAuthn'],
-    Icon: Users,
-    accentColor: 'pink',
-    link: 'https://github.com/PundarikakshNTripathi/VeilID',
   }
 ];
 
 export const milestones = [
-  {
-    id: 'amazon-ml',
-    title: 'Amazon ML Challenge \'25',
-    description:
-      'Architected a robust dual-pipeline LightGBM and XGBoost ensemble, achieving a 58.02 SMAPE score for multimodal price prediction.',
-    metric: '58.02',
-    metricLabel: 'SMAPE Score',
-    Icon: Trophy,
-    accentColor: 'peach',
-  },
   {
     id: 'hackarena',
     title: 'HackArena 2025',

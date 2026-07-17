@@ -63,10 +63,6 @@ const itemVariants = {
 };
 
 const Hero = () => {
-  const [activeMenu, setActiveMenu] = useState(null); // 'resume', 'contact', or null
-  const handleMenuToggle = (menu) => {
-    setActiveMenu(activeMenu === menu ? null : menu);
-  };
 
   return (
     <section
@@ -148,13 +144,15 @@ const Hero = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
-            <button
-              onClick={() => handleMenuToggle('resume')}
+            <a
+              href={`${import.meta.env.BASE_URL}resume/Pundarikaksh_NT_Resume.pdf`}
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-bg-card text-text-primary hover:text-lavender hover:border-lavender/50 hover:bg-lavender/10 transition-all font-medium text-sm sm:text-base cursor-pointer"
             >
               <Download size={18} />
               Download Resume
-            </button>
+            </a>
             <button
               onClick={() => {
                 const el = document.getElementById('contact');
@@ -166,55 +164,6 @@ const Hero = () => {
               Contact Me
             </button>
           </div>
-
-          {/* Expandable Menus */}
-          <AnimatePresence>
-            {activeMenu === 'resume' && (
-              <motion.div
-                initial={{ opacity: 0, y: -10, height: 0 }}
-                animate={{ opacity: 1, y: 0, height: 'auto' }}
-                exit={{ opacity: 0, y: -10, height: 0 }}
-                className="w-full max-w-sm overflow-hidden"
-              >
-                <div className="mt-4 p-4 rounded-xl border border-border bg-bg-card/80 backdrop-blur-md flex flex-col gap-3">
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-sm font-semibold text-text-primary">Select Resume Version</span>
-                    <button onClick={() => setActiveMenu(null)} className="text-text-muted hover:text-pink transition-colors cursor-pointer">
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <a
-                    href={`${import.meta.env.BASE_URL}resume/Pundarikaksh_Narayan_Tripathi_Research_Resume.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-lavender/50 hover:bg-lavender/5 transition-colors group text-left"
-                  >
-                    <div className="p-2 rounded bg-lavender/10 text-lavender group-hover:bg-lavender group-hover:text-white transition-colors">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-text-primary group-hover:text-lavender transition-colors">Research Resume</div>
-                      <div className="text-xs text-text-muted">Focus on publications & academic work</div>
-                    </div>
-                  </a>
-                  <a
-                    href={`${import.meta.env.BASE_URL}resume/Pundarikaksh_Narayan_Tripathi_Corporate_Resume.pdf`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 rounded-lg border border-border hover:border-pink/50 hover:bg-pink/5 transition-colors group text-left"
-                  >
-                    <div className="p-2 rounded bg-pink/10 text-pink group-hover:bg-pink group-hover:text-white transition-colors">
-                      <FileText size={20} />
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-text-primary group-hover:text-pink transition-colors">Corporate Resume</div>
-                      <div className="text-xs text-text-muted">Focus on engineering & development</div>
-                    </div>
-                  </a>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </motion.div>
 
 
