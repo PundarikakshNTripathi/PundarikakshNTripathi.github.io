@@ -1,18 +1,13 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
-import JoditEditor from 'jodit-react';
-import katex from "katex";
-import "katex/dist/katex.min.css";
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus } from 'lucide-react';
-
-window.katex = katex;
+import StructuredEditor from './StructuredEditor';
 
 export default function BlogAdmin() {
   const [posts, setPosts] = useState([]);
   const [currentPost, setCurrentPost] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
-  const editor = useRef(null);
 
   useEffect(() => {
     const saved = localStorage.getItem('portfolio_blogs');
@@ -20,17 +15,6 @@ export default function BlogAdmin() {
     const auth = localStorage.getItem('admin_auth');
     if (auth === 'true') setIsAuthenticated(true);
   }, []);
-
-  const config = useMemo(() => ({
-    readonly: false,
-    placeholder: 'Write your blog post here...',
-    theme: 'dark',
-    minHeight: 500,
-    style: {
-      background: 'rgba(255, 255, 255, 0.05)',
-      color: '#fff',
-    },
-  }), []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -48,17 +32,37 @@ export default function BlogAdmin() {
     }
   };
 
+  const handleNewPost = () => {
+    setCurrentPost({ 
+      title: '', 
+      pinned: false,
+      blocks: [{ id: Date.now().toString(), type: 'text', content: '' }]
+    });
+  };
+
   const savePost = () => {
     let updated;
-    if (currentPost.id) {
-      updated = posts.map(p => p.id === currentPost.id ? currentPost : p);
+    const postToSave = { ...currentPost };
+    // Always store as structured blocks now
+    if (postToSave.id) {
+      updated = posts.map(p => p.id === postToSave.id ? postToSave : p);
     } else {
-      currentPost.id = Date.now().toString();
-      updated = [...posts, currentPost];
+      postToSave.id = Date.now().toString();
+      updated = [...posts, postToSave];
     }
     setPosts(updated);
     localStorage.setItem('portfolio_blogs', JSON.stringify(updated));
     alert('Saved successfully!');
+  };
+
+  const openPost = (post) => {
+    // Legacy support: convert old string content to blocks
+    if (post.content && typeof post.content === 'string' && !post.blocks) {
+      post.blocks = [{ id: Date.now().toString(), type: 'text', content: post.content }];
+      delete post.content;
+    }
+    if (!post.blocks) post.blocks = [];
+    setCurrentPost(post);
   };
 
   if (!isAuthenticated) {
@@ -80,7 +84,7 @@ export default function BlogAdmin() {
           <ArrowLeft size={20} /> Back to Site
         </Link>
         <div className="flex gap-4">
-          <button onClick={() => setCurrentPost({ title: '', content: '', pinned: false })} className="flex items-center gap-2 px-4 py-2 rounded border border-border hover:border-lavender transition-colors">
+          <button onClick={handleNewPost} className="flex items-center gap-2 px-4 py-2 rounded border border-border hover:border-lavender transition-colors">
             <Plus size={18} /> New Post
           </button>
           {currentPost && (
@@ -95,7 +99,7 @@ export default function BlogAdmin() {
         <div className="grid gap-4 overflow-y-auto">
           <h2 className="text-2xl font-bold mb-4 text-text-primary">Manage Posts</h2>
           {posts.map(post => (
-            <div key={post.id} onClick={() => setCurrentPost(post)} className="glass-card p-4 cursor-pointer hover:border-lavender border border-transparent transition-colors">
+            <div key={post.id} onClick={() => openPost({...post})} className="glass-card p-4 cursor-pointer hover:border-lavender border border-transparent transition-colors">
               <h3 className="font-bold text-text-primary">{post.title || 'Untitled'}</h3>
               <span className="text-sm text-text-muted">{new Date(parseInt(post.id)).toLocaleDateString()} {post.pinned && '• Pinned'}</span>
             </div>
@@ -114,12 +118,10 @@ export default function BlogAdmin() {
             <input type="checkbox" checked={currentPost.pinned || false} onChange={e => setCurrentPost({...currentPost, pinned: e.target.checked})} className="accent-lavender" />
             Pin this post
           </label>
-          <div className="flex-1 overflow-y-auto bg-bg-secondary/50 rounded-lg text-text-primary">
-            <JoditEditor
-              ref={editor}
-              value={currentPost.content || ''}
-              config={config}
-              onBlur={newContent => setCurrentPost({...currentPost, content: newContent})}
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            <StructuredEditor 
+              blocks={currentPost.blocks} 
+              setBlocks={blocks => setCurrentPost({ ...currentPost, blocks })} 
             />
           </div>
         </div>
