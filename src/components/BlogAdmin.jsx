@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import katex from "katex";
 import "katex/dist/katex.min.css";
-import hljs from 'highlight.js';
+import hljs from 'highlight.js/lib/common';
 import 'highlight.js/styles/atom-one-dark.css';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Save, Plus } from 'lucide-react';
