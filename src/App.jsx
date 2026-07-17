@@ -9,6 +9,7 @@ import Milestones from './components/Milestones';
 import Footer from './components/Footer';
 import ScrollIndicator from './components/ScrollIndicator';
 import Contact from './components/Contact';
+import Blog from './components/Blog';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Research />
         <Projects />
         <Milestones />
+        <Blog />
       </main>
       <Contact />
       <Footer />
