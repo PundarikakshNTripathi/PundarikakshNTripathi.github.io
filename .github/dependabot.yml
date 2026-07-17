@@ -4,6 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "develop"
     open-pull-requests-limit: 10
     ignore:
       - dependency-name: "*"
@@ -13,3 +14,4 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    target-branch: "develop"

@@ -23,6 +23,8 @@ jobs:
         run: npm ci
       - name: Build
         run: npm run build
+        env:
+          VITE_ADMIN_HASH: ${{ secrets.VITE_ADMIN_HASH }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
