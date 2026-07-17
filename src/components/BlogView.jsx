@@ -98,15 +98,16 @@ export default function BlogView() {
                   );
 
                 case 'image':
+                  const alignClass = block.align === 'center' ? 'mx-auto' : block.align === 'right' ? 'ml-auto' : 'mr-auto';
                   return (
-                    <figure key={block.id} className="my-8">
+                    <figure key={block.id} className={`my-8 flex flex-col ${block.align === 'center' ? 'items-center' : block.align === 'right' ? 'items-end' : 'items-start'}`}>
                       <img 
                         src={block.url} 
-                        alt={block.caption || 'Blog image'} 
-                        className="rounded-xl border border-border shadow-lg max-h-[600px] w-auto mx-auto object-cover"
+                        alt={block.alt || block.caption || 'Blog image'} 
+                        className={`rounded-xl border border-border shadow-lg max-h-[600px] w-auto ${alignClass} object-cover`}
                       />
                       {block.caption && (
-                        <figcaption className="text-center text-sm text-text-muted mt-3 italic">
+                        <figcaption className="text-sm text-text-muted mt-3 italic text-center w-full max-w-2xl">
                           {block.caption}
                         </figcaption>
                       )}
@@ -114,16 +115,47 @@ export default function BlogView() {
                   );
 
                 case 'list':
+                  const ListTag = block.listType === 'ol' ? 'ol' : 'ul';
                   return (
-                    <ul key={block.id} className="list-none space-y-3 my-6 pl-4">
+                    <ListTag key={block.id} className={`${block.listType === 'ol' ? 'list-decimal pl-6' : 'list-none pl-4'} space-y-3 my-6 text-text-secondary`}>
                       {block.items?.map((item, i) => (
-                        <li key={i} className="flex gap-4 items-start text-text-secondary leading-relaxed">
-                          <span className="text-pink mt-1.5 opacity-80">•</span>
+                        <li key={i} className="leading-relaxed relative">
+                          {block.listType !== 'ol' && <span className="absolute -left-4 text-pink mt-1.5 opacity-80">•</span>}
                           <span dangerouslySetInnerHTML={{ __html: item }} />
                         </li>
                       ))}
-                    </ul>
+                    </ListTag>
                   );
+
+                case 'quote':
+                  return (
+                    <blockquote key={block.id} className="border-l-4 border-lavender pl-6 my-8 italic text-xl text-text-secondary">
+                      "{block.content}"
+                      {block.author && <footer className="mt-4 text-sm font-bold text-lavender">— {block.author}</footer>}
+                    </blockquote>
+                  );
+
+                case 'code':
+                  return (
+                    <div key={block.id} className="my-8 rounded-xl overflow-hidden border border-border/50">
+                      <div className="bg-[#1e1e1e] border-b border-white/10 px-4 py-2 flex items-center justify-between">
+                        <span className="text-xs font-mono text-white/50">{block.language || 'code'}</span>
+                        <div className="flex gap-1.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+                        </div>
+                      </div>
+                      <pre className="p-6 bg-[#0d0d0d] overflow-x-auto text-sm">
+                        <code className={`language-${block.language || 'javascript'} text-[#c4a7e7] font-mono leading-relaxed`}>
+                          {block.content}
+                        </code>
+                      </pre>
+                    </div>
+                  );
+
+                case 'divider':
+                  return <hr key={block.id} className="my-12 border-border/50" />;
 
                 default:
                   return null;
