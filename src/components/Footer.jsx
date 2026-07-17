@@ -39,9 +39,7 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-lavender to-pink flex items-center justify-center">
-                <span className="font-mono text-sm font-bold text-bg-primary">P</span>
-              </div>
+              <img src="/favicon-light-v2.png" alt="Logo" className="h-8 w-8 rounded-lg" />
               <span className="font-mono text-sm font-semibold text-text-primary">
                 Pundarikaksh N. Tripathi
               </span>
