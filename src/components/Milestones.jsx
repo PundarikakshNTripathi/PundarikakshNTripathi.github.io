@@ -34,14 +34,14 @@ const Milestones = () => {
           subtitle="Demonstrating impact through competitive hacking, community building, and leading initiatives."
         />
 
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="flex flex-wrap justify-center gap-6">
           {milestones.map((milestone, i) => {
             const accent = accentClasses[milestone.accentColor] || accentClasses.lavender;
             const IconComponent = milestone.Icon;
 
             return (
               <ScrollReveal key={milestone.id} delay={i * 0.1}>
-                <div className="group glass-card gradient-border p-8 h-full flex flex-col cursor-default">
+                <div className="group glass-card gradient-border p-8 h-full flex flex-col cursor-default w-full md:w-[350px] max-w-[400px]">
                   {/* Icon & Category */}
                   <div className="flex items-center gap-3 mb-6">
                     <div className={`p-2 rounded-lg ${accent.bg} border ${accent.border} transition-colors duration-300 group-hover:bg-opacity-20`}>

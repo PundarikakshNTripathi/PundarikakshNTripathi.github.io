@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { socialLinks, navItems } from '../data/content';
 
 // Custom SVG icons for social platforms (lucide-react no longer exports brand icons)
@@ -38,9 +39,9 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-lavender to-pink flex items-center justify-center">
+              <Link to="/admin" className="h-8 w-8 rounded-lg bg-gradient-to-br from-lavender to-pink flex items-center justify-center cursor-pointer hover:opacity-80 transition-opacity" title="Admin Access">
                 <span className="font-mono text-sm font-bold text-bg-primary">P</span>
-              </div>
+              </Link>
               <span className="font-mono text-sm font-semibold text-text-primary">
                 Pundarikaksh N. Tripathi
               </span>

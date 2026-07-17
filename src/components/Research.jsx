@@ -19,8 +19,8 @@ const Research = () => {
             <h3 className="text-xl font-bold text-text-primary mb-2">
               Active Research Endeavors
             </h3>
-            <p className="text-base text-text-secondary max-w-md">
-              Currently conducting research in Hardware-Optimized Inference, Distributed Systems, and 3D Gaussian Splatting. Publications and formal papers will be updated here soon.
+            <p className="text-base text-text-secondary max-w-xl">
+              I am a dual-aligned researcher exploring both mathematical, architectural frontier AI, as well as AI infrastructure, HPC, and low-level systems engineering. Publications and formal papers detailing these explorations will be updated here soon.
             </p>
           </div>
         </ScrollReveal>
