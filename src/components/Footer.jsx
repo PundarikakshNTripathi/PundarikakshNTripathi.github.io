@@ -39,7 +39,10 @@ const Footer = () => {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <img src="/favicon-light-v2.png" alt="Logo" className="h-8 w-8 rounded-lg" />
+              <div className="relative h-8 w-8 rounded-lg overflow-hidden border border-border/50 shadow-sm">
+                <img src="/favicon-light-v3.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
+                <img src="/favicon-dark-v3.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
+              </div>
               <span className="font-mono text-sm font-semibold text-text-primary">
                 Pundarikaksh N. Tripathi
               </span>

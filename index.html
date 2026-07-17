@@ -1,9 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon-light-v2.png" />
-    <link rel="icon" type="image/png" href="/favicon-dark-v2.png" media="(prefers-color-scheme: dark)" />
+    <link id="dynamic-favicon" rel="icon" type="image/png" href="/favicon-dark-v3.png" />
+    <script>
+      (function() {
+        var link = document.getElementById('dynamic-favicon');
+        var updateFavicon = function(e) {
+          link.href = e.matches ? '/favicon-dark-v3.png' : '/favicon-light-v3.png';
+        };
+        var mql = window.matchMedia('(prefers-color-scheme: dark)');
+        mql.addEventListener('change', updateFavicon);
+        updateFavicon(mql);
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Pundarikaksh Narayan Tripathi — AI & HPC Researcher</title>
     <meta name="description" content="Portfolio of Pundarikaksh Narayan Tripathi — AI Researcher and Systems Engineer bridging foundational Artificial Intelligence research with High-Performance Computing." />

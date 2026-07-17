@@ -8,14 +8,20 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved) return saved;
+    return 'dark'; // Default to dark mode
+  });
 
   useEffect(() => {
-    // Check initial theme
-    if (document.documentElement.classList.contains('dark')) {
-      setTheme('dark');
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, []);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   const toggleTheme = () => {
     if (theme === 'light') {
@@ -89,7 +95,10 @@ const Navbar = () => {
             className="group flex items-center gap-2 cursor-pointer"
             id="nav-logo"
           >
-            <img src={`${import.meta.env.BASE_URL}favicon.png`} alt="Logo" className="h-10 w-10 sm:h-12 sm:w-12 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105" />
+            <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl overflow-hidden drop-shadow-sm transition-transform duration-300 group-hover:scale-105">
+              <img src="/favicon-light-v3.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
+              <img src="/favicon-dark-v3.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
+            </div>
           </button>
 
           {/* Desktop Nav */}
