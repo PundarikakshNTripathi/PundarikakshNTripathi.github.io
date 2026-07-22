@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
-    "@tailwindcss/vite": "^4.3.1",
+    "@tailwindcss/vite": "^4.3.3",
     "framer-motion": "^12.40.0",
     "jodit": "4.13.5",
     "jodit-react": "5.3.21",
