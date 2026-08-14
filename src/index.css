@@ -55,7 +55,7 @@
     --bg-secondary: #2e1065;
     --bg-card: rgba(46, 16, 101, 0.75);
     --bg-card-hover: rgba(76, 29, 149, 0.95);
-    
+
     --lavender: #c4a7e7;
     --lavender-dim: #9d7cbf;
     --lavender-bright: #d9c4f0;
@@ -210,3 +210,8 @@ section {
 .ql-snow .ql-picker-options { background-color: var(--bg-card) !important; border-color: var(--border) !important; }
 .ql-tooltip { background-color: var(--bg-card) !important; border-color: var(--border) !important; color: var(--text-primary) !important; }
 .ql-tooltip input[type=text] { background-color: var(--bg-secondary) !important; color: var(--text-primary) !important; border-color: var(--border) !important; }
+
+/* Hide orbs in dark mode */
+.dark .orb {
+  display: none !important;
+}

@@ -8,7 +8,7 @@ const GradientBackground = memo(function GradientBackground() {
       
       {/* Lavender orb - top left */}
       <div
-        className="animate-float absolute -top-[20%] -left-[10%] h-[600px] w-[600px] rounded-full opacity-[0.07]"
+        className="orb animate-float absolute -top-[20%] -left-[10%] h-[600px] w-[600px] rounded-full opacity-[0.07]"
         style={{
           background: 'radial-gradient(circle, #c4a7e7 0%, transparent 70%)',
         }}
@@ -16,7 +16,7 @@ const GradientBackground = memo(function GradientBackground() {
       
       {/* Pink orb - right */}
       <div
-        className="animate-float-delayed absolute -right-[5%] top-[30%] h-[500px] w-[500px] rounded-full opacity-[0.06]"
+        className="orb animate-float-delayed absolute -right-[5%] top-[30%] h-[500px] w-[500px] rounded-full opacity-[0.06]"
         style={{
           background: 'radial-gradient(circle, #f5c2e7 0%, transparent 70%)',
         }}
@@ -24,7 +24,7 @@ const GradientBackground = memo(function GradientBackground() {
       
       {/* Mauve orb - bottom */}
       <div
-        className="animate-float-slow absolute -bottom-[10%] left-[30%] h-[700px] w-[700px] rounded-full opacity-[0.05]"
+        className="orb animate-float-slow absolute -bottom-[10%] left-[30%] h-[700px] w-[700px] rounded-full opacity-[0.05]"
         style={{
           background: 'radial-gradient(circle, #cba6f7 0%, transparent 70%)',
         }}
@@ -32,7 +32,7 @@ const GradientBackground = memo(function GradientBackground() {
 
       {/* Small accent orb */}
       <div
-        className="animate-float-delayed absolute top-[60%] left-[10%] h-[300px] w-[300px] rounded-full opacity-[0.04]"
+        className="orb animate-float-delayed absolute top-[60%] left-[10%] h-[300px] w-[300px] rounded-full opacity-[0.04]"
         style={{
           background: 'radial-gradient(circle, #f5c2e7 0%, transparent 70%)',
         }}
