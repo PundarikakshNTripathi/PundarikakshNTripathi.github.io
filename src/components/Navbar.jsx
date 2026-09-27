@@ -1,9 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, Moon, Sun, X } from 'lucide-react';
-import { navItems, person } from '../data/content';
+import { navItems as baseItems, person } from '../data/content';
+import { allPosts } from '../lib/posts';
 import { getTheme, setTheme } from '../lib/theme';
 import Logo from './Logo';
+
+// "Writing" joins the nav once there's at least one post, just before Contact.
+const navItems = allPosts().length
+  ? [...baseItems.slice(0, -1), { id: 'writing', label: 'Writing' }, ...baseItems.slice(-1)]
+  : baseItems;
 
 const useActiveSection = (enabled) => {
   const [active, setActive] = useState('');

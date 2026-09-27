@@ -73,7 +73,7 @@ export default function BlogAdmin() {
     'inline-flex cursor-pointer items-center gap-2 rounded-[3px] border border-border px-3 py-2 text-[0.875rem] text-text-secondary transition-colors hover:border-accent hover:text-text-primary';
 
   return (
-    <div className="mx-auto max-w-5xl px-5 pb-16 pt-10 sm:px-8">
+    <div className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:px-8">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <Link to="/" className="link meta">Back to the site</Link>
         <div className="flex flex-wrap gap-2">

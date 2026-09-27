@@ -13,7 +13,7 @@ const EMAILJS = {
 const COOLDOWN_MS = 60_000;
 
 const field =
-  'w-full rounded-[3px] border border-border bg-bg-primary px-3.5 py-2.5 text-[1rem] text-text-primary placeholder:text-text-muted/70 transition-colors focus:border-accent focus:outline-none';
+  'w-full rounded-[3px] border border-[var(--field)] bg-bg-primary px-3.5 py-2.5 text-[1rem] text-text-primary placeholder:text-text-muted/70 transition-colors focus:border-accent focus:outline-none';
 
 const Contact = () => {
   const formRef = useRef(null);
@@ -34,6 +34,7 @@ const Contact = () => {
       await emailjs.sendForm(EMAILJS.service, EMAILJS.template, form, {
         publicKey: EMAILJS.publicKey,
         limitRate: { id: 'contact', throttle: COOLDOWN_MS },
+        blockHeadless: true,
       });
       lastSent.current = Date.now();
       form.reset();
@@ -51,7 +52,7 @@ const Contact = () => {
 
   return (
     <Section id="contact" title="Contact">
-      <div className="grid max-w-[56rem] gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+      <div className="grid max-w-[52rem] gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
         <div className="prose-serif max-w-[34rem]">
           <p>
             I'm happy to talk about research, collaborations, internships, or anything you've read here. If you're

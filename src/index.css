@@ -48,6 +48,8 @@
     --rule: #e3d8e8;
     --rule-strong: #c9b8d6;
     --tile: #6a3dbd;
+    --tile-weak: #d9c8ef;
+    --field: #8f80ad;
     color-scheme: light;
   }
 
@@ -65,6 +67,8 @@
     --rule: #2f2a54;
     --rule-strong: #463f73;
     --tile: #c4a7e7;
+    --tile-weak: #3a3170;
+    --field: #6e64a3;
     color-scheme: dark;
   }
 
@@ -128,14 +132,27 @@
     font-variation-settings: 'opsz' 72;
   }
 
+  /* Section titles: large when stacked above content, smaller once they sit in the left rail. */
   .section-title {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 400;
-    font-size: 1.375rem;
+    font-size: 1.875rem;
+    line-height: 1.2;
+    color: var(--ink);
+    font-variation-settings: 'opsz' 36;
+  }
+  @media (min-width: 64rem) {
+    .section-title { font-size: 1.375rem; line-height: 1.3; }
+  }
+
+  .subhead {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.1875rem;
     line-height: 1.3;
     color: var(--ink);
-    font-variation-settings: 'opsz' 24;
   }
 
   .meta {
@@ -154,7 +171,7 @@
   .link {
     color: var(--ink);
     text-decoration-line: underline;
-    text-decoration-color: var(--rule-strong);
+    text-decoration-color: var(--accent-dim);
     text-decoration-thickness: 1px;
     text-underline-offset: 0.22em;
     transition: text-decoration-color 150ms ease, color 150ms ease;
@@ -176,11 +193,58 @@
   .note-ref {
     font-family: var(--font-sans);
     font-size: 0.7em;
-    vertical-align: super;
+    vertical-align: baseline;
+    position: relative;
+    top: -0.45em;
     line-height: 0;
     color: var(--dot);
-    padding-left: 0.1em;
   }
+  /* Taller hit area without pushing the following punctuation away. */
+  .note-ref a { padding: 0.35em 0 0.35em 0.15em; margin-right: -0.05em; text-decoration: none; }
+
+  /* HTML from the post editor. Preflight strips everything, so restore prose styling here. */
+  .post-body a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: var(--accent-dim);
+    text-underline-offset: 0.22em;
+  }
+  .post-body a:hover { color: var(--accent); }
+  .post-body p + p { margin-top: 1.1em; }
+  .post-body strong, .post-body b { font-weight: 600; color: var(--ink); }
+  .post-body ul { list-style: disc; padding-left: 1.5rem; margin: 1em 0; }
+  .post-body ol { list-style: decimal; padding-left: 1.5rem; margin: 1em 0; }
+  .post-body li + li { margin-top: 0.35em; }
+  .post-body li::marker { color: var(--ink-3); }
+  .post-body h1, .post-body h2 { font-size: 1.875rem; line-height: 1.2; color: var(--ink); margin: 1.6em 0 0.6em; }
+  .post-body h3, .post-body h4 { font-size: 1.4375rem; line-height: 1.25; color: var(--ink); margin: 1.4em 0 0.5em; }
+  .post-body blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.5rem;
+    margin: 1.5em 0;
+    font-style: italic;
+    color: var(--ink);
+  }
+  .post-body :not(pre) > code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--surface);
+    padding: 0.1em 0.3em;
+    border-radius: 3px;
+  }
+  .post-body pre {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1.5em 0;
+  }
+  .post-body img { max-width: 100%; height: auto; border-radius: 3px; }
+  .post-body table { border-collapse: collapse; margin: 1.5em 0; font-family: var(--font-sans); font-size: 0.9375rem; }
+  .post-body th, .post-body td { border-bottom: 1px solid var(--rule); padding: 0.4em 0.8em; text-align: left; }
 
   /* Kept for the blog and admin screens. */
   .glass-card {

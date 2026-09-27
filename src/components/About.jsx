@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { interests, person, story, toolbox } from '../data/content';
+import { interests, story, toolbox } from '../data/content';
 import Section from './Section';
 
 // Turns "text{note:id} more text" into text with a numbered reference, and collects the notes
@@ -33,14 +33,14 @@ const About = () => {
             <div key={i} className="grid gap-x-10 xl:grid-cols-[minmax(0,40rem)_minmax(0,1fr)]">
               <p className="max-w-[40rem]">{nodes}</p>
               {notes.length > 0 && (
-                <aside className="mt-3 xl:mt-1">
+                <div role="note" className="mt-3 xl:mt-1">
                   {notes.map((note) => (
                     <p key={note.id} id={`note-${note.id}`} className="sidenote max-w-[40rem] xl:max-w-[15rem]">
                       <span className="num mr-1.5 text-dot">{note.n}</span>
                       {story.notes[note.id]}
                     </p>
                   ))}
-                </aside>
+                </div>
               )}
             </div>
           );
@@ -49,7 +49,7 @@ const About = () => {
 
       <div className="mt-14 grid max-w-[52rem] gap-x-12 gap-y-10 sm:grid-cols-2">
         <div>
-          <h3 className="mb-3 text-[0.9375rem] font-medium text-text-primary">What I read and think about</h3>
+          <h3 className="subhead mb-4">What I read and think about</h3>
           <ul className="space-y-1.5 text-[0.9375rem] text-text-secondary">
             {interests.map((item) => (
               <li key={item} className="flex gap-3">
@@ -60,7 +60,7 @@ const About = () => {
           </ul>
         </div>
         <div>
-          <h3 className="mb-3 text-[0.9375rem] font-medium text-text-primary">Tools I reach for</h3>
+          <h3 className="subhead mb-4">Tools I reach for</h3>
           <dl className="space-y-2 text-[0.9375rem]">
             {toolbox.map((row) => (
               <div key={row.group}>
@@ -71,7 +71,6 @@ const About = () => {
           </dl>
         </div>
       </div>
-      <p className="meta mt-10">Last updated {person.updated}.</p>
     </Section>
   );
 };

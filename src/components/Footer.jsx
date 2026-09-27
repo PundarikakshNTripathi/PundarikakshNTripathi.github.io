@@ -16,13 +16,13 @@ const Footer = () => (
       <ul className="meta flex flex-wrap gap-x-5 gap-y-1">
         {socialLinks.map((s) => (
           <li key={s.id}>
-            <a href={s.url} target="_blank" rel="noopener noreferrer me" className="link text-text-muted">
+            <a href={s.url} target="_blank" rel="noopener noreferrer me" className="link inline-block py-1.5 text-text-muted">
               {s.label}
             </a>
           </li>
         ))}
         <li>
-          <a href={person.resume} target="_blank" rel="noopener noreferrer" className="link text-text-muted">
+          <a href={person.resume} target="_blank" rel="noopener noreferrer" className="link inline-block py-1.5 text-text-muted">
             Résumé
           </a>
         </li>

@@ -4,13 +4,8 @@ import DOMPurify from 'dompurify';
 import 'katex/dist/katex.min.css';
 import { findPost, postDate } from '../lib/posts';
 
-// Post HTML comes from the editor. Sanitise it before it touches the DOM, and make any links
-// that open a new tab safe from reverse tabnabbing.
-DOMPurify.addHook('afterSanitizeAttributes', (node) => {
-  if (node.tagName === 'A' && node.getAttribute('target') === '_blank') {
-    node.setAttribute('rel', 'noopener noreferrer');
-  }
-});
+// Post HTML comes from the editor. Sanitize it before it touches the DOM. DOMPurify drops `target`,
+// so links in posts open in the same tab and can't be used for reverse tabnabbing.
 const clean = (html) => ({ __html: DOMPurify.sanitize(html || '', { USE_PROFILES: { html: true } }) });
 
 // Only http(s) and same-site image URLs; blocks javascript: and friends.
@@ -46,7 +41,7 @@ const Block = ({ block }) => {
       const align = block.align === 'left' ? 'items-start' : block.align === 'right' ? 'items-end' : 'items-center';
       return (
         <figure className={`my-10 flex flex-col ${align}`}>
-          <img src={src} alt={block.alt || block.caption || ''} loading="lazy" className="max-h-[600px] w-auto rounded-[3px] border border-border" />
+          <img src={src} alt={block.alt || block.caption || ''} loading="lazy" referrerPolicy="no-referrer" className="max-h-[600px] w-auto rounded-[3px] border border-border" />
           {block.caption && <figcaption className="meta mt-3 max-w-[36rem]">{block.caption}</figcaption>}
         </figure>
       );
@@ -139,12 +134,12 @@ export default function BlogView() {
         <nav aria-label="On this page" className="hidden lg:block">
           <div className="sticky top-24 pt-24">
             <p className="mb-3 text-[0.875rem] font-medium text-text-primary">On this page</p>
-            <ul className="space-y-2 border-l border-border text-[0.875rem]">
+            <ul className="border-l border-border text-[0.875rem]">
               {toc.map((h) => (
-                <li key={h.id} className={h.level === 'h3' ? 'pl-7' : 'pl-4'}>
+                <li key={h.id}>
                   <a
                     href={`#heading-${h.id}`}
-                    className={`-ml-px block border-l pl-0 transition-colors ${
+                    className={`-ml-px block border-l py-1 transition-colors ${h.level === 'h3' ? 'pl-7' : 'pl-4'} ${
                       activeId === `heading-${h.id}`
                         ? 'border-accent text-text-primary'
                         : 'border-transparent text-text-muted hover:text-text-primary'

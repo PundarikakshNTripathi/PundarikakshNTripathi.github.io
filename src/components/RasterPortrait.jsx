@@ -62,7 +62,7 @@ const RasterPortrait = ({ src, fallback, alt, width, height }) => {
 
   return (
     <figure className="w-full">
-      <div className="relative overflow-hidden rounded-[3px] bg-surface" style={{ aspectRatio: `${width} / ${height}` }}>
+      <div className="relative overflow-hidden rounded-[3px] border border-border bg-surface" style={{ aspectRatio: `${width} / ${height}` }}>
         <picture>
           <source srcSet={src} type="image/webp" />
           <img
@@ -86,14 +86,14 @@ const RasterPortrait = ({ src, fallback, alt, width, height }) => {
           }`}
         />
       </div>
-      <figcaption className="meta mt-3 flex items-baseline justify-between gap-4">
+      <figcaption className="meta mt-2 flex flex-wrap items-baseline justify-between gap-x-4">
         <span>
           <span className="text-text-secondary">Fig. 1.</span> Me, rasterized coarse to fine.
         </span>
         <button
           type="button"
           onClick={run}
-          className="shrink-0 cursor-pointer underline decoration-border underline-offset-4 hover:text-accent hover:decoration-current"
+          className="shrink-0 cursor-pointer py-1.5 underline decoration-border underline-offset-4 hover:text-accent hover:decoration-current"
         >
           <span className="num">
             {rendering ? `${PASSES[pass]}×${Math.round((PASSES[pass] * height) / width)} tiles` : 'Replay'}

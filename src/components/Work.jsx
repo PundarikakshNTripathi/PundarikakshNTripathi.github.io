@@ -24,8 +24,8 @@ const Work = () => (
       </article>
     ))}
 
-    <h3 className="mt-16 mb-5 text-[0.9375rem] font-medium text-text-primary">Along the way</h3>
-    <ol className="max-w-[44rem] border-t border-border">
+    <h3 className="subhead mt-16 mb-5">Along the way</h3>
+    <ol className="max-w-[40rem] border-t border-border">
       {timeline.map((item) => (
         <li
           key={`${item.when}-${item.title}`}

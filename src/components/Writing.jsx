@@ -12,7 +12,7 @@ const Writing = () => {
           proper write-ups.
         </p>
       ) : (
-        <ul className="max-w-[44rem] border-t border-border">
+        <ul className="max-w-[40rem] border-t border-border">
           {posts.map((post) => (
             <li key={post.id} className="border-b border-border">
               <Link to={`/blog/${post.id}`} className="group grid gap-x-8 gap-y-1 py-5 sm:grid-cols-[7rem_minmax(0,1fr)]">

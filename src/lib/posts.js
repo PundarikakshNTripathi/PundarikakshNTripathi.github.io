@@ -45,7 +45,8 @@ export function excerpt(post, length = 180) {
     .filter((b) => b.type === 'text')
     .map((b) => b.content)
     .join(' ');
-  const text = new DOMParser().parseFromString(html, 'text/html').body.textContent || '';
+  const spaced = html.replace(/<\/(p|li|h\d|blockquote|div)>/gi, ' $&');
+  const text = new DOMParser().parseFromString(spaced, 'text/html').body.textContent || '';
   const clean = text.replace(/\s+/g, ' ').trim();
   return clean.length > length ? `${clean.slice(0, length).replace(/\s\S*$/, '')}…` : clean;
 }

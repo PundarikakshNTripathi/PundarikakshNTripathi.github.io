@@ -9,6 +9,8 @@ import Projects from './components/Projects';
 import Writing from './components/Writing';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import ErrorBoundary from './components/ErrorBoundary';
+import { allPosts } from './lib/posts';
 
 // The post reader and the editor pull in KaTeX and Jodit; keep them out of the home page bundle.
 const BlogView = lazy(() => import('./components/BlogView'));
@@ -19,7 +21,13 @@ const ScrollManager = () => {
   const { pathname, hash } = useLocation();
   useEffect(() => {
     if (hash) {
-      const el = document.getElementById(decodeURIComponent(hash.slice(1)));
+      let id = hash.slice(1);
+      try {
+        id = decodeURIComponent(id);
+      } catch {
+        // Malformed escape in a shared link; fall back to the raw id instead of crashing.
+      }
+      const el = document.getElementById(id);
       if (el) {
         el.scrollIntoView();
         return;
@@ -37,7 +45,7 @@ const Home = () => (
     <Work />
     <Research />
     <Projects />
-    <Writing />
+    {allPosts().length > 0 && <Writing />}
     <Contact />
   </>
 );
@@ -48,14 +56,16 @@ function App() {
       <ScrollManager />
       <Navbar />
       <main id="main">
-        <Suspense fallback={<div className="min-h-[60vh]" />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/blog/:id" element={<BlogView />} />
-            <Route path="/admin" element={<BlogAdmin />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<div className="min-h-[60vh]" />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/blog/:id" element={<BlogView />} />
+              <Route path="/admin" element={<BlogAdmin />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <Footer />
     </Router>

@@ -1,29 +1,48 @@
-# Pundarikaksh Narayan Tripathi - Portfolio
+# pundarikakshntripathi.github.io
 
-Hi! I'm Pundarikaksh Narayan Tripathi. This is my personal portfolio website, built to showcase my work bridging foundational Artificial Intelligence research with High-Performance Computing (HPC) infrastructure.
+My personal site: who I am, what I'm building, and eventually what I've written.
+It's a small React app built with Vite and Tailwind, deployed to GitHub Pages.
 
-## Project Overview
+## Editing
 
-I built this portfolio to act as a centralized hub for my academic research, open-source contributions, and professional engineering experiences. It's designed to be lightning-fast, highly responsive, and visually distinct.
+Almost everything you read on the site lives in [`src/data/content.js`](src/data/content.js):
+the intro, the About story and its sidenotes, work, research questions, projects and the timeline.
+Components only decide how it looks.
 
-## Features
+- **Projects** take a `figure` key that picks a small schematic drawn in
+  [`ProjectFigure.jsx`](src/components/ProjectFigure.jsx). Set `featured: true` to give one the large layout.
+- **Sidenotes** in the About story are written inline as `{note:id}` and defined in `story.notes`.
+- **"Last updated"** is `person.updated`. Change it when the content changes.
 
-- **Modern Glassmorphism UI**: Custom-built interface using soft pastel accents over a deep dark background.
-- **Dynamic Theming**: Fully integrated Light and Dark mode toggles to suit different viewing preferences.
-- **Responsive Design**: Fluid layout that scales elegantly from mobile devices to ultrawide desktop monitors.
-- **Project Showcase**: Detailed cards highlighting my research papers, systems architectures, and algorithms.
-- **Interactive Elements**: Micro-animations powered by Framer Motion for a polished user experience.
+## Writing posts
 
-## Tech Stack
+`/admin` is a local drafting tool. Drafts are saved in your browser only, and nobody else can see them.
+To publish:
 
-This project was built from the ground up using a modern frontend ecosystem:
+1. Write and save drafts at `/admin`.
+2. Click **Export posts.json**.
+3. Replace `src/data/posts.json` with the exported file, commit and push.
 
-- **Framework**: React 19 + Vite for instantaneous hot module replacement and optimized production builds.
-- **Styling**: Tailwind CSS v4, utilizing custom CSS variables for complex theming.
-- **Animations**: Framer Motion for scroll reveals and layout transitions.
-- **Icons**: Lucide React combined with bespoke SVGs.
-- **Typography**: Inter for primary body text, and JetBrains Mono for technical accents and tags.
+Post HTML is sanitised with DOMPurify before it's rendered.
 
-## Contributing
+## Running it
 
-While this is a personal portfolio, I'm always open to feedback on the design, architecture, or the projects showcased within. Feel free to open an issue or reach out directly if you have any thoughts or suggestions!
+```sh
+npm ci --ignore-scripts
+npx husky          # once per clone, enables the pre-commit audit hook
+npm run dev
+npm run build      # outputs dist/, including the Content-Security-Policy
+```
+
+## Security notes
+
+- **No third-party requests.** Fonts (Newsreader and IBM Plex, OFL) are self-hosted in `public/fonts`.
+  The only external call is EmailJS, from the contact form.
+- **Content-Security-Policy** is injected at build time by a small plugin in `vite.config.js`. It allows
+  the one inline theme script by hash. GitHub Pages can't send headers, so it ships as a `<meta>` tag.
+- **Supply chain.** Dependencies are pinned to exact versions, and `.npmrc` sets `ignore-scripts`, so
+  packages can't run code on install. CI verifies registry signatures and fails on high-severity
+  advisories. GitHub Actions are pinned to commit SHAs. Dependabot waits seven days before proposing
+  a new release.
+- **EmailJS.** The IDs in `Contact.jsx` are public by design. Restrict allowed origins to this domain
+  in the EmailJS dashboard so nobody else can send through the account.

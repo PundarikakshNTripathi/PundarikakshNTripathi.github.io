@@ -5,15 +5,15 @@ const Hero = () => (
   <section id="top" aria-label="Introduction" className="pb-16 pt-10 sm:pb-20 sm:pt-16">
     <div className="mx-auto grid max-w-6xl items-end gap-x-16 gap-y-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
       <div className="rise min-w-0">
-        <p className="meta mb-6">
-          {person.location}. Independent AI and ML systems researcher.
-        </p>
         <h1 className="display text-[clamp(2.75rem,7.5vw,5.75rem)] leading-[0.98]">
           <span className="block">{person.firstName}</span>
           <span className="block">{person.lastName}</span>
         </h1>
+        <p className="mt-5 font-serif text-[1.25rem] italic text-text-secondary sm:text-[1.4375rem]">
+          Independent AI and ML systems researcher, {person.location}.
+        </p>
 
-        <p className="prose-serif mt-8 max-w-[36rem] text-[1.3125rem] leading-[1.6] text-text-primary sm:text-[1.4375rem]">
+        <p className="prose-serif mt-10 max-w-[36rem] text-[1.3125rem] leading-[1.6] text-text-primary sm:text-[1.4375rem]">
           {hero.lead}
         </p>
 
@@ -39,10 +39,10 @@ const Hero = () => (
             {person.email}
           </a>
         </div>
-        <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[0.9375rem]" aria-label="Elsewhere">
+        <ul className="mt-4 flex flex-wrap gap-x-5 text-[0.9375rem]" aria-label="Elsewhere">
           {socialLinks.map((s) => (
             <li key={s.id}>
-              <a href={s.url} target="_blank" rel="noopener noreferrer me" className="link text-text-secondary">
+              <a href={s.url} target="_blank" rel="noopener noreferrer me" className="link inline-block py-1.5 text-text-secondary">
                 {s.label}
               </a>
             </li>
@@ -50,7 +50,7 @@ const Hero = () => (
         </ul>
       </div>
 
-      <div className="w-full max-w-[15rem] sm:max-w-[20rem]">
+      <div className="w-full max-w-[18rem] sm:max-w-[20rem]">
         <RasterPortrait
           src="/portrait.webp"
           fallback="/portrait.jpg"
