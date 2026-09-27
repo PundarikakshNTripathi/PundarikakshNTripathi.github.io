@@ -5,7 +5,7 @@ import Section from './Section';
 // Results read like a small table in a paper: what was measured, the number, and the setup.
 const ResultsTable = ({ results, setup }) =>
   results.length > 0 && (
-    <div className="mt-6 max-w-[30rem]">
+    <div className="mt-6 max-w-[36rem]">
       <table className="w-full border-t border-border text-[0.9375rem]">
         <tbody>
           {results.map(([label, value]) => (
@@ -56,7 +56,7 @@ const Featured = ({ project, fig }) => (
     <div className="min-w-0 max-w-[40rem]">
       <Title project={project} className="text-[1.875rem]" />
       <p className="mt-2 font-serif text-[1.1875rem] italic leading-snug text-text-primary">{project.summary}</p>
-      <p className="prose-serif mt-4 text-[1.0625rem]">{project.body}</p>
+      <p className="prose-serif mt-4 max-w-[36rem] text-[1.0625rem]">{project.body}</p>
       <ResultsTable results={project.results} setup={project.setup} />
       <CodeLink project={project} />
     </div>
@@ -90,7 +90,7 @@ const Projects = () => {
         <Featured key={project.id} project={project} fig={i + 2} />
       ))}
       <h3 className="subhead mt-14 mb-6">Also built</h3>
-      <div className="grid max-w-[52rem] gap-x-12 gap-y-12 md:grid-cols-2">
+      <div className="grid gap-x-12 gap-y-12 md:grid-cols-2">
         {rest.map((project) => (
           <Compact key={project.id} project={project} />
         ))}

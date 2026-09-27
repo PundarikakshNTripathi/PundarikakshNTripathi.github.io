@@ -38,6 +38,12 @@ const ScrollManager = () => {
   return null;
 };
 
+// Remount the boundary on navigation so one failed page doesn't stick.
+const RouteBoundary = ({ children }) => {
+  const { pathname } = useLocation();
+  return <ErrorBoundary key={pathname}>{children}</ErrorBoundary>;
+};
+
 const Home = () => (
   <>
     <Hero />
@@ -56,7 +62,7 @@ function App() {
       <ScrollManager />
       <Navbar />
       <main id="main">
-        <ErrorBoundary>
+        <RouteBoundary>
           <Suspense fallback={<div className="min-h-[60vh]" />}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -65,7 +71,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </ErrorBoundary>
+        </RouteBoundary>
       </main>
       <Footer />
     </Router>

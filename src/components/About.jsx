@@ -35,7 +35,7 @@ const About = () => {
               {notes.length > 0 && (
                 <div role="note" className="mt-3 xl:mt-1">
                   {notes.map((note) => (
-                    <p key={note.id} id={`note-${note.id}`} className="sidenote max-w-[40rem] xl:max-w-[15rem]">
+                    <p key={note.id} id={`note-${note.id}`} className="sidenote max-w-[32rem] xl:max-w-[15rem]">
                       <span className="num mr-1.5 text-dot">{note.n}</span>
                       {story.notes[note.id]}
                     </p>

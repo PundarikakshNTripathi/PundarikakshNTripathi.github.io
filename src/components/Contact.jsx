@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
 import { person } from '../data/content';
 import Section from './Section';
 
@@ -31,6 +30,8 @@ const Contact = () => {
     }
     setStatus('sending');
     try {
+      // Loaded on first send, so the form costs nothing on page load.
+      const { default: emailjs } = await import('@emailjs/browser');
       await emailjs.sendForm(EMAILJS.service, EMAILJS.template, form, {
         publicKey: EMAILJS.publicKey,
         limitRate: { id: 'contact', throttle: COOLDOWN_MS },
@@ -45,7 +46,7 @@ const Contact = () => {
   };
 
   const message = {
-    sent: 'Sent. I read everything and usually reply within a few days.',
+    sent: "Sent. Thanks for writing, I'll get back to you.",
     error: `That didn't go through. Try again, or email me at ${person.email}.`,
     wait: 'You just sent a message. Give it a minute before sending another.',
   }[status];

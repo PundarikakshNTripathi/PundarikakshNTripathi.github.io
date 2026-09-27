@@ -16,7 +16,7 @@ const Work = () => (
             {job.period}. {job.where}.
           </p>
         </header>
-        <div className="prose-serif mt-4 text-[1.0625rem]">
+        <div className="prose-serif mt-4 max-w-[36rem] text-[1.0625rem]">
           {job.body.map((p) => (
             <p key={p}>{p}</p>
           ))}

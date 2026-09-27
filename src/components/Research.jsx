@@ -11,7 +11,7 @@ const Research = () => (
           <li key={item.q} className="border-l border-border pl-6">
             <div>
               <h3 className="font-serif text-[1.375rem] leading-snug text-text-primary">{item.q}</h3>
-              <p className="prose-serif mt-3 text-[1.0625rem]">{item.a}</p>
+              <p className="prose-serif mt-3 max-w-[36rem] text-[1.0625rem]">{item.a}</p>
               {project && (
                 <a href={`#project-${project.id}`} className="link meta mt-3 inline-block">
                   See {project.title} below
