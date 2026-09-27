@@ -1,4 +1,3 @@
-import React, { useState } from 'react';
 import JoditEditor from 'jodit-react';
 import { Trash2, Image as ImageIcon, Type, List, Hash, Quote, Code, Minus, ArrowUp, ArrowDown } from 'lucide-react';
 
@@ -49,7 +48,10 @@ export default function StructuredEditor({ blocks, setBlocks }) {
   // Full Jodit config with all Substack/Medium features
   const joditConfig = {
     readonly: false,
-    theme: 'dark',
+    // Stay self-contained: no ace editor or js-beautify fetched from a CDN at runtime.
+    sourceEditor: 'area',
+    beautifyHTML: false,
+    theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
     minHeight: 300,
     toolbarAdaptive: false,
     buttons: [
@@ -62,7 +64,7 @@ export default function StructuredEditor({ blocks, setBlocks }) {
       'align', 'undo', 'redo', '|',
       'hr', 'math', 'copyformat', 'fullsize'
     ],
-    style: { background: 'rgba(255, 255, 255, 0.03)', color: '#fff' }
+    style: { background: 'var(--bg)', color: 'var(--ink)' }
   };
 
   return (

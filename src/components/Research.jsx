@@ -1,32 +1,28 @@
-import SectionHeading from './SectionHeading';
-import ScrollReveal from './ScrollReveal';
+import { projects, research } from '../data/content';
+import Section from './Section';
 
-const Research = () => {
-  return (
-    <section id="research" className="relative py-32 px-6">
-      <div className="mx-auto max-w-6xl">
-        <SectionHeading
-          label="// Academic"
-          title="Research and Publications"
-          subtitle="Advancing the frontiers of Artificial Intelligence through academic inquiry."
-        />
-        
-        <ScrollReveal delay={0.1}>
-          <div className="glass-card gradient-border p-8 h-full flex flex-col items-center justify-center text-center min-h-[300px]">
-            <span className="font-mono text-xs tracking-widest uppercase text-pink/70 mb-4">
-              In Progress
-            </span>
-            <h3 className="text-xl font-bold text-text-primary mb-2">
-              Active Research Endeavors
-            </h3>
-            <p className="text-base text-text-secondary max-w-xl">
-              I am a dual-aligned researcher exploring both mathematical, architectural frontier AI, as well as AI infrastructure, HPC, and low-level systems engineering. Publications and formal papers detailing these explorations will be updated here soon.
-            </p>
-          </div>
-        </ScrollReveal>
-      </div>
-    </section>
-  );
-};
+const Research = () => (
+  <Section id="research" title="Research">
+    <p className="prose-serif max-w-[40rem]">{research.intro}</p>
+    <ul className="mt-10 max-w-[40rem] space-y-10">
+      {research.questions.map((item) => {
+        const project = projects.find((p) => p.id === item.project);
+        return (
+          <li key={item.q} className="border-l border-border pl-6">
+            <div>
+              <h3 className="font-serif text-[1.375rem] leading-snug text-text-primary">{item.q}</h3>
+              <p className="prose-serif mt-3 text-[1.0625rem]">{item.a}</p>
+              {project && (
+                <a href={`#project-${project.id}`} className="link meta mt-3 inline-block">
+                  See {project.title} below
+                </a>
+              )}
+            </div>
+          </li>
+        );
+      })}
+    </ul>
+  </Section>
+);
 
 export default Research;

@@ -1,88 +1,104 @@
 import { useRef, useState } from 'react';
 import emailjs from '@emailjs/browser';
-import SectionHeading from './SectionHeading';
-import ScrollReveal from './ScrollReveal';
+import { person } from '../data/content';
+import Section from './Section';
+
+// EmailJS IDs are public by design. Restrict allowed origins in the EmailJS dashboard
+// so they can't be reused from other sites.
+const EMAILJS = {
+  service: 'service_74o81x1',
+  template: 'template_27u1v0o',
+  publicKey: 'yVSScP3UIh4EX4ibz',
+};
+const COOLDOWN_MS = 60_000;
+
+const field =
+  'w-full rounded-[3px] border border-border bg-bg-primary px-3.5 py-2.5 text-[1rem] text-text-primary placeholder:text-text-muted/70 transition-colors focus:border-accent focus:outline-none';
 
 const Contact = () => {
-  const formRef = useRef();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitStatus, setSubmitStatus] = useState(null);
+  const formRef = useRef(null);
+  const lastSent = useRef(0);
+  const [status, setStatus] = useState('idle'); // idle | sending | sent | error | wait
 
-  const sendEmail = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitStatus(null);
-
-    const serviceID = 'service_74o81x1';
-    const templateID = 'template_27u1v0o';
-    const publicKey = 'yVSScP3UIh4EX4ibz';
-
-    if (serviceID === 'YOUR_SERVICE_ID') {
-      alert('Please configure your EmailJS credentials in Contact.jsx');
-      setIsSubmitting(false);
+    const form = formRef.current;
+    // Bots fill every field; people never see this one.
+    if (form.elements.company.value) return;
+    if (Date.now() - lastSent.current < COOLDOWN_MS) {
+      setStatus('wait');
       return;
     }
-
-    emailjs.sendForm(serviceID, templateID, formRef.current, publicKey)
-      .then((result) => {
-          setSubmitStatus('success');
-          setIsSubmitting(false);
-          setTimeout(() => {
-            setSubmitStatus(null);
-            e.target.reset();
-          }, 3000);
-      }, (error) => {
-          console.error(error.text);
-          setSubmitStatus('error');
-          setIsSubmitting(false);
+    setStatus('sending');
+    try {
+      await emailjs.sendForm(EMAILJS.service, EMAILJS.template, form, {
+        publicKey: EMAILJS.publicKey,
+        limitRate: { id: 'contact', throttle: COOLDOWN_MS },
       });
+      lastSent.current = Date.now();
+      form.reset();
+      setStatus('sent');
+    } catch {
+      setStatus('error');
+    }
   };
 
+  const message = {
+    sent: 'Sent. I read everything and usually reply within a few days.',
+    error: `That didn't go through. Try again, or email me at ${person.email}.`,
+    wait: 'You just sent a message. Give it a minute before sending another.',
+  }[status];
+
   return (
-    <section id="contact" className="relative py-32 px-6">
-      <div className="mx-auto max-w-2xl">
-        <SectionHeading
-          label="// Let's Connect"
-          title="Get In Touch"
-          subtitle="Feel free to reach out for collaborations, opportunities, or just to say hi!"
-        />
-        
-        <ScrollReveal delay={0.1}>
-          <form
-            ref={formRef}
-            className="mt-8 p-8 rounded-2xl glass-card gradient-border flex flex-col gap-5 text-left"
-            onSubmit={sendEmail}
-          >
-            <div>
-              <label htmlFor="user_name" className="block text-sm font-medium text-text-secondary mb-2">Name</label>
-              <input type="text" name="user_name" id="user_name" required className="w-full px-4 py-3 rounded-xl border border-border bg-bg-primary text-base text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="John Doe" />
-            </div>
-            <div>
-              <label htmlFor="user_email" className="block text-sm font-medium text-text-secondary mb-2">Email</label>
-              <input type="email" name="user_email" id="user_email" required className="w-full px-4 py-3 rounded-xl border border-border bg-bg-primary text-base text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all" placeholder="john@example.com" />
-            </div>
-            <div>
-              <label htmlFor="message" className="block text-sm font-medium text-text-secondary mb-2">Message</label>
-              <textarea name="message" id="message" required rows={5} className="w-full px-4 py-3 rounded-xl border border-border bg-bg-primary text-base text-text-primary focus:outline-none focus:border-lavender focus:ring-1 focus:ring-lavender transition-all resize-y" placeholder="Hello..." />
-            </div>
-            {submitStatus === 'error' && (
-              <p className="text-sm text-pink">Something went wrong. Please try again.</p>
-            )}
-            <button 
-              type="submit" 
-              disabled={isSubmitting || submitStatus === 'success'} 
-              className={`w-full flex justify-center items-center gap-2 py-4 rounded-xl transition-all text-base font-semibold cursor-pointer border ${
-                submitStatus === 'success' 
-                  ? 'bg-lavender text-white shadow-lg shadow-lavender/30 border-lavender' 
-                  : 'border-border bg-bg-card text-text-primary hover:text-lavender hover:border-lavender/50 hover:bg-lavender/10 disabled:opacity-70 disabled:cursor-not-allowed'
-              }`}
+    <Section id="contact" title="Contact">
+      <div className="grid max-w-[56rem] gap-x-14 gap-y-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,22rem)]">
+        <div className="prose-serif max-w-[34rem]">
+          <p>
+            I'm happy to talk about research, collaborations, internships, or anything you've read here. If you're
+            working on inference, kernels, or interpretability and want another pair of hands, I'd especially like
+            to hear from you.
+          </p>
+          <p>
+            Email is the most reliable way to reach me:{' '}
+            <a href={`mailto:${person.email}`} className="link">
+              {person.email}
+            </a>
+            . The form goes to the same inbox.
+          </p>
+        </div>
+
+        <form ref={formRef} onSubmit={onSubmit} className="space-y-4" noValidate={false}>
+          <div>
+            <label htmlFor="user_name" className="mb-1.5 block text-[0.875rem] text-text-secondary">Name</label>
+            <input id="user_name" name="user_name" type="text" required maxLength={100} autoComplete="name" className={field} />
+          </div>
+          <div>
+            <label htmlFor="user_email" className="mb-1.5 block text-[0.875rem] text-text-secondary">Email</label>
+            <input id="user_email" name="user_email" type="email" required maxLength={200} autoComplete="email" className={field} />
+          </div>
+          <div>
+            <label htmlFor="message" className="mb-1.5 block text-[0.875rem] text-text-secondary">Message</label>
+            <textarea id="message" name="message" required rows={5} maxLength={5000} className={`${field} resize-y`} />
+          </div>
+          <div aria-hidden="true" className="absolute -left-[9999px] h-px w-px overflow-hidden">
+            <label htmlFor="company">Company</label>
+            <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
+          </div>
+          <div className="flex flex-wrap items-center gap-4 pt-1">
+            <button
+              type="submit"
+              disabled={status === 'sending'}
+              className="cursor-pointer rounded-[3px] bg-text-primary px-4 py-2.5 text-[0.9375rem] font-medium text-bg-primary transition-colors hover:bg-accent disabled:cursor-wait disabled:opacity-60"
             >
-              {isSubmitting ? 'Sending...' : submitStatus === 'success' ? 'Message Sent!' : 'Send Message'}
+              {status === 'sending' ? 'Sending…' : 'Send message'}
             </button>
-          </form>
-        </ScrollReveal>
+          </div>
+          <p role="status" aria-live="polite" className={`text-[0.9375rem] ${status === 'error' ? 'text-dot' : 'text-text-secondary'}`}>
+            {message}
+          </p>
+        </form>
       </div>
-    </section>
+    </Section>
   );
 };
 

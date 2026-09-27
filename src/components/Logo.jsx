@@ -1,0 +1,12 @@
+// The "P." monogram, same drawing as public/favicon.svg.
+const Logo = ({ size = 28, className = '' }) => (
+  <svg viewBox="0 0 64 64" width={size} height={size} className={className} aria-hidden="true">
+    <rect width="64" height="64" rx="14" fill="#221c4a" />
+    <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#c4a7e7" strokeOpacity=".35" strokeWidth="1.5" />
+    <path d="M17 13h7v38h-7z" fill="#e6d8fb" />
+    <path d="M20.5 16.5H31a10 10 0 0 1 0 20H20.5" fill="none" stroke="#e6d8fb" strokeWidth="7" />
+    <circle cx="45.5" cy="46.5" r="5.5" fill="#ff4fa3" />
+  </svg>
+);
+
+export default Logo;

@@ -1,224 +1,142 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { navItems } from '../data/content';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, Moon, Sun, X } from 'lucide-react';
+import { navItems, person } from '../data/content';
+import { getTheme, setTheme } from '../lib/theme';
+import Logo from './Logo';
+
+const useActiveSection = (enabled) => {
+  const [active, setActive] = useState('');
+  useEffect(() => {
+    if (!enabled) return undefined;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActive(entry.target.id === 'top' ? '' : entry.target.id);
+        });
+      },
+      { rootMargin: '-45% 0px -50% 0px' }
+    );
+    ['top', ...navItems.map((n) => n.id)].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [enabled]);
+  return active;
+};
+
+const ThemeToggle = ({ className = '' }) => {
+  const [theme, setThemeState] = useState(getTheme);
+  const next = theme === 'dark' ? 'light' : 'dark';
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setTheme(next);
+        setThemeState(next);
+      }}
+      className={`cursor-pointer rounded p-2 text-text-muted transition-colors hover:text-text-primary ${className}`}
+      aria-label={`Switch to ${next} theme`}
+      title={`Switch to ${next} theme`}
+    >
+      {theme === 'dark' ? <Sun size={17} strokeWidth={1.75} /> : <Moon size={17} strokeWidth={1.75} />}
+    </button>
+  );
+};
 
 const Navbar = () => {
+  const { pathname } = useLocation();
+  const onHome = pathname === '/';
+  const active = useActiveSection(onHome);
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('');
-  const [theme, setTheme] = useState(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved) return saved;
-    return 'dark'; // Default to dark mode
-  });
 
   useEffect(() => {
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => {
-    if (theme === 'light') {
-      document.documentElement.classList.add('dark');
-      setTheme('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      setTheme('light');
-    }
-  };
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-
-      // Determine active section
-      const sections = navItems.map((item) => document.getElementById(item.id));
-      const scrollPos = window.scrollY + 200;
-
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (sections[i] && sections[i].offsetTop <= scrollPos) {
-          setActiveSection(navItems[i].id);
-          break;
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const scrollTo = (id) => {
-    if (location.pathname !== '/') {
-      navigate('/');
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) el.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
-    } else {
-      const el = document.getElementById(id);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
-    }
-    setMobileOpen(false);
-  };
+  // Hash links work from any route: on home they scroll, elsewhere they navigate home first.
+  const href = (id) => (onHome ? `#${id}` : `/#${id}`);
 
   return (
-    <>
-      <motion.nav
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          scrolled
-            ? 'bg-bg-primary/80 backdrop-blur-xl border-b border-border'
-            : 'bg-transparent'
-        }`}
+    <header
+      className={`sticky top-0 z-50 border-b transition-colors duration-200 ${
+        scrolled || open ? 'border-border bg-bg-primary/90 backdrop-blur-md' : 'border-transparent bg-bg-primary'
+      }`}
+    >
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-3 focus:rounded focus:bg-surface focus:px-3 focus:py-2"
       >
-        <div className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
-          {/* Logo */}
-          <button
-            onClick={() => {
-              if (location.pathname !== '/') {
-                navigate('/');
-              } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }
-            }}
-            className="group flex items-center gap-2 cursor-pointer"
-            id="nav-logo"
-          >
-            <div className="relative h-10 w-10 sm:h-12 sm:w-12 rounded-xl overflow-hidden drop-shadow-sm transition-transform duration-300 group-hover:scale-105">
-              <img src="/favicon-light-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover dark:opacity-0 transition-opacity" />
-              <img src="/favicon-dark-v5.png" alt="Logo" className="absolute inset-0 w-full h-full object-cover opacity-0 dark:opacity-100 transition-opacity" />
-            </div>
-          </button>
+        Skip to content
+      </a>
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8" aria-label="Primary">
+        <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-3" aria-label={`${person.name}, home`}>
+          <Logo size={28} />
+          <span className="hidden font-serif text-[1.0625rem] text-text-primary sm:inline">P. N. Tripathi</span>
+        </Link>
 
-          {/* Desktop Nav */}
-          <ul className="hidden md:flex items-center gap-1">
+        <div className="hidden items-center gap-1 md:flex">
+          <ul className="flex items-center gap-1">
             {navItems.map((item) => (
               <li key={item.id}>
-                <button
-                  onClick={() => scrollTo(item.id)}
-                  className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                    activeSection === item.id
-                      ? 'text-lavender'
-                      : 'text-text-secondary hover:text-text-primary'
+                <a
+                  href={href(item.id)}
+                  aria-current={active === item.id ? 'true' : undefined}
+                  className={`relative rounded px-3 py-2 text-[0.9375rem] transition-colors ${
+                    active === item.id ? 'text-text-primary' : 'text-text-muted hover:text-text-primary'
                   }`}
-                  id={`nav-${item.id}`}
                 >
-                  {activeSection === item.id && (
-                    <motion.div
-                      layoutId="activeNav"
-                      className="absolute inset-0 rounded-lg bg-lavender/10 border border-lavender/20"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                  <span className="relative z-10">{item.label}</span>
-                </button>
+                  {item.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute bottom-1 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-dot transition-opacity ${
+                      active === item.id ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                </a>
               </li>
             ))}
-            <li>
-              <button
-                onClick={() => navigate('/admin')}
-                className={`relative px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer ${
-                  location.pathname === '/admin' ? 'text-lavender' : 'text-text-secondary hover:text-text-primary'
-                }`}
-              >
-                <span className="relative z-10">Admin</span>
-              </button>
-            </li>
-            <li className="ml-2 pl-2 border-l border-border">
-              <button
-                onClick={toggleTheme}
-                className="p-2 text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-colors cursor-pointer"
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
-              </button>
-            </li>
           </ul>
+          <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
+          <ThemeToggle />
+        </div>
 
-          {/* Mobile Toggle */}
+        <div className="flex items-center md:hidden">
+          <ThemeToggle />
           <button
-            onClick={() => setMobileOpen(!mobileOpen)}
-            className="md:hidden p-2 text-text-secondary hover:text-lavender transition-colors cursor-pointer"
-            id="nav-mobile-toggle"
-            aria-label="Toggle navigation menu"
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            className="cursor-pointer rounded p-2 text-text-muted hover:text-text-primary"
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            aria-label={open ? 'Close menu' : 'Open menu'}
           >
-            {mobileOpen ? <X size={20} /> : <Menu size={20} />}
+            {open ? <X size={20} strokeWidth={1.75} /> : <Menu size={20} strokeWidth={1.75} />}
           </button>
         </div>
-      </motion.nav>
+      </nav>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-40 bg-bg-primary/95 backdrop-blur-xl pt-24 px-6 md:hidden"
-          >
-            <ul className="flex flex-col gap-2">
-              {navItems.map((item, i) => (
-                <motion.li
-                  key={item.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <button
-                    onClick={() => scrollTo(item.id)}
-                    className="w-full text-left px-4 py-3 text-lg font-medium text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-all cursor-pointer"
-                    id={`nav-mobile-${item.id}`}
-                  >
-                    {item.label}
-                  </button>
-                </motion.li>
-              ))}
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navItems.length * 0.1 }}
+      {open && (
+        <ul id="mobile-menu" className="border-t border-border px-5 pb-4 pt-2 md:hidden">
+          {navItems.map((item) => (
+            <li key={item.id}>
+              <a
+                href={href(item.id)}
+                onClick={() => setOpen(false)}
+                className="block border-b border-border py-3 font-serif text-xl text-text-primary last:border-0"
               >
-                <button
-                  onClick={() => {
-                    navigate('/admin');
-                    setMobileOpen(false);
-                  }}
-                  className="w-full text-left px-4 py-3 text-lg font-medium text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-all cursor-pointer"
-                >
-                  Admin
-                </button>
-              </motion.li>
-              <motion.li
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: navItems.length * 0.1 }}
-                className="pt-4 mt-2 border-t border-border"
-              >
-                <button
-                  onClick={toggleTheme}
-                  className="flex items-center gap-3 w-full text-left px-4 py-3 text-lg font-medium text-text-secondary hover:text-lavender hover:bg-lavender/5 rounded-lg transition-all cursor-pointer"
-                >
-                  {theme === 'light' ? <Moon size={20} /> : <Sun size={20} />}
-                  <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-                </button>
-              </motion.li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </header>
   );
 };
 
