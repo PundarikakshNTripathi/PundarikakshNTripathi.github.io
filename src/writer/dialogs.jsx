@@ -9,6 +9,8 @@ export function Modal({ title, onClose, children, wide = false }) {
   useEffect(() => {
     const d = ref.current;
     d?.showModal();
+    // showModal() focuses the first focusable element (the Close button); move focus to the field.
+    d?.querySelector('[data-autofocus]')?.focus();
     return () => d?.close();
   }, []);
   return (
@@ -57,7 +59,7 @@ export function LinkDialog({ initial, onSubmit, onRemove, onClose }) {
         }}
       >
         <Field label="URL" hint="Links to other sites open in a new tab.">
-          <input autoFocus value={href} onChange={(e) => setHref(e.target.value)} placeholder="https://" inputMode="url" />
+          <input data-autofocus value={href} onChange={(e) => setHref(e.target.value)} placeholder="https://" inputMode="url" />
         </Field>
         <Actions>
           {initial.href && (
@@ -96,7 +98,7 @@ export function EmbedDialog({ onSubmit, onClose }) {
         }}
       >
         <Field label="URL" hint="YouTube, Vimeo, Spotify, Loom and CodePen embed as players. Image and video file links show inline. Anything else becomes a card or a link.">
-          <input autoFocus value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" inputMode="url" />
+          <input data-autofocus value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" inputMode="url" />
         </Field>
         {kind && (
           <fieldset className="writer-choices">
@@ -130,7 +132,7 @@ export function MediaUrlDialog({ title, hint, onSubmit, onClose }) {
         }}
       >
         <Field label="URL" hint={hint}>
-          <input autoFocus value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" inputMode="url" />
+          <input data-autofocus value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://" inputMode="url" />
         </Field>
         <Actions>
           <button type="submit" disabled={!isHttpUrl(url)}>
@@ -162,10 +164,11 @@ export function MathDialog({ initial, onSubmit, onRemove, onClose }) {
       >
         <Field label="LaTeX" hint="KaTeX syntax. In the text you can also type $$x^2$$ for inline math or $$$…$$$ for a display equation.">
           <textarea
-            autoFocus
+            data-autofocus
             rows={4}
             className="font-mono"
             value={latex}
+            spellCheck={false}
             onChange={(e) => setLatex(e.target.value)}
             placeholder={'\\mathcal{L}(\\theta) = -\\sum_i y_i \\log p_\\theta(x_i)'}
             onKeyDown={(e) => {
@@ -209,7 +212,7 @@ export function TextDialog({ title, label, hint, initial = '', multiline, submit
         }}
       >
         <Field label={label} hint={hint}>
-          <Input autoFocus rows={multiline ? 4 : undefined} value={value} onChange={(e) => setValue(e.target.value)} />
+          <Input data-autofocus rows={multiline ? 4 : undefined} value={value} onChange={(e) => setValue(e.target.value)} />
         </Field>
         <Actions>
           {onRemove && (
@@ -237,7 +240,7 @@ export function CtaDialog({ initial, onSubmit, onRemove, onClose }) {
         }}
       >
         <Field label="Label">
-          <input autoFocus value={label} onChange={(e) => setLabel(e.target.value)} />
+          <input data-autofocus value={label} onChange={(e) => setLabel(e.target.value)} />
         </Field>
         <Field label="Link">
           <input value={href} onChange={(e) => setHref(e.target.value)} placeholder="https:// or /path or mailto:" />

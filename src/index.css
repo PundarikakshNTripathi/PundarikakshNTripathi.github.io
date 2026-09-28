@@ -50,18 +50,18 @@
 
   /* Day: blush paper, plum ink, raspberry and rose. */
   :root {
-    --bg: #fcf1f5;
-    --surface: #f8e3ec;
-    --surface-2: #f2d9e5;
+    --bg: #fbedf3;
+    --surface: #f7e0ea;
+    --surface-2: #f0d3e1;
     --ink: #2b1231;
     --ink-2: #573a5e;
-    --ink-3: #7a5a80;
+    --ink-3: #735379;
     --accent: #a3236e;
     --accent-dim: #c05f96;
-    --dot: #c2226a;
+    --dot: #b81f64;
     --rule: #efd7e2;
     --rule-strong: #ddb8ca;
-    --field: #a27d96;
+    --field: #94708a;
     --tile: #a3236e;
     --tile-weak: #f4cfe0;
     --mark: #ffd9ea;

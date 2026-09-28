@@ -211,7 +211,7 @@
   padding: 0.3rem 0.5rem 0.3rem 1rem;
   font-family: var(--font-sans);
   font-size: 0.75rem;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 .article .code-bar button, .article .code-bar select {
   font: inherit;
@@ -229,7 +229,7 @@
 .article .hljs-comment, .article .hljs-quote { color: var(--ink-3); font-style: italic; }
 .article .hljs-keyword, .article .hljs-selector-tag, .article .hljs-built_in, .article .hljs-type { color: var(--accent); }
 .article .hljs-string, .article .hljs-regexp, .article .hljs-addition, .article .hljs-attribute { color: var(--dot); }
-.article .hljs-number, .article .hljs-literal, .article .hljs-symbol, .article .hljs-bullet { color: var(--accent-dim); }
+.article .hljs-number, .article .hljs-literal, .article .hljs-symbol, .article .hljs-bullet { color: var(--accent); font-weight: 500; }
 .article .hljs-title, .article .hljs-section, .article .hljs-function .hljs-title { color: var(--ink); font-weight: 500; }
 .article .hljs-attr, .article .hljs-variable, .article .hljs-template-variable, .article .hljs-params { color: var(--ink-2); }
 .article .hljs-meta, .article .hljs-deletion { color: var(--ink-3); }

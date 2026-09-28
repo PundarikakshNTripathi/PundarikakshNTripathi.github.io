@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components -- TipTap extensions are defined next to their node views by design. */
-import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react';
 import { Extension } from '@tiptap/core';
 import { ReactRenderer } from '@tiptap/react';
 import Suggestion from '@tiptap/suggestion';
@@ -10,7 +10,12 @@ import { PluginKey } from '@tiptap/pm/state';
 
 const SlashMenu = forwardRef(({ items, command }, ref) => {
   const [index, setIndex] = useState(0);
+  const listRef = useRef(null);
   useEffect(() => setIndex(0), [items]);
+  // Keep the highlighted block visible while moving through the list with the arrow keys.
+  useEffect(() => {
+    listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
+  }, [index]);
 
   useImperativeHandle(ref, () => ({
     onKeyDown: ({ event }) => {
@@ -34,7 +39,7 @@ const SlashMenu = forwardRef(({ items, command }, ref) => {
     return <div className="slash-menu"><p className="slash-empty">No block with that name</p></div>;
   }
   return (
-    <div className="slash-menu" role="listbox" aria-label="Insert a block">
+    <div ref={listRef} className="slash-menu" role="listbox" aria-label="Insert a block">
       {items.map((item, i) => (
         <button
           key={item.title}
@@ -90,7 +95,7 @@ export const SlashCommand = Extension.create({
         },
         items: ({ query }) => {
           const q = query.toLowerCase();
-          return all().filter((c) => c.title.toLowerCase().includes(q) || (c.keywords || '').includes(q)).slice(0, 12);
+          return all().filter((c) => c.title.toLowerCase().includes(q) || (c.keywords || '').includes(q));
         },
         command: ({ editor, range, props }) => {
           editor.chain().focus().deleteRange(range).run();

@@ -13,6 +13,7 @@ export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, f
   useEffect(() => {
     const d = ref.current;
     d?.showModal();
+    d?.querySelector('[data-autofocus]')?.focus();
     return () => d?.close();
   }, []);
 
@@ -90,7 +91,7 @@ export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, f
             <span>URL</span>
             <div className="writer-slug">
               <span>/blog/</span>
-              <input value={draft.slug || ''} onChange={(e) => onChange({ slug: slugify(e.target.value) })} placeholder={slugify(draft.title) || 'post-url'} />
+              <input data-autofocus value={draft.slug || ''} onChange={(e) => onChange({ slug: slugify(e.target.value) })} placeholder={slugify(draft.title) || 'post-url'} />
             </div>
           </label>
           <label className="writer-field">
@@ -102,8 +103,10 @@ export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, f
             <span>Tags</span>
             <input
               value={tags}
-              onChange={(e) => setTags(e.target.value)}
-              onBlur={() => onChange({ tags: tags.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 5) })}
+              onChange={(e) => {
+                setTags(e.target.value);
+                onChange({ tags: e.target.value.split(',').map((t) => t.trim()).filter(Boolean).slice(0, 5) });
+              }}
               placeholder="CUDA, inference, notes"
             />
             <small>Comma separated, up to five.</small>

@@ -80,6 +80,65 @@ Judges were report-only, so they couldn't grade their own edits.
   instructions. Vercel's guideline skill fetched its rules from a mutable URL at run time, so those rules
   were vendored at a pinned commit. Sources and commits are in `~/.claude/skills/PROVENANCE.md`.
 
+## Round 2: palette, lotus mark, new resume, writing platform
+
+**Goal:** a purple/pink palette, a better favicon, updated story from the new résumé, the blog back,
+and a Medium/Substack-grade writer. **Signals:** the same judges as round 1, plus round-trip tests of
+the editor's document model and an end-to-end publish test.
+
+1. **Research.**
+   - Checked Substack's and Medium's editor features. Substack itself is built on TipTap/ProseMirror.
+   - Read the current TipTap v3 docs through the Context7 MCP.
+   - Vetted every new package before installing it. All TipTap packages are at 3.31.3, published by
+     the official maintainers, 24 days old, MIT-licensed, with no install scripts. `npm audit`
+     signatures verified.
+2. **Build.**
+   - Palette tokens, with every text/background pair checked against WCAG.
+   - The lotus mark ("Puṇḍarīkākṣa", lotus-eyed), previewed at 16, 32 and 180 px on dark and light
+     tab bars.
+   - Content rewritten from the résumé and the repository READMEs.
+   - The editor, the reader, publish-to-folder and an RSS feed.
+3. **Self-test through the Playwright MCP.** Caught and fixed:
+   - The slash menu was empty, because TipTap `configure()` deep-copies options.
+   - Footnotes and buttons were lost on reload, because a parse rule had the wrong priority.
+   - The reader's enhancements were wiped, because React re-applied `innerHTML`.
+   - Title autosize and a nested `<main>`.
+   - After the fixes, a round trip of 12 node types showed 0 differences, and an end-to-end publish
+     into an OPFS folder worked.
+4. **Judges.**
+   - **Security:** one High, the SVG-as-document issue, fixed by rasterizing SVGs and allowlisting
+     media types. Two Mediums:
+     - The writer on the shared github.io origin, fixed by making it dev-only and storing only the
+       folders it writes to.
+     - Style-attribute UI redress, fixed with a style allowlist.
+     - Six Lows, all fixed.
+   - **Prose:** 8/10. The staged opener was cut and the unsupported "Founder" title removed. All
+     numbers matched their sources.
+   - **Editor/design critic** (re-run after a rate limit): four P1s.
+     - Typing after an insert deleted the block.
+     - Inserting while a figure was selected replaced it.
+     - Dialogs opened with focus on Close.
+     - `$$…$$` math was mangled by smart typography.
+
+     Also six P2s, a set of missing features and polish items.
+5. **Fix and verify through the Playwright MCP.**
+   - `insertBlock` never replaces a selection and always leaves a text cursor.
+   - Dialogs focus their first field and return focus to the editor when they close.
+   - Typography skips math and code. Links are non-inclusive.
+   - Tags save as you type.
+   - The "/" menu lists every block and scrolls with the keys.
+   - The mobile bubble menu fits the screen. `# ` makes a heading, and Ctrl+/ opens the shortcuts.
+   - Light-theme contrast is fixed, the page is one step pinker, shadows are plum-tinted, and
+     `theme-color` follows the toggle.
+   - The lotus now has outlined petals, so it holds up at 16/32 px.
+
+   Each P1 was re-checked in the browser. The 12-node round trip still shows 0 differences, and the
+   production bundle still contains no editor code.
+
+**Not built** (noted for later): image galleries, crop, version history, find and replace, X/Gist
+embeds (they need third-party scripts, which the CSP blocks by design), and single-dollar `$…$` inline
+math (it collides with prices like "$5").
+
 ## Open items for the owner
 
 - Confirm the personal lines that aren't in the résumé:

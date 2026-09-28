@@ -5,7 +5,6 @@ import { BubbleMenu } from '@tiptap/react/menus';
 import { Extension } from '@tiptap/core';
 import StarterKit from '@tiptap/starter-kit';
 import { CharacterCount, Placeholder } from '@tiptap/extensions';
-import Typography from '@tiptap/extension-typography';
 import Highlight from '@tiptap/extension-highlight';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
@@ -25,6 +24,7 @@ import {
 import { CodeBlock, CtaButton, DropCap, Embed, Figure, Footnote, LinkCard, PullQuote, Callout, Video, emit } from './nodes';
 import { lowlight } from './lowlight';
 import { SlashCommand } from './slash';
+import { HashHeading, SafeTypography, WriterLink, insertBlock } from './extensions';
 import { imageToDataUrl, pickFile, videoToDataUrl } from './media';
 import { canWriteToFolder, downloadPostsJson, publishToFolder, unpublishFromFolder } from './publish';
 import { CtaDialog, EmbedDialog, LinkDialog, MathDialog, MediaUrlDialog, Modal, ShortcutsDialog, TextDialog } from './dialogs';
@@ -305,16 +305,14 @@ function Editor({ initial }) {
 
   const extensions = useMemo(
     () => [
-      StarterKit.configure({
-        heading: { levels: [2, 3, 4] },
-        codeBlock: false,
-        link: { openOnClick: false, autolink: true, linkOnPaste: true, defaultProtocol: 'https' },
-      }),
+      StarterKit.configure({ heading: { levels: [2, 3, 4] }, codeBlock: false, link: false }),
+      WriterLink.configure({ openOnClick: false, autolink: true, linkOnPaste: true, defaultProtocol: 'https' }),
+      HashHeading,
       Placeholder.configure({
         placeholder: ({ node }) => (node.type.name === 'heading' ? 'Heading' : 'Start writing, or type / to insert a block'),
       }),
       CharacterCount,
-      Typography,
+      SafeTypography,
       Highlight,
       Subscript,
       Superscript,
@@ -352,6 +350,10 @@ function Editor({ initial }) {
             bus.actions.preview();
             return true;
           },
+          'Mod-/': () => {
+            bus.actions.shortcuts();
+            return true;
+          },
         }),
       }),
     ],
@@ -364,10 +366,10 @@ function Editor({ initial }) {
         const src = await imageToDataUrl(file);
         const node = { type: 'figure', attrs: { src, alt: '', caption: '', width: 'normal' } };
         if (pos != null) editor.chain().focus().insertContentAt(pos, node).run();
-        else editor.chain().focus().insertContent(node).run();
+        else insertBlock(editor, node);
       } else if (file.type.startsWith('video/')) {
         const src = await videoToDataUrl(file);
-        editor.chain().focus().insertContent({ type: 'video', attrs: { src, caption: '', width: 'normal' } }).run();
+        insertBlock(editor, { type: 'video', attrs: { src, caption: '', width: 'normal' } });
       }
     } catch (err) {
       flash(err.message, 'error');
@@ -426,6 +428,7 @@ function Editor({ initial }) {
       const file = await pickFile('video/mp4,video/webm,video/ogg,video/quicktime');
       if (file) insertFile(editor, file);
     },
+    shortcuts: () => setDialog({ type: 'shortcuts' }),
   }, [editor, insertFile, saveNow]);
 
   // Extensions and keyboard shortcuts read the latest actions at the moment they fire.
@@ -519,7 +522,7 @@ function Editor({ initial }) {
             </button>
           </div>
         </div>
-        {!preview && <Toolbar editor={editor} actions={actions} onShortcuts={() => setDialog({ type: 'shortcuts' })} />}
+        {!preview && <Toolbar editor={editor} actions={actions} onShortcuts={actions.shortcuts} />}
       </header>
 
       {notice && (
@@ -598,7 +601,10 @@ function Editor({ initial }) {
             if ('slug' in patch) slugTouched.current = true;
             update(patch);
           }}
-          onClose={() => setSettings(false)}
+          onClose={() => {
+            setSettings(false);
+            editor.commands.focus();
+          }}
           onUnpublish={canWriteToFolder() ? unpublish : null}
           flash={flash}
         />
@@ -610,16 +616,16 @@ function Editor({ initial }) {
           onClose={close}
           onRemove={() => {
             editor.chain().focus().extendMarkRange('link').unsetLink().run();
-            setDialog(null);
+            close();
           }}
           onSubmit={(href) => {
             const chain = editor.chain().focus().extendMarkRange('link');
             if (editor.state.selection.empty && !editor.isActive('link')) {
-              chain.insertContent({ type: 'text', text: href, marks: [{ type: 'link', attrs: { href } }] }).run();
+              chain.insertContent([{ type: 'text', text: href, marks: [{ type: 'link', attrs: { href } }] }, { type: 'text', text: ' ' }]).run();
             } else {
               chain.setLink({ href }).run();
             }
-            setDialog(null);
+            close();
           }}
         />
       )}
@@ -627,19 +633,18 @@ function Editor({ initial }) {
         <EmbedDialog
           onClose={close}
           onSubmit={(k, mode) => {
-            const chain = editor.chain().focus();
             if (mode === 'plain') {
-              chain.insertContent({ type: 'text', text: k.url, marks: [{ type: 'link', attrs: { href: k.url } }] }).run();
+              editor.chain().focus().insertContent([{ type: 'text', text: k.url, marks: [{ type: 'link', attrs: { href: k.url } }] }, { type: 'text', text: ' ' }]).run();
             } else if (mode === 'card') {
-              chain.setLinkCard({ url: k.url, title: hostOf(k.url), description: '' }).run();
+              insertBlock(editor, { type: 'linkCard', attrs: { url: k.url, title: hostOf(k.url), description: '' } });
             } else if (k.kind === 'embed') {
-              chain.setEmbed({ src: k.src, url: k.url, provider: k.provider, aspect: k.aspect, height: k.height }).run();
+              insertBlock(editor, { type: 'embed', attrs: { src: k.src, url: k.url, provider: k.provider, aspect: k.aspect, height: k.height } });
             } else if (k.kind === 'image') {
-              chain.setFigure({ src: k.url, alt: '', caption: '', width: 'normal' }).run();
+              insertBlock(editor, { type: 'figure', attrs: { src: k.url, alt: '', caption: '', width: 'normal' } });
             } else if (k.kind === 'video') {
-              chain.setVideo({ src: k.url, caption: '', width: 'normal' }).run();
+              insertBlock(editor, { type: 'video', attrs: { src: k.url, caption: '', width: 'normal' } });
             }
-            setDialog(null);
+            close();
           }}
         />
       )}
@@ -649,8 +654,8 @@ function Editor({ initial }) {
           hint="Paste a link to a .gif file (on GIPHY, use “Copy GIF link”), or close this and use Image to upload one."
           onClose={close}
           onSubmit={(url) => {
-            editor.chain().focus().setFigure({ src: url, alt: '', caption: '', width: 'normal' }).run();
-            setDialog(null);
+            insertBlock(editor, { type: 'figure', attrs: { src: url, alt: '', caption: '', width: 'normal' } });
+            close();
           }}
         />
       )}
@@ -660,7 +665,7 @@ function Editor({ initial }) {
           onClose={close}
           onRemove={dialog.pos != null ? () => {
             editor.chain().focus().setNodeSelection(dialog.pos).deleteSelection().run();
-            setDialog(null);
+            close();
           } : null}
           onSubmit={(latex, kind) => {
             const chain = editor.chain().focus();
@@ -670,11 +675,11 @@ function Editor({ initial }) {
               else chain.updateInlineMath({ latex });
             } else {
               if (dialog.replace) chain.deleteRange(dialog.replace);
-              if (kind === 'block') chain.insertBlockMath({ latex });
-              else chain.insertInlineMath({ latex });
+              if (kind !== 'block') chain.insertInlineMath({ latex });
             }
             chain.run();
-            setDialog(null);
+            if (dialog.pos == null && kind === 'block') insertBlock(editor, { type: 'blockMath', attrs: { latex } });
+            close();
           }}
         />
       )}
@@ -689,13 +694,13 @@ function Editor({ initial }) {
           onClose={close}
           onRemove={dialog.remove ? () => {
             dialog.remove();
-            setDialog(null);
+            close();
           } : null}
           removeLabel="Delete footnote"
           onSubmit={(note) => {
             if (dialog.set) dialog.set(note);
             else if (note) editor.chain().focus().insertFootnote(note).run();
-            setDialog(null);
+            close();
           }}
         />
       )}
@@ -705,12 +710,12 @@ function Editor({ initial }) {
           onClose={close}
           onRemove={dialog.remove ? () => {
             dialog.remove();
-            setDialog(null);
+            close();
           } : null}
           onSubmit={(attrs) => {
             if (dialog.set) dialog.set(attrs);
-            else editor.chain().focus().setCtaButton(attrs).run();
-            setDialog(null);
+            else insertBlock(editor, { type: 'ctaButton', attrs });
+            close();
           }}
         />
       )}
@@ -724,7 +729,7 @@ function Editor({ initial }) {
           onClose={close}
           onSubmit={(alt) => {
             dialog.set(alt);
-            setDialog(null);
+            close();
           }}
         />
       )}
@@ -737,7 +742,7 @@ function Editor({ initial }) {
           onClose={close}
           onSubmit={(image) => {
             dialog.set(/^https?:\/\//.test(image) ? image : '');
-            setDialog(null);
+            close();
           }}
         />
       )}
@@ -746,7 +751,7 @@ function Editor({ initial }) {
         <PublishDialog
           onClose={close}
           onPublish={(mode) => {
-            setDialog(null);
+            close();
             publish(mode);
           }}
         />
@@ -764,7 +769,7 @@ function PublishDialog({ onPublish, onClose }) {
         GitHub Pages puts it live.
       </p>
       <div className="writer-publish-options">
-        <button type="button" disabled={!folder} onClick={() => onPublish('folder')}>
+        <button type="button" data-autofocus={folder || undefined} disabled={!folder} onClick={() => onPublish('folder')}>
           <strong>Write to the site folder</strong>
           <span>
             {folder
@@ -772,7 +777,7 @@ function PublishDialog({ onPublish, onClose }) {
               : 'Needs Chrome or Edge, which can write to a folder on your computer.'}
           </span>
         </button>
-        <button type="button" onClick={() => onPublish('download')}>
+        <button type="button" data-autofocus={folder ? undefined : true} onClick={() => onPublish('download')}>
           <strong>Download posts.json</strong>
           <span>For any browser. Media stays inline in the file, which can make it large.</span>
         </button>
