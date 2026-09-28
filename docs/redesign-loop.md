@@ -152,6 +152,22 @@ the editor's document model and an end-to-end publish test.
 - **Mark:** replaced the lotus with a causal attention mask. Each row is a token's softmax over earlier
   tokens, the diagonal is self-attention, and the masked upper triangle is the future. It reads at 16 px.
 
+## Round 4: the writer on the web
+
+- **Backend:** Supabase (Postgres, Auth with TOTP, Storage, RLS), because GitHub Pages can't run a server.
+- **Supply chain:** the auth-js, postgrest-js and storage-js sub-packages are pinned at 2.116.0, which
+  was 21 days old at the time. Signatures verified, no install scripts, and no realtime or functions
+  code in the bundle.
+- **Tests:** the full flow ran against a mocked Supabase in Playwright: sign-in, TOTP enrollment and
+  verification, autosave, upload, publish/update, and the live read.
+- **Security review:** no Critical or High findings.
+  - M1: retracted posts lingered on the build snapshot. Fixed.
+  - M2: a half-configured build shipped an ungated local writer. Fixed with a single `__WRITER__`
+    compile-time flag and a production guard.
+  - Also fixed: the session is now in memory only, slugs change only on Update, uploads no longer
+    upsert and have a storage SELECT policy, and the SQL grants are tightened.
+- **Mark:** gradient descent on a loss surface, explained in one line of the footer colophon.
+
 **Not built** (noted for later): image galleries, crop, version history, find and replace, X/Gist
 embeds (they need third-party scripts, which the CSP blocks by design), and single-dollar `$…$` inline
 math (it collides with prices like "$5").
