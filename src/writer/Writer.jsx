@@ -495,7 +495,7 @@ function Editor({ initial }) {
       if (mode === 'cloud') {
         await (await import('./cloud')).unpublishPost(draft.id);
         setDraft((d) => ({ ...d, isPublished: false }));
-        flash('Unpublished. The post is back to being a draft.');
+        flash('Unpublished. It is off the site now; the RSS feed drops it at the next rebuild (run the deploy workflow to do it now).');
         return;
       }
       await unpublishFromFolder(draft.id);

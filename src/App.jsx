@@ -15,8 +15,10 @@ import ErrorBoundary from './components/ErrorBoundary';
 const BlogView = lazy(() => import('./components/BlogView'));
 // The writer ships when Supabase is configured (sign-in plus two-factor, enforced by the database) or in
 // local dev. A build without Supabase settings leaves it out of the bundle entirely.
-// Compile-time constant (Vite inlines env), so an unconfigured build drops the writer chunks entirely.
-const WRITER = import.meta.env.DEV || !!import.meta.env.VITE_SUPABASE_URL;
+// Compile-time constant from vite.config.js, so a build without a complete Supabase config drops the
+// writer chunks entirely.
+/* global __WRITER__ */
+const WRITER = __WRITER__;
 const WriterHome = WRITER ? lazy(() => import('./writer/WriterHome')) : null;
 const Writer = WRITER ? lazy(() => import('./writer/Writer')) : null;
 

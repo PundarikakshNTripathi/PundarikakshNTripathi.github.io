@@ -43,7 +43,7 @@ With `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` set (GitHub Actions secret
 - The public can read only the published copy of published posts.
 - The media bucket accepts raster images and video only.
 
-The writer's session is kept in `sessionStorage`.
+The writer's session is kept in memory only, so reloading asks you to sign in again.
 
 ### Locally, without Supabase
 

@@ -7,8 +7,9 @@ import { slugify } from '../lib/posts';
 // The writer's connection to Supabase. Loaded only on /write, never by readers.
 //
 // Security notes:
-// - The session lives in sessionStorage, so it ends when the tab closes and no long-lived token sits in
-//   localStorage on the shared github.io origin.
+// - The session lives only in memory. github.io is shared with other Pages projects, and anything in
+//   localStorage or sessionStorage there is readable by them; memory isn't. The cost is signing in again
+//   after a reload (drafts are already saved).
 // - Writes need a user listed in blog_admins who has passed TOTP two-factor (aal2); the database
 //   enforces that (supabase/schema.sql), this file only drives the flow.
 
@@ -16,7 +17,10 @@ export const auth = new AuthClient({
   url: `${SUPABASE_URL}/auth/v1`,
   headers: { apikey: SUPABASE_KEY },
   storageKey: 'pnt-writer-auth',
-  storage: window.sessionStorage,
+  storage: (() => {
+    const mem = new Map();
+    return { getItem: (k) => mem.get(k) ?? null, setItem: (k, v) => void mem.set(k, v), removeItem: (k) => void mem.delete(k) };
+  })(),
   persistSession: true,
   autoRefreshToken: true,
   detectSessionInUrl: false,
@@ -82,7 +86,7 @@ export const signOut = () => auth.signOut();
 
 /* ---------- Posts ---------- */
 
-const DRAFT_FIELDS = ['title', 'subtitle', 'description', 'tags', 'cover', 'html', 'pinned', 'date'];
+const DRAFT_FIELDS = ['title', 'subtitle', 'description', 'tags', 'cover', 'html', 'pinned', 'date', 'slug'];
 const pick = (post) => Object.fromEntries(DRAFT_FIELDS.map((k) => [k, post[k] ?? null]));
 
 // Turn a row into the editor's draft shape. `published` tells the UI whether there's a live version.
@@ -94,7 +98,8 @@ const toDraft = (row) => ({
   subtitle: row.draft?.subtitle || '',
   description: row.draft?.description || '',
   id: row.id,
-  slug: row.slug,
+  // A draft may carry a new URL that only takes effect when the post is published again.
+  slug: row.draft?.slug || row.slug,
   updated: row.updated_at,
   isPublished: !!row.published,
   publishedAt: row.published_at,
@@ -121,10 +126,11 @@ export async function createPost() {
   return toDraft(data);
 }
 
-// Autosave: only the draft changes. The live version stays as it was until you publish.
+// Autosave: only the draft changes. The live version, including its URL, stays as it was until you
+// publish. Unpublished drafts keep the slug column in step so URL clashes show up early.
 export async function saveDraft(post) {
   const slug = slugify(post.slug || post.title) || undefined;
-  const patch = { draft: pick(post), ...(slug ? { slug } : {}) };
+  const patch = { draft: { ...pick(post), slug: slug || null }, ...(slug && !post.isPublished ? { slug } : {}) };
   const { error } = await (await db()).from('posts').update(patch).eq('id', post.id);
   fail(error, 'Could not save.');
 }
@@ -132,7 +138,7 @@ export async function saveDraft(post) {
 export async function publishPost(post) {
   const slug = slugify(post.slug || post.title);
   if (!slug) throw new Error('Give the post a title or a URL before publishing.');
-  const live = pick(post);
+  const live = { ...pick(post), slug };
   const current = await getPost(post.id);
   const { error } = await (await db())
     .from('posts')
@@ -165,7 +171,8 @@ export async function uploadMedia(blob) {
   const now = new Date();
   const path = `${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, '0')}/${hash}.${ext}`;
   const bucket = (await storage()).from('blog-media');
-  const { error } = await bucket.upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: true });
-  if (error && !/exists/i.test(error.message)) fail(error, 'Upload failed.');
+  // Names are content hashes, so an existing file is the same file: no need to overwrite.
+  const { error } = await bucket.upload(path, blob, { contentType: blob.type, cacheControl: '31536000', upsert: false });
+  if (error && !/exists|duplicate/i.test(error.message)) fail(error, 'Upload failed.');
   return bucket.getPublicUrl(path).data.publicUrl;
 }

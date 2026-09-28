@@ -25,12 +25,13 @@ returns boolean
 language sql
 stable
 security definer
-set search_path = public
+set search_path = ''
 as $$
   select coalesce((auth.jwt() ->> 'aal') = 'aal2', false)
      and exists (select 1 from public.blog_admins a where a.user_id = auth.uid());
 $$;
 revoke all on function public.is_blog_admin() from public;
+revoke execute on function public.is_blog_admin() from anon;
 grant execute on function public.is_blog_admin() to authenticated;
 
 -- Posts ----------------------------------------------------------------------------------------------
@@ -58,16 +59,18 @@ create trigger posts_touch before update on public.posts
 for each row execute function public.touch_updated_at();
 
 alter table public.posts enable row level security;
-revoke all on public.posts from anon;
+-- Supabase grants ALL on new tables to anon and authenticated by default (including TRUNCATE, which
+-- ignores RLS). Start from nothing and grant only what the policies below need.
+revoke all on public.posts from anon, authenticated;
 
 drop policy if exists "admins read posts" on public.posts;
 drop policy if exists "admins insert posts" on public.posts;
 drop policy if exists "admins update posts" on public.posts;
 drop policy if exists "admins delete posts" on public.posts;
-create policy "admins read posts" on public.posts for select to authenticated using (public.is_blog_admin());
-create policy "admins insert posts" on public.posts for insert to authenticated with check (public.is_blog_admin());
-create policy "admins update posts" on public.posts for update to authenticated using (public.is_blog_admin()) with check (public.is_blog_admin());
-create policy "admins delete posts" on public.posts for delete to authenticated using (public.is_blog_admin());
+create policy "admins read posts" on public.posts for select to authenticated using ((select public.is_blog_admin()));
+create policy "admins insert posts" on public.posts for insert to authenticated with check ((select public.is_blog_admin()));
+create policy "admins update posts" on public.posts for update to authenticated using ((select public.is_blog_admin())) with check ((select public.is_blog_admin()));
+create policy "admins delete posts" on public.posts for delete to authenticated using ((select public.is_blog_admin()));
 grant select, insert, update, delete on public.posts to authenticated;
 
 -- Public view: published fields only. Owned by postgres, so it reads past RLS, but it can only ever
@@ -93,13 +96,17 @@ on conflict (id) do update set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+drop policy if exists "admins read blog media" on storage.objects;
 drop policy if exists "admins upload blog media" on storage.objects;
 drop policy if exists "admins update blog media" on storage.objects;
 drop policy if exists "admins delete blog media" on storage.objects;
 create policy "admins upload blog media" on storage.objects for insert to authenticated
-  with check (bucket_id = 'blog-media' and public.is_blog_admin());
+  with check (bucket_id = 'blog-media' and (select public.is_blog_admin()));
 create policy "admins update blog media" on storage.objects for update to authenticated
-  using (bucket_id = 'blog-media' and public.is_blog_admin());
+  using (bucket_id = 'blog-media' and (select public.is_blog_admin()));
 create policy "admins delete blog media" on storage.objects for delete to authenticated
-  using (bucket_id = 'blog-media' and public.is_blog_admin());
--- Reading needs no policy: public buckets serve files by URL.
+  using (bucket_id = 'blog-media' and (select public.is_blog_admin()));
+-- Storage's insert returns the new row, which needs SELECT. Admins only: the public still reads files by
+-- URL through the public bucket, but can't list them.
+create policy "admins read blog media" on storage.objects for select to authenticated
+  using (bucket_id = 'blog-media' and (select public.is_blog_admin()));

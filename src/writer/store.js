@@ -8,6 +8,9 @@ import { assertVideo, dataUrlToBlob, imageToDataUrl, videoToDataUrl } from './me
 // publishing writes into the repository folder, as before.
 export const mode = cloudEnabled ? 'cloud' : 'local';
 
+// Local mode has no sign-in, so it must never run on the public site.
+if (mode === 'local' && !import.meta.env.DEV) throw new Error('The writer needs Supabase on the public site.');
+
 const cloud = () => import('./cloud');
 
 export async function loadPost(id) {

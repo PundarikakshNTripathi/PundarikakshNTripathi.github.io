@@ -27,7 +27,9 @@ export function usePublishedPost(slug) {
     if (!cloudEnabled) return undefined;
     let alive = true;
     fetchPublishedPost(slug)
-      .then((live) => alive && setState({ slug, post: live ? normalisePost(live) : snapshot || null }))
+      // The database is the authority: if it says the post isn't published, it isn't, even if the
+      // build-time snapshot still has it. The snapshot is only a fallback for network failures.
+      .then((live) => alive && setState({ slug, post: live ? normalisePost(live) : null }))
       .catch(() => alive && setState({ slug, post: snapshot || null }));
     return () => {
       alive = false;

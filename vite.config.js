@@ -90,8 +90,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
   const url = (env.VITE_SUPABASE_URL || '').replace(/\/+$/, '')
   const supabaseUrl = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) ? url : ''
+  // The writer ships only in dev, or when Supabase is fully configured. A half-configured build (URL
+  // but no key, or a malformed URL) must not ship it, because local mode has no sign-in.
+  const writerOn = mode === 'development' || (!!supabaseUrl && (env.VITE_SUPABASE_ANON_KEY || '').length > 20)
   return {
     base: '/',
+    define: { __WRITER__: JSON.stringify(writerOn) },
     plugins: [react(), tailwindcss(), csp(supabaseUrl), rss()],
   }
 })
