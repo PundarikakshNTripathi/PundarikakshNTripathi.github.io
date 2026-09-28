@@ -62,7 +62,7 @@ const RasterPortrait = ({ src, fallback, alt, width, height }) => {
 
   return (
     <figure className="w-full">
-      <div className="relative overflow-hidden rounded-[3px] border border-border bg-surface" style={{ aspectRatio: `${width} / ${height}` }}>
+      <div className="relative overflow-hidden rounded-[22px] border border-border bg-surface" style={{ aspectRatio: `${width} / ${height}` }}>
         <picture>
           <source srcSet={src} type="image/webp" />
           <img

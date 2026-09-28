@@ -5,6 +5,39 @@ import { navItems, person } from '../data/content';
 import { getTheme, setTheme } from '../lib/theme';
 import Logo from './Logo';
 
+// Compile-time constant from vite.config.js (see App.jsx). A build without Supabase configured drops
+// the writer chunks entirely, so this link has to disappear with them.
+/* global __WRITER__ */
+const WRITER = __WRITER__;
+
+// Whether the current visitor should see "Write" (a verified admin) or just "Sign in" (everyone else,
+// including a signed-in non-admin — there's nothing for them to do yet, but sign-in is the same door
+// a future comment section would use). Never blocks rendering; starts as 'anon' and upgrades quietly.
+const useWriterNav = () => {
+  const [admin, setAdmin] = useState(false);
+  useEffect(() => {
+    if (!WRITER) return undefined;
+    let cancelled = false;
+    const check = async () => {
+      const { authState, isBlogAdmin } = await import('../writer/cloud');
+      const s = await authState();
+      const isAdmin = s.step === 'ready' && (await isBlogAdmin());
+      if (!cancelled) setAdmin(isAdmin);
+    };
+    check();
+    let unsubscribe;
+    import('../writer/cloud').then(({ auth }) => {
+      const { data } = auth.onAuthStateChange(() => check());
+      unsubscribe = () => data.subscription.unsubscribe();
+    });
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
+  }, []);
+  return admin;
+};
+
 const useActiveSection = (enabled) => {
   const [active, setActive] = useState('');
   useEffect(() => {
@@ -51,6 +84,7 @@ const Navbar = () => {
   const active = useActiveSection(onHome);
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const isAdmin = useWriterNav();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -102,6 +136,14 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
+          {WRITER && (
+            <>
+              <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
+              <Link to="/write" className="rounded px-3 py-2 text-[0.9375rem] text-text-muted transition-colors hover:text-text-primary">
+                {isAdmin ? 'Write' : 'Sign in'}
+              </Link>
+            </>
+          )}
           <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
           <ThemeToggle />
         </div>
@@ -134,6 +176,17 @@ const Navbar = () => {
               </a>
             </li>
           ))}
+          {WRITER && (
+            <li>
+              <Link
+                to="/write"
+                onClick={() => setOpen(false)}
+                className="block border-b border-border py-3 font-serif text-xl text-text-primary last:border-0"
+              >
+                {isAdmin ? 'Write' : 'Sign in'}
+              </Link>
+            </li>
+          )}
         </ul>
       )}
     </header>

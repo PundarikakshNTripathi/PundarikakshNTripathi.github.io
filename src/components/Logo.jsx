@@ -8,6 +8,7 @@ const Logo = ({ size = 28, className = '' }) => {
   const bg = `bg-${useId().replace(/:/g, '')}`;
   return (
     <svg viewBox="0 0 64 64" width={size} height={size} className={className} aria-hidden="true">
+      <title>The mark is a loss surface seen from above: gradient descent zigzagging down a narrow valley to its minimum.</title>
       <defs>
         <radialGradient id={bg} cx="50%" cy="35%" r="85%">
           <stop offset="0" stopColor="#3a1d68" />

@@ -153,12 +153,12 @@ export const projects = [
   {
     id: 'amlc-2026',
     title: 'Amazon ML Challenge 2026',
-    status: 'Third place',
+    status: 'Provisional rank 3',
     summary: 'Business entity resolution: matching the same business across three noisy directories.',
-    body: "For every business in one source, find all of its records in two others, from messy names and addresses, scored by macro F0.5. One region showed up only in the test set, with no labels at all, which was most of the difficulty. My team placed third on both the public and private leaderboards. I'm keeping the approach itself under wraps for now, since we still have a write-up to submit.",
+    body: "For every business in one source, find all of its records in two others, from messy names and addresses, scored by macro F0.5. One region showed up only in the test set, with no labels at all, which was most of the difficulty. My team currently ranks third on both the public and private leaderboards; that's provisional until Amazon announces the official results. I'm keeping the approach itself under wraps for now, since we still have a write-up to submit.",
     results: [
-      ['Final rank, public and private leaderboard', '3rd'],
-      ['Final score', '0.991762'],
+      ['Leaderboard rank (provisional), public and private', '3rd'],
+      ['Leaderboard score', '0.991762'],
     ],
     setup: 'Official results and the approach write-up are pending.',
     stack: 'Python, PyTorch',
@@ -234,8 +234,8 @@ export const timeline = [
   },
   {
     when: '2026',
-    title: 'Third place, Amazon ML Challenge 2026',
-    text: 'Business entity resolution, on both the public and private leaderboards. Official results are pending.',
+    title: 'Leaderboard rank 3, Amazon ML Challenge 2026',
+    text: 'Business entity resolution, on both the public and private leaderboards. Provisional; official results are pending.',
   },
   {
     when: '2026',

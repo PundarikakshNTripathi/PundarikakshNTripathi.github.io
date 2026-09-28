@@ -1,11 +1,6 @@
 import { person, socialLinks } from '../data/content';
 import Logo from './Logo';
 
-// Compile-time constant from vite.config.js (see App.jsx). Keeps the link from appearing on a build
-// where /write wouldn't exist anyway.
-/* global __WRITER__ */
-const WRITER = __WRITER__;
-
 const Footer = () => (
   <footer className="border-t border-border">
     <div className="mx-auto flex max-w-6xl flex-col gap-6 px-5 py-10 sm:px-8 md:flex-row md:items-end md:justify-between">
@@ -15,11 +10,7 @@ const Footer = () => (
           <p className="text-text-secondary">
             © {new Date().getFullYear()} {person.name}
           </p>
-          <p>Set in Newsreader and IBM Plex. Last updated {person.updated}.</p>
-          <p className="mt-1 max-w-[34rem] text-text-secondary">
-            The mark is a loss surface seen from above: gradient descent zigzagging down a narrow valley to its
-            minimum.
-          </p>
+          <p>Last updated {person.updated}.</p>
         </div>
       </div>
       <ul className="meta flex flex-wrap gap-x-5 gap-y-1">
@@ -35,13 +26,6 @@ const Footer = () => (
             Résumé
           </a>
         </li>
-        {WRITER && (
-          <li>
-            <a href="/write" className="link inline-block py-1.5 text-text-muted">
-              Write
-            </a>
-          </li>
-        )}
       </ul>
     </div>
   </footer>
