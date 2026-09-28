@@ -41,11 +41,10 @@
    *   bg / surface / surface-2   page, raised panels, hover and active panels
    *   ink / ink-2 / ink-3        headings, body, metadata (all >= 4.5:1 on bg and surface)
    *   accent / accent-dim        links, focus, interactive state; accent-dim for underlines
-   *   dot                        the signature pink: note marks, status, the lotus core. Use sparingly.
+   *   dot                        the signature pink: note marks, status, the diagonal of the attention-mask mark. Use sparingly.
    *   rule / rule-strong / field hairlines, stronger dividers, form borders (field >= 3:1)
    *   tile / tile-weak           figures and diagrams
    *   mark                       highlighted text in posts
-   *   glow                       the faint ambient wash at the top of the page
    */
 
   /* Day: blush paper, plum ink, raspberry and rose. */
@@ -65,7 +64,6 @@
     --tile: #a3236e;
     --tile-weak: #f4cfe0;
     --mark: #ffd9ea;
-    --glow: rgb(255 150 196 / 0.45);
     color-scheme: light;
   }
 
@@ -86,7 +84,6 @@
     --tile: #d4a9f8;
     --tile-weak: #3f2a63;
     --mark: #5a2a6e;
-    --glow: rgb(160 70 230 / 0.30);
     color-scheme: dark;
   }
 
@@ -107,11 +104,6 @@
   body {
     font-family: var(--font-sans);
     background-color: var(--bg);
-    /* Ambience: one soft wash of the theme's hue behind the top of the page, nothing more. */
-    background-image:
-      radial-gradient(64rem 34rem at 88% -8%, var(--glow), transparent 70%),
-      radial-gradient(40rem 28rem at -10% 18%, var(--glow), transparent 70%);
-    background-repeat: no-repeat;
     color: var(--ink);
     font-size: 1rem;
     line-height: 1.6;
@@ -169,6 +161,39 @@
     .section-title { font-size: 1.375rem; line-height: 1.3; }
   }
 
+  /*
+   * Reading position. Each section's rail title carries a hairline that fills as you read through
+   * that section, so a long section always tells you how much is left. Scroll-linked, pure CSS;
+   * browsers without scroll-driven animations just don't show it.
+   */
+  .section-progress { display: none; }
+  @supports (animation-timeline: view()) {
+    @media (min-width: 64rem) {
+      .section-track { view-timeline: --section block; }
+      .section-progress {
+        display: block;
+        margin-top: 0.9rem;
+        width: 4.5rem;
+        height: 1px;
+        background: var(--rule-strong);
+        position: relative;
+        overflow: hidden;
+      }
+      .section-progress::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--accent);
+        transform-origin: left;
+        transform: scaleX(0);
+        animation: section-read linear both;
+        animation-timeline: --section;
+        animation-range: contain 0% contain 100%;
+      }
+    }
+  }
+  @keyframes section-read { to { transform: scaleX(1); } }
+
   .subhead {
     font-family: var(--font-serif);
     font-style: italic;
@@ -225,13 +250,4 @@
   /* Taller hit area without pushing the following punctuation away. */
   .note-ref a { padding: 0.35em 0 0.35em 0.15em; margin-right: -0.05em; text-decoration: none; }
 
-}
-
-/* One orchestrated moment: the hero settles in once on load. */
-@keyframes rise {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-.rise {
-  animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }

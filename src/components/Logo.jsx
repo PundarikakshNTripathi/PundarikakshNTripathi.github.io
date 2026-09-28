@@ -1,43 +1,35 @@
-import { useId } from 'react';
+// The mark: a causal attention mask. Each row is one token's attention over the tokens before it;
+// the diagonal (pink) is a token attending to itself, and the empty upper triangle is the future it
+// isn't allowed to see. Same drawing as public/favicon.svg.
+const N = 4;
+const PAD = 12;
+const GAP = 3.2;
+const CELL = (64 - 2 * PAD - (N - 1) * GAP) / N;
 
-// The lotus mark (Puṇḍarīkākṣa: "lotus-eyed"). Five translucent petals, drawn as Gaussians,
-// around a pink core. Same drawing as public/favicon.svg; gradient ids are per-instance.
-const Logo = ({ size = 28, className = '' }) => {
-  const id = useId().replace(/:/g, '');
-  const g = (name) => `${name}-${id}`;
-  return (
-    <svg viewBox="0 0 64 64" width={size} height={size} className={className} aria-hidden="true">
-      <defs>
-        <radialGradient id={g('bg')} cx="50%" cy="30%" r="80%">
-          <stop offset="0" stopColor="#43226a" />
-          <stop offset="1" stopColor="#1b1030" />
-        </radialGradient>
-        <linearGradient id={g('c')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f7ecff" />
-          <stop offset="1" stopColor="#d2b0f7" />
-        </linearGradient>
-        <linearGradient id={g('s')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#d9b9fa" />
-          <stop offset="1" stopColor="#a77fdc" />
-        </linearGradient>
-        <linearGradient id={g('o')} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ff9fd0" />
-          <stop offset="1" stopColor="#e0559b" />
-        </linearGradient>
-      </defs>
-      <rect width="64" height="64" rx="15" fill={`url(#${g('bg')})`} />
-      <rect x=".75" y=".75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#d2a8f7" strokeOpacity=".4" strokeWidth="1.5" />
-      <g transform="translate(32 47)">
-        <ellipse cy="-12.5" rx="7" ry="13.5" fill={`url(#${g('o')})`} opacity=".85" stroke="#1b1030" strokeWidth="1.6" transform="rotate(-76)" />
-        <ellipse cy="-12.5" rx="7" ry="13.5" fill={`url(#${g('o')})`} opacity=".85" stroke="#1b1030" strokeWidth="1.6" transform="rotate(76)" />
-        <ellipse cy="-16" rx="8" ry="17" fill={`url(#${g('s')})`} opacity=".95" stroke="#1b1030" strokeWidth="1.6" transform="rotate(-38)" />
-        <ellipse cy="-16" rx="8" ry="17" fill={`url(#${g('s')})`} opacity=".95" stroke="#1b1030" strokeWidth="1.6" transform="rotate(38)" />
-        <ellipse cy="-18" rx="9" ry="19.5" fill={`url(#${g('c')})`} stroke="#1b1030" strokeWidth="1.6" />
-        <circle cy="-7" r="5.4" fill="#ff4fa3" stroke="#1b1030" strokeWidth="1.2" />
-        <circle cy="-8.6" r="1.7" fill="#ffe3f1" />
-      </g>
-    </svg>
-  );
-};
+// Row-wise softmax that favors recent tokens, scaled to an opacity range.
+const weights = Array.from({ length: N }, (_, i) => {
+  const raw = Array.from({ length: i + 1 }, (_, j) => Math.exp(1.2 * (j - i)));
+  const total = raw.reduce((a, b) => a + b, 0);
+  const w = raw.map((r) => r / total);
+  const max = i > 0 ? Math.max(...w.slice(0, -1)) : 1;
+  return w.map((x) => 0.22 + 0.56 * (x / max));
+});
+
+const Logo = ({ size = 28, className = '' }) => (
+  <svg viewBox="0 0 64 64" width={size} height={size} className={className} aria-hidden="true">
+    <rect width="64" height="64" rx="15" fill="#1f1236" />
+    <rect x=".75" y=".75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#d4a9f8" strokeOpacity=".35" strokeWidth="1.5" />
+    {Array.from({ length: N * N }, (_, k) => {
+      const i = Math.floor(k / N);
+      const j = k % N;
+      const x = PAD + j * (CELL + GAP);
+      const y = PAD + i * (CELL + GAP);
+      const props = { x, y, width: CELL, height: CELL, rx: CELL * 0.2 };
+      if (j === i) return <rect key={k} {...props} fill="#ff6cb5" />;
+      if (j < i) return <rect key={k} {...props} fill="#e2c9fb" fillOpacity={weights[i][j].toFixed(2)} />;
+      return <rect key={k} {...props} fill="#e2c9fb" fillOpacity="0.07" />;
+    })}
+  </svg>
+);
 
 export default Logo;

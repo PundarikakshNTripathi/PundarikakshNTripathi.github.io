@@ -135,6 +135,23 @@ the editor's document model and an end-to-end publish test.
    Each P1 was re-checked in the browser. The 12-node round trip still shows 0 differences, and the
    production bundle still contains no editor code.
 
+## Round 3: owner feedback before release
+
+- **Archive:** the original site is kept as the `archive/v1-pixel-portfolio` branch, the `v1.0.0` tag, and a
+  GitHub release.
+- **Quiet Intelligence:** the owner is its founder and Lead Researcher. The lab is now a block in Research,
+  with its tagline and links. Wording is modest because the lab isn't publicly announced yet.
+- **Projects:**
+  - nanoDist is no longer framed as research.
+  - Causal-DML moved to "Also built". Cognova was removed.
+  - Amazon ML Challenge 2026 (third place, business entity resolution) is now featured, using numbers from
+    the repository README. The repo is private, so the entry says so instead of linking to a 404.
+- **Background glow:** removed. It was decoration with no purpose. It's replaced by a reading-position
+  hairline under each sticky section title, using CSS scroll-driven animation with no JavaScript. The hero's
+  second load animation was also removed, leaving the portrait render as the single motion moment.
+- **Mark:** replaced the lotus with a causal attention mask. Each row is a token's softmax over earlier
+  tokens, the diagonal is self-attention, and the masked upper triangle is the future. It reads at 16 px.
+
 **Not built** (noted for later): image galleries, crop, version history, find and replace, X/Gist
 embeds (they need third-party scripts, which the CSP blocks by design), and single-dollar `$…$` inline
 math (it collides with prices like "$5").

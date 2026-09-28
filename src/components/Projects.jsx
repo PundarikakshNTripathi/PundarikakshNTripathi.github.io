@@ -25,17 +25,25 @@ const ResultsTable = ({ results, setup }) =>
 const CodeLink = ({ project }) => (
   <p className="meta mt-5 flex flex-wrap items-baseline gap-x-5 gap-y-1">
     <span>{project.stack}</span>
-    <a href={project.link} target="_blank" rel="noopener noreferrer" className="link inline-block py-1 text-text-secondary">
-      Code on GitHub<span className="sr-only">: {project.title}</span>
-    </a>
+    {project.link ? (
+      <a href={project.link} target="_blank" rel="noopener noreferrer" className="link inline-block py-1 text-text-secondary">
+        Code on GitHub<span className="sr-only">: {project.title}</span>
+      </a>
+    ) : (
+      project.linkNote && <span className="italic">{project.linkNote}</span>
+    )}
   </p>
 );
 
 const Title = ({ project, className }) => (
   <h3 className={`font-serif leading-tight text-text-primary ${className}`}>
-    <a href={project.link} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
-      {project.title}
-    </a>
+    {project.link ? (
+      <a href={project.link} target="_blank" rel="noopener noreferrer" className="hover:text-accent">
+        {project.title}
+      </a>
+    ) : (
+      project.title
+    )}
     {project.status && <span className="ml-3 align-middle font-sans text-[0.8125rem] text-dot">{project.status}</span>}
   </h3>
 );

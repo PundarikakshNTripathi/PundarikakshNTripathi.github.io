@@ -122,38 +122,49 @@ const Layers = () => {
   );
 };
 
-// Causal-DML: listening history (X) confounds both the offer (T) and churn (Y).
-// Double ML partials X out of both (dashed), leaving the effect of T on Y (pink).
-const Dag = () => {
-  const node = (x, y, label, strong) => (
-    <g>
-      <circle cx={x} cy={y} r="15" fill={strong ? WEAK : 'var(--bg)'} stroke={strong ? TILE : INK} strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
-      <text x={x} y={y + 5} textAnchor="middle" fontSize="15" fontStyle="italic" fill="var(--ink)" style={{ fontFamily: 'var(--font-serif)' }}>
-        {label}
-      </text>
-    </g>
-  );
+// Amazon ML Challenge: one business (pink) has records in three sources. Dashed lines are cheap candidate
+// links from retrieval; solid ones are what the ranker keeps as the same entity.
+const Resolve = () => {
+  const cols = [22, 80, 138];
+  const rows = [16, 44, 72, 100];
+  const matches = [
+    [0, 1],
+    [1, 2],
+    [2, 0],
+  ]; // [column, row] of the true records
+  const candidates = [
+    [[0, 1], [1, 0]],
+    [[0, 1], [1, 3]],
+    [[0, 1], [2, 1]],
+    [[0, 1], [2, 3]],
+    [[1, 2], [2, 1]],
+  ];
+  const pt = ([c, r]) => [cols[c], rows[r]];
   return (
     <>
-      <defs>
-        <marker id="dag-ink" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0 0L6 3L0 6z" fill={INK} />
-        </marker>
-        <marker id="dag-dot" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto">
-          <path d="M0 0L6 3L0 6z" fill={DOT} />
-        </marker>
-      </defs>
-      <line x1="70" y1="31" x2="37" y2="80" stroke={INK} strokeDasharray="4 3" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-ink)" />
-      <line x1="90" y1="31" x2="123" y2="80" stroke={INK} strokeDasharray="4 3" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-ink)" />
-      <line x1="44" y1="95" x2="112" y2="95" stroke={DOT} strokeWidth="2" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-dot)" />
-      {node(80, 18, 'X')}
-      {node(28, 95, 'T', true)}
-      {node(132, 95, 'Y', true)}
+      {candidates.map(([a, b], i) => {
+        const [x1, y1] = pt(a);
+        const [x2, y2] = pt(b);
+        return <line key={`c${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={RULE} strokeWidth="1" strokeDasharray="3 3" vectorEffect="non-scaling-stroke" />;
+      })}
+      {[[matches[0], matches[1]], [matches[1], matches[2]], [matches[0], matches[2]]].map(([a, b], i) => {
+        const [x1, y1] = pt(a);
+        const [x2, y2] = pt(b);
+        return <line key={`m${i}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke={DOT} strokeWidth="1.75" vectorEffect="non-scaling-stroke" />;
+      })}
+      {cols.map((x, c) =>
+        rows.map((y, r) => {
+          const hit = matches.some(([mc, mr]) => mc === c && mr === r);
+          return (
+            <rect key={`${c}-${r}`} x={x - 13} y={y - 7} width="26" height="14" rx="2" fill={hit ? DOT : WEAK} opacity={hit ? 0.9 : 1} stroke={hit ? 'none' : RULE} strokeWidth="1" vectorEffect="non-scaling-stroke" />
+          );
+        })
+      )}
     </>
   );
 };
 
-const figures = { tiles: Tiles, ternary: Ternary, layers: Layers, dag: Dag };
+const figures = { tiles: Tiles, ternary: Ternary, layers: Layers, resolve: Resolve };
 
 const ProjectFigure = ({ kind, className = '' }) => {
   const Figure = figures[kind];

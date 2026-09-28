@@ -4,7 +4,7 @@ import RasterPortrait from './RasterPortrait';
 const Hero = () => (
   <section id="top" aria-label="Introduction" className="pb-16 pt-10 sm:pb-20 sm:pt-16">
     <div className="mx-auto grid max-w-6xl items-end gap-x-16 gap-y-12 px-5 sm:px-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="rise min-w-0">
+      <div className="min-w-0">
         <h1 className="display text-[clamp(2.75rem,7.5vw,5.75rem)] leading-[0.98]">
           <span className="block">{person.firstName}</span>
           <span className="block">{person.lastName}</span>

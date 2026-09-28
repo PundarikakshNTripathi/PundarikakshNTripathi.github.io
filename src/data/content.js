@@ -7,7 +7,18 @@ export const person = {
   email: 'pundarikaksh.dev@gmail.com',
   resume: '/resume/Pundarikaksh_NT_Resume.pdf',
   location: 'Lucknow, India',
-  lab: { name: 'Quiet Intelligence', url: 'https://quietintelligence.org' },
+  lab: {
+    name: 'Quiet Intelligence',
+    role: 'Founder and Lead Researcher',
+    url: 'https://quietintelligence.org',
+    tagline: 'Signal, not noise.',
+    links: [
+      { label: 'Website', url: 'https://quietintelligence.org' },
+      { label: 'GitHub', url: 'https://github.com/Quiet-Intelligence' },
+      { label: 'LinkedIn', url: 'https://linkedin.com/company/quietintelligence' },
+      { label: 'X', url: 'https://x.com/qi_research' },
+    ],
+  },
   updated: 'September 2026',
 };
 
@@ -25,7 +36,7 @@ export const hero = {
     "I'm a final-year computer science student and an independent researcher. I work on the layer of machine learning that most people never have to look at: the kernels, the memory traffic, and the systems that decide whether a model is fast enough, and safe enough, to be useful.",
   now: [
     { label: 'Working', text: 'ML engineering intern at FlyRank AI, on ranking and causal inference.' },
-    { label: 'Building', text: 'Aegis and TernixEngine, at my research lab, Quiet Intelligence.' },
+    { label: 'Leading', text: 'Quiet Intelligence, the research lab I founded. Building Aegis and TernixEngine there.' },
     { label: 'Studying', text: 'B.Tech CSE (AI) at BBDU, Lucknow. Graduating in 2027.' },
   ],
 };
@@ -35,14 +46,14 @@ export const story = {
   paragraphs: [
     "I learn things by building a smaller version of them. When I wanted to understand how distributed training moves data between machines, I wrote nanoDist in plain NumPy, derived every backward pass by hand, and simulated the all-reduce one step at a time. When the 1.58-bit papers came out{note:ternary}, I wanted to know how fast a ternary model could actually run on an ordinary CPU, so I wrote the kernels myself in C++ and AVX2.",
     "Somewhere along the way I realized that the parts of AI I cared about most sat underneath the model definitions: where the memory goes, why a kernel is slow, what the GPU is actually waiting on. My coursework mostly stops at calling the library, and I kept wanting to know what the library was doing.",
-    "Being independent means nobody hands me problems. I pick questions I can't stop thinking about, build until I can measure something, and write down what I find. In July I started putting that work under one name, Quiet Intelligence{note:qi}, a small research lab with three threads: the systems that run models, the models themselves, and interpretability, which is the other half of the same curiosity: how a trained network works on the inside.",
+    "Being independent means nobody hands me problems. I pick questions I can't stop thinking about, build until I can measure something, and write down what I find. This year I founded Quiet Intelligence{note:qi}, a small research lab for that work, with three threads: the systems that run models, the models themselves, and interpretability, which is the other half of the same curiosity: how a trained network works on the inside.",
     "At FlyRank AI I learned that a model can tell you who will leave and still have nothing useful to say about what to do, and I've been reading causal inference ever since. And after watching coding agents get tricked into doing things no single permission would have allowed, I started building Aegis, which watches what an agent does in the kernel and learns what normal looks like.",
     "I graduate in 2027. After that I'd like to be somewhere the systems people and the modeling people sit in the same room{note:room}, because the most interesting problems I've found live between them.",
   ],
   notes: {
     ternary:
       '1.58 is log₂3. Every weight is −1, 0 or +1, so a matrix multiply becomes additions, subtractions and skips.',
-    qi: 'The name is the philosophy: signal over noise. Results, working systems and careful math, without the hype.',
+    qi: 'The name is the philosophy. From the manifesto: “True intelligence does not require hype; a well-designed architecture speaks entirely through its performance.”',
     room: 'Figuratively. I would also take a shared Slack channel.',
   },
 };
@@ -85,7 +96,7 @@ export const work = [
 
 export const research = {
   intro:
-    "I haven't published a paper yet. Most of what I'm working on lives at Quiet Intelligence, and these are the questions behind it. Notes and papers will show up here as they're ready.",
+    "I haven't published a paper yet. My research lives at Quiet Intelligence, and these are the questions behind it. The interpretability work is still in progress and will come out first as a preprint; notes and papers will show up here as they're ready.",
   questions: [
     {
       q: 'How far can low-bit inference go on hardware people already own?',
@@ -96,11 +107,6 @@ export const research = {
       q: 'Can an agent sandbox learn what normal behavior looks like?',
       a: 'Static sandboxes allow or deny single actions, but the attacks that worry me are sequences of individually allowed steps. Aegis tests whether a behavior graph built from kernel events, plus a bandit that tunes its own thresholds, can catch those sequences without getting in the way of honest work.',
       project: 'aegis',
-    },
-    {
-      q: 'What does memory-saving parallelism cost at small scale?',
-      a: 'ZeRO-style sharding and activation checkpointing are usually discussed at the scale of thousands of GPUs. nanoDist let me measure the trade between memory and communication on a handful of workers, where every byte is visible.',
-      project: 'nanodist',
     },
   ],
 };
@@ -145,20 +151,22 @@ export const projects = [
     featured: true,
   },
   {
-    id: 'causal-dml',
-    title: 'Causal-DML',
-    summary: 'A causal inference engine that estimates what a retention offer would actually do for each user.',
-    body: "A churn model can tell you a user is 90% likely to leave. It can't tell you whether a discount would change that, or whether you'd be paying someone who was staying anyway. Causal-DML answers the second question on KKBox streaming logs: DuckDB aggregates the raw data, double machine learning in EconML and DoWhy strips out confounders like listening history, and a FastAPI service with a Streamlit dashboard lets you simulate the counterfactual for any user.",
+    id: 'amlc-2026',
+    title: 'Amazon ML Challenge 2026',
+    status: 'Third place',
+    summary: 'Business entity resolution: matching the same business across three noisy directories.',
+    body: "For every business in one source, find all of its records in two others, from messy names and addresses, scored by macro F0.5. We generated candidates with 13 lexical retrievers plus an e5 embedding search, pruned and ranked them with LightGBM, then re-ranked with fine-tuned multilingual-e5 cross-encoders in a five-seed bag before calibrating and choosing each match set to maximize expected F0.5. France appeared only in the test set, with no labels, so closing that gap took pseudo-labels and audited rules built from unlabeled text. We finished third on both the public and private leaderboards.",
     results: [
-      ['Users in the training sample', '100,000'],
-      ['Average treatment effect on churn', '−1.74 × 10⁻³'],
-      ['Final-stage orthogonal loss (MSE)', '0.060'],
+      ['Final public leaderboard, macro F0.5', '0.9918 (rank 3)'],
+      ['Validation macro F0.5, US and India', '0.9924'],
+      ['Candidate recall before ranking', '99.8%'],
     ],
-    setup: 'LinearDML with random-forest nuisance models, chosen for sub-millisecond serving.',
-    stack: 'Python, EconML, DoWhy, DuckDB, FastAPI, Streamlit',
-    figure: 'dag',
-    caption: 'Listening history drives both who gets the offer and who churns. Double ML regresses it out of both before estimating the effect.',
-    link: 'https://github.com/PundarikakshNTripathi/Causal-DML',
+    setup: 'Official results are not announced yet. Trained CPU-only on an Apple M5 Pro, with Colab GPUs for the encoders.',
+    stack: 'Python, LightGBM, multilingual-e5, PyTorch',
+    figure: 'resolve',
+    caption: 'Records for one business scattered across three sources. Candidate links are cheap; the ranker keeps the few that are really the same entity.',
+    link: null,
+    linkNote: 'Code private until the results are announced',
     featured: true,
   },
   {
@@ -189,6 +197,15 @@ export const projects = [
     link: 'https://github.com/PundarikakshNTripathi/nanoDist',
   },
   {
+    id: 'causal-dml',
+    title: 'Causal-DML',
+    summary: 'A causal inference engine that estimates what a retention offer would actually do for each user.',
+    body: "A churn model can tell you a user is 90% likely to leave. It can't tell you whether a discount would change that. Causal-DML answers the second question on KKBox streaming logs with double machine learning in EconML and DoWhy, served through FastAPI with a Streamlit dashboard for simulating the counterfactual.",
+    results: [['Average treatment effect on churn, 100,000 users', '−1.74 × 10⁻³']],
+    stack: 'EconML, DoWhy, DuckDB, FastAPI',
+    link: 'https://github.com/PundarikakshNTripathi/Causal-DML',
+  },
+  {
     id: 'hivetorch',
     title: 'HiveTorch',
     summary: 'Federated learning with PyTorch microservices on Kubernetes.',
@@ -206,15 +223,7 @@ export const projects = [
     stack: 'C++20, OpenGL 3.3, OpenCV',
     link: 'https://github.com/PundarikakshNTripathi/LumaSort-Engine',
   },
-  {
-    id: 'cognova',
-    title: 'Cognova',
-    summary: "Multimodal price prediction for the Amazon ML Challenge '25.",
-    body: 'Product text goes through Sentence-BERT, images through ResNet-50, and a LightGBM and XGBoost ensemble sits on top. Most of the real work was unglamorous: fixing a log-scale mismatch between training and scoring, and letting Optuna do the tuning I would otherwise have done badly by hand.',
-    results: [],
-    stack: 'LightGBM, XGBoost, ResNet-50, Optuna, MLflow',
-    link: 'https://github.com/PundarikakshNTripathi/Cognova-Amazon-ML-Challenge-2025',
-  },
+
 ];
 
 // Reverse-chronological. `when` is shown as written.
@@ -225,9 +234,14 @@ export const timeline = [
     text: 'Machine learning engineering internship, remote.',
   },
   {
-    when: 'Jul 2026',
-    title: 'Started Quiet Intelligence',
-    text: 'An independent research lab for my systems, modeling and interpretability work.',
+    when: '2026',
+    title: 'Third place, Amazon ML Challenge 2026',
+    text: 'Business entity resolution, on both the public and private leaderboards. Official results are pending.',
+  },
+  {
+    when: '2026',
+    title: 'Founded Quiet Intelligence',
+    text: 'An independent research lab for ML systems, model research and interpretability. I lead its research.',
   },
   {
     when: '2025',
