@@ -61,7 +61,7 @@ export function ArticleView({ post, preview = false }) {
   }, [toc]);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-x-16 px-5 pb-24 pt-10 sm:px-8 lg:grid-cols-[minmax(0,42rem)_13rem]">
+    <div className="article-scope mx-auto grid max-w-6xl gap-x-16 px-5 pb-24 pt-10 sm:px-8 lg:grid-cols-[minmax(0,42rem)_13rem]">
       <article className="min-w-0">
         {!preview && (
           <Link to="/#writing" className="link meta">
@@ -92,20 +92,27 @@ export function ArticleView({ post, preview = false }) {
         <nav aria-label="On this page" className="hidden lg:block">
           <div className="sticky top-24 pt-40">
             <p className="subhead mb-3 text-[1rem]">On this page</p>
-            <ul className="border-l border-border text-[0.875rem]">
-              {toc.map((h) => (
-                <li key={h.id}>
-                  <a
-                    href={`#${h.id}`}
-                    className={`-ml-px block border-l py-1 transition-colors ${h.level === 'h3' ? 'pl-7' : 'pl-4'} ${
-                      active === h.id ? 'border-accent text-text-primary' : 'border-transparent text-text-muted hover:text-text-primary'
-                    }`}
-                  >
-                    {h.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            {/* Reading-progress rail: a track for the full article, a fill that grows with scroll
+                (index.css, .toc-rail-fill), and the heading list layered on top. */}
+            <div className="relative pl-4">
+              <div className="absolute inset-y-0 left-0 w-px bg-border" aria-hidden="true">
+                <div className="toc-rail-fill" />
+              </div>
+              <ul className="text-[0.875rem]">
+                {toc.map((h) => (
+                  <li key={h.id}>
+                    <a
+                      href={`#${h.id}`}
+                      className={`block py-1 transition-colors ${h.level === 'h3' ? 'pl-3' : ''} ${
+                        active === h.id ? 'text-text-primary' : 'text-text-muted hover:text-text-primary'
+                      }`}
+                    >
+                      {h.text}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
         </nav>
       )}

@@ -52,17 +52,15 @@ const fail = (error, fallback) => {
 
 /* ---------- Sign-in and two-factor ---------- */
 
-// Where the current session stands: 'signed-out', 'enroll' (no verified factor yet), 'verify' (needs a
-// code from an already-enrolled factor) or 'ready'. TOTP and phone/SMS are both accepted; either one
-// satisfies aal2.
+// Where the current session stands: 'signed-out', 'enroll' (no TOTP factor yet), 'verify' (needs a code) or 'ready'.
 export async function authState() {
   const { data } = await auth.getSession();
   if (!data.session) return { step: 'signed-out' };
   const { data: aal } = await auth.mfa.getAuthenticatorAssuranceLevel();
   if (aal?.currentLevel === 'aal2') return { step: 'ready', email: data.session.user.email };
   const { data: factors } = await auth.mfa.listFactors();
-  const verified = factors?.all?.find((f) => f.status === 'verified');
-  return verified ? { step: 'verify', factorId: verified.id, factorType: verified.factor_type } : { step: 'enroll' };
+  const totp = factors?.totp?.find((f) => f.status === 'verified');
+  return totp ? { step: 'verify', factorId: totp.id } : { step: 'enroll' };
 }
 
 export async function signIn(email, password) {
@@ -70,40 +68,18 @@ export async function signIn(email, password) {
   if (error) throw new Error(/invalid/i.test(error.message) ? 'That email and password don’t match.' : error.message);
 }
 
-// factorType is 'totp' or 'phone'. `phone` (E.164, e.g. +14155551234) is required for phone enrollment.
-export async function startEnrollment(factorType, phone) {
+export async function startEnrollment() {
   // Clear half-finished enrollments so a reload doesn't pile up unverified factors.
   const { data: factors } = await auth.mfa.listFactors();
   for (const f of factors?.all || []) if (f.status !== 'verified') await auth.mfa.unenroll({ factorId: f.id });
-
-  if (factorType === 'phone') {
-    const { data, error } = await auth.mfa.enroll({ factorType: 'phone', phone, friendlyName: 'Portfolio writer (phone)' });
-    if (error) throw new Error(error.message);
-    // Phone factors need an explicit challenge (which sends the SMS) before they can be verified.
-    const { data: challenge, error: challengeError } = await auth.mfa.challenge({ factorId: data.id });
-    if (challengeError) throw new Error(challengeError.message);
-    return { factorType: 'phone', factorId: data.id, challengeId: challenge.id };
-  }
   const { data, error } = await auth.mfa.enroll({ factorType: 'totp', friendlyName: 'Portfolio writer' });
   if (error) throw new Error(error.message);
-  return { factorType: 'totp', factorId: data.id, qr: data.totp.qr_code, secret: data.totp.secret };
+  return { factorId: data.id, qr: data.totp.qr_code, secret: data.totp.secret };
 }
 
-// Sends a fresh SMS code for an already-enrolled phone factor: on sign-in, or to resend during enrollment.
-export async function requestPhoneCode(factorId) {
-  const { data, error } = await auth.mfa.challenge({ factorId });
-  if (error) throw new Error(error.message);
-  return data.id;
-}
-
-// TOTP verifies with just a code (challenge and verify happen together). Phone needs the challengeId
-// from the SMS that was just sent.
-export async function verifyCode(factorId, code, challengeId) {
-  const clean = code.replace(/\s/g, '');
-  const { error } = challengeId
-    ? await auth.mfa.verify({ factorId, challengeId, code: clean })
-    : await auth.mfa.challengeAndVerify({ factorId, code: clean });
-  if (error) throw new Error(/invalid|expired/i.test(error.message) ? 'That code didn’t work. Try the most recent one.' : error.message);
+export async function verifyCode(factorId, code) {
+  const { error } = await auth.mfa.challengeAndVerify({ factorId, code: code.replace(/\s/g, '') });
+  if (error) throw new Error(/invalid|expired/i.test(error.message) ? 'That code didn’t work. Codes change every 30 seconds; try the current one.' : error.message);
 }
 
 export const signOut = () => auth.signOut();

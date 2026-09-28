@@ -3,17 +3,16 @@ import { Link } from 'react-router-dom';
 import { mode } from './store';
 import './writer.css';
 
-// On the live site the writer sits behind sign-in, two-factor (TOTP or phone/SMS, either satisfies
-// aal2), and blog_admins membership. In local dev (no Supabase) it renders straight away. The database
-// enforces the membership and aal2 rules independently (supabase/schema.sql); this screen is about
-// getting a real admin to 'ready', not about protecting anything by itself.
+// On the live site the writer sits behind sign-in, TOTP two-factor, and blog_admins membership. In
+// local dev (no Supabase) it renders straight away. The database enforces the membership and aal2
+// rules independently (supabase/schema.sql); this screen is about getting a real admin to 'ready',
+// not about protecting anything by itself.
 export default function WriterGate({ children }) {
   const [state, setState] = useState(mode === 'cloud' ? null : { step: 'ready' });
   const [admin, setAdmin] = useState(mode === 'cloud' ? null : true);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const [enroll, setEnroll] = useState(null);
-  const [factorType, setFactorType] = useState(null); // choice offered at the 'enroll' step
 
   const refresh = async () => {
     const { authState, isBlogAdmin } = await import('./cloud');
@@ -38,21 +37,11 @@ export default function WriterGate({ children }) {
     return () => meta.remove();
   }, []);
 
-  // TOTP enrollment starts as soon as it's chosen; phone enrollment waits for a number.
   useEffect(() => {
-    if (state?.step !== 'enroll' || factorType !== 'totp' || enroll) return;
+    if (state?.step !== 'enroll' || enroll) return;
     import('./cloud')
-      .then((c) => c.startEnrollment('totp'))
+      .then((c) => c.startEnrollment())
       .then(setEnroll)
-      .catch((e) => setError(e.message));
-  }, [state, factorType, enroll]);
-
-  // A returning phone factor needs its SMS challenge sent before the code field is useful.
-  useEffect(() => {
-    if (state?.step !== 'verify' || state.factorType !== 'phone' || enroll) return;
-    import('./cloud')
-      .then((c) => c.requestPhoneCode(state.factorId))
-      .then((challengeId) => setEnroll({ challengeId }))
       .catch((e) => setError(e.message));
   }, [state, enroll]);
 
@@ -123,27 +112,12 @@ export default function WriterGate({ children }) {
           </form>
         )}
 
-        {state?.step === 'enroll' && !factorType && (
-          <>
-            <h1>Set up two-factor</h1>
-            <p className="writer-dialog-text">Choose how you'd like to verify sign-ins from now on.</p>
-            <div className="mt-4 flex flex-col gap-2">
-              <button type="button" className="writer-primary" onClick={() => setFactorType('totp')}>
-                Authenticator app (recommended)
-              </button>
-              <button type="button" className="writer-primary" onClick={() => setFactorType('phone')}>
-                Text message
-              </button>
-            </div>
-          </>
-        )}
-
-        {state?.step === 'enroll' && factorType === 'totp' && (
+        {state?.step === 'enroll' && (
           <form onSubmit={run(async (f) => (await import('./cloud')).verifyCode(enroll.factorId, f.get('code')))}>
-            <h1>Scan this code</h1>
+            <h1>Set up two-factor</h1>
             <p className="writer-dialog-text">
-              Scan this with an authenticator app (1Password, Google Authenticator, Aegis, Authy), then enter the
-              six-digit code it shows. You'll need a code each time you sign in.
+              Scan this with an authenticator app (1Password, Google Authenticator, Microsoft Authenticator,
+              Aegis, Authy), then enter the six-digit code it shows. You'll need a code each time you sign in.
             </p>
             {enroll ? (
               <>
@@ -162,53 +136,10 @@ export default function WriterGate({ children }) {
             <button type="submit" className="writer-primary" disabled={busy || !enroll}>
               {busy ? 'Checking…' : 'Turn on two-factor'}
             </button>
-            <button type="button" className="link meta mt-3 block" onClick={() => setFactorType(null)}>
-              Use a different method
-            </button>
           </form>
         )}
 
-        {state?.step === 'enroll' && factorType === 'phone' && !enroll && (
-          <form
-            onSubmit={run(async (f) => {
-              const { startEnrollment } = await import('./cloud');
-              setEnroll(await startEnrollment('phone', f.get('phone')));
-            })}
-          >
-            <h1>Text message</h1>
-            <p className="writer-dialog-text">Enter your phone number. We'll text you a code to confirm it.</p>
-            <label className="writer-field">
-              <span>Phone number</span>
-              <input name="phone" type="tel" placeholder="+14155551234" autoComplete="tel" required autoFocus />
-            </label>
-            <button type="submit" className="writer-primary" disabled={busy}>
-              {busy ? 'Sending…' : 'Send code'}
-            </button>
-            <button type="button" className="link meta mt-3 block" onClick={() => setFactorType(null)}>
-              Use a different method
-            </button>
-          </form>
-        )}
-
-        {state?.step === 'enroll' && factorType === 'phone' && enroll && (
-          <form
-            onSubmit={run(async (f) =>
-              (await import('./cloud')).verifyCode(enroll.factorId, f.get('code'), enroll.challengeId)
-            )}
-          >
-            <h1>Enter the code</h1>
-            <p className="writer-dialog-text">We texted a six-digit code to your phone. Codes are valid for 5 minutes.</p>
-            <label className="writer-field">
-              <span>Six-digit code</span>
-              <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,7}" required autoFocus />
-            </label>
-            <button type="submit" className="writer-primary" disabled={busy}>
-              {busy ? 'Checking…' : 'Turn on two-factor'}
-            </button>
-          </form>
-        )}
-
-        {state?.step === 'verify' && state.factorType === 'totp' && (
+        {state?.step === 'verify' && (
           <form onSubmit={run(async (f) => (await import('./cloud')).verifyCode(state.factorId, f.get('code')))}>
             <h1>Two-factor code</h1>
             <p className="writer-dialog-text">Enter the six-digit code from your authenticator app.</p>
@@ -217,26 +148,6 @@ export default function WriterGate({ children }) {
               <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,7}" required autoFocus />
             </label>
             <button type="submit" className="writer-primary" disabled={busy}>
-              {busy ? 'Checking…' : 'Verify'}
-            </button>
-          </form>
-        )}
-
-        {state?.step === 'verify' && state.factorType === 'phone' && (
-          <form
-            onSubmit={run(async (f) =>
-              (await import('./cloud')).verifyCode(state.factorId, f.get('code'), enroll?.challengeId)
-            )}
-          >
-            <h1>Two-factor code</h1>
-            <p className="writer-dialog-text">
-              {enroll ? 'Enter the six-digit code we just texted you.' : 'Sending a code to your phone…'}
-            </p>
-            <label className="writer-field">
-              <span>Code</span>
-              <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]{6,7}" required autoFocus />
-            </label>
-            <button type="submit" className="writer-primary" disabled={busy || !enroll}>
               {busy ? 'Checking…' : 'Verify'}
             </button>
           </form>
