@@ -16,14 +16,28 @@ Components only decide how it looks.
 
 ## Writing posts
 
-`/admin` is a local drafting tool. Drafts are saved in your browser only, and nobody else can see them.
-To publish:
+The site has its own editor at `/write`, built on TipTap (ProseMirror). It works like Substack's or Medium's:
 
-1. Write and save drafts at `/admin`.
-2. Click **Export posts.json**.
-3. Replace `src/data/posts.json` with the exported file, commit and push.
+- **Formatting**: a toolbar plus a menu on selected text for headings, bold, italic, underline,
+  strikethrough, inline code, highlight, links (Ctrl K), sub/superscript, alignment, lists, quotes,
+  pull quotes, callouts and drop caps. Markdown shortcuts work as you type (`##`, `-`, `>`, ```` ``` ````, `---`).
+- **Blocks**: type `/` for the block menu. It has equations (KaTeX, inline and display, with a live
+  preview), syntax-highlighted code blocks, images and GIFs with captions, alt text and width, uploaded
+  video, tables, footnotes, buttons and dividers.
+- **Embeds or links**: paste a URL and choose how it shows. It can be a live player (YouTube, Vimeo,
+  Spotify, Loom, CodePen), a link card, or a plain link. Image and video URLs show inline.
+- **Post settings**: cover image, URL slug, description, tags, publish date and pinning.
+- **Preview** uses the same renderer as the public post page.
 
-Post HTML is sanitised with DOMPurify before it's rendered.
+Drafts save automatically to the browser's IndexedDB as you type. To publish:
+
+1. Click **Publish → Write to the site folder** in Chrome or Edge, and pick this repository once.
+   That updates `src/data/posts.json` and saves images and videos to `public/blog/media/`.
+   In other browsers, **Download posts.json** and replace `src/data/posts.json` with it.
+2. Commit and push. GitHub Pages rebuilds the site, and the post also shows up in `/feed.xml` (RSS).
+
+Post HTML is sanitized with DOMPurify before it's rendered, and iframes are limited to the embed
+providers listed in `src/lib/embeds.js`. The same list drives the Content-Security-Policy.
 
 ## Running it
 

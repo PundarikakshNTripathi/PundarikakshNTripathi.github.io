@@ -84,7 +84,76 @@ const Ternary = () => {
   );
 };
 
-const figures = { tiles: Tiles, ternary: Ternary };
+// Aegis: syscalls from the agent cross the kernel boundary into a behavior graph.
+// Each step alone is allowed; the pink sequence adds up to an attack and is stopped at the hook.
+const Layers = () => {
+  const xs = [18, 50, 82, 114, 146];
+  return (
+    <>
+      <defs>
+        <marker id="layers-arrow" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0 0L6 3L0 6z" fill={INK} />
+        </marker>
+      </defs>
+      <rect x="2" y="2" width="156" height="30" rx="3" fill={WEAK} />
+      {xs.map((x, i) => (
+        <circle key={`e${i}`} cx={x} cy="17" r="5" fill={i === 4 ? DOT : TILE} opacity={i === 4 ? 0.9 : 0.6} />
+      ))}
+      {xs.slice(0, 4).map((x) => (
+        <line key={`d${x}`} x1={x} y1="25" x2={x} y2="80" stroke={INK} strokeWidth="1" vectorEffect="non-scaling-stroke" markerEnd="url(#layers-arrow)" />
+      ))}
+      <line x1={xs[4]} y1="25" x2={xs[4]} y2="44" stroke={DOT} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+      <line x1={xs[4] - 7} y1="50" x2={xs[4] + 7} y2="50" stroke={DOT} strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
+      <line x1="0" y1="50" x2="160" y2="50" stroke={RULE} strokeWidth="1" strokeDasharray="4 3" vectorEffect="non-scaling-stroke" />
+      {[
+        [18, 96],
+        [50, 106],
+        [82, 92],
+        [114, 104],
+      ].map(([x, y], i, arr) => (
+        <g key={`n${i}`}>
+          {i < arr.length - 1 && (
+            <line x1={x} y1={y} x2={arr[i + 1][0]} y2={arr[i + 1][1]} stroke={i >= 1 ? DOT : RULE} strokeWidth={i >= 1 ? 1.5 : 1} vectorEffect="non-scaling-stroke" />
+          )}
+          <circle cx={x} cy={y} r="6" fill="var(--bg)" stroke={i >= 1 ? DOT : INK} strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
+        </g>
+      ))}
+    </>
+  );
+};
+
+// Causal-DML: listening history (X) confounds both the offer (T) and churn (Y).
+// Double ML partials X out of both (dashed), leaving the effect of T on Y (pink).
+const Dag = () => {
+  const node = (x, y, label, strong) => (
+    <g>
+      <circle cx={x} cy={y} r="15" fill={strong ? WEAK : 'var(--bg)'} stroke={strong ? TILE : INK} strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
+      <text x={x} y={y + 5} textAnchor="middle" fontSize="15" fontStyle="italic" fill="var(--ink)" style={{ fontFamily: 'var(--font-serif)' }}>
+        {label}
+      </text>
+    </g>
+  );
+  return (
+    <>
+      <defs>
+        <marker id="dag-ink" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0 0L6 3L0 6z" fill={INK} />
+        </marker>
+        <marker id="dag-dot" viewBox="0 0 6 6" refX="5" refY="3" markerWidth="5" markerHeight="5" orient="auto">
+          <path d="M0 0L6 3L0 6z" fill={DOT} />
+        </marker>
+      </defs>
+      <line x1="70" y1="31" x2="37" y2="80" stroke={INK} strokeDasharray="4 3" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-ink)" />
+      <line x1="90" y1="31" x2="123" y2="80" stroke={INK} strokeDasharray="4 3" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-ink)" />
+      <line x1="44" y1="95" x2="112" y2="95" stroke={DOT} strokeWidth="2" vectorEffect="non-scaling-stroke" markerEnd="url(#dag-dot)" />
+      {node(80, 18, 'X')}
+      {node(28, 95, 'T', true)}
+      {node(132, 95, 'Y', true)}
+    </>
+  );
+};
+
+const figures = { tiles: Tiles, ternary: Ternary, layers: Layers, dag: Dag };
 
 const ProjectFigure = ({ kind, className = '' }) => {
   const Figure = figures[kind];

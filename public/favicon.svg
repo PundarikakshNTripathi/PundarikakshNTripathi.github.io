@@ -1,7 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#221c4a"/>
-  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="13.25" fill="none" stroke="#c4a7e7" stroke-opacity=".35" stroke-width="1.5"/>
-  <path d="M17 13h7v38h-7z" fill="#e6d8fb"/>
-  <path d="M20.5 16.5H31a10 10 0 0 1 0 20H20.5" fill="none" stroke="#e6d8fb" stroke-width="7"/>
-  <circle cx="45.5" cy="46.5" r="5.5" fill="#ff4fa3"/>
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="30%" r="80%"><stop offset="0" stop-color="#43226a"/><stop offset="1" stop-color="#1b1030"/></radialGradient>
+    <linearGradient id="c" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7ecff"/><stop offset="1" stop-color="#d2b0f7"/></linearGradient>
+    <linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9b9fa"/><stop offset="1" stop-color="#a77fdc"/></linearGradient>
+    <linearGradient id="o" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9fd0"/><stop offset="1" stop-color="#e0559b"/></linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="15" fill="url(#bg)"/>
+  <rect x=".75" y=".75" width="62.5" height="62.5" rx="14.25" fill="none" stroke="#d2a8f7" stroke-opacity=".4" stroke-width="1.5"/>
+  <g transform="translate(32 47)">
+    <ellipse cy="-12.5" rx="7" ry="13.5" fill="url(#o)" opacity=".7" transform="rotate(-76)"/>
+    <ellipse cy="-12.5" rx="7" ry="13.5" fill="url(#o)" opacity=".7" transform="rotate(76)"/>
+    <ellipse cy="-16" rx="8" ry="17" fill="url(#s)" opacity=".85" transform="rotate(-38)"/>
+    <ellipse cy="-16" rx="8" ry="17" fill="url(#s)" opacity=".85" transform="rotate(38)"/>
+    <ellipse cy="-18" rx="9" ry="19.5" fill="url(#c)" opacity=".95"/>
+    <circle cy="-7" r="4.6" fill="#ff4fa3"/>
+    <circle cy="-8.2" r="1.5" fill="#ffe3f1"/>
+  </g>
 </svg>

@@ -34,41 +34,59 @@
 }
 
 @layer base {
-  /* Light: lilac paper, indigo ink. */
+  /*
+   * Palette. Two moods of one family: a plum-violet night and a blush-rose day.
+   * Both themes share the same roles, so components never pick raw colours.
+   *
+   *   bg / surface / surface-2   page, raised panels, hover and active panels
+   *   ink / ink-2 / ink-3        headings, body, metadata (all >= 4.5:1 on bg and surface)
+   *   accent / accent-dim        links, focus, interactive state; accent-dim for underlines
+   *   dot                        the signature pink: note marks, status, the lotus core. Use sparingly.
+   *   rule / rule-strong / field hairlines, stronger dividers, form borders (field >= 3:1)
+   *   tile / tile-weak           figures and diagrams
+   *   mark                       highlighted text in posts
+   *   glow                       the faint ambient wash at the top of the page
+   */
+
+  /* Day: blush paper, plum ink, raspberry and rose. */
   :root {
-    --bg: #faf6fb;
-    --surface: #f2ebf4;
-    --surface-2: #eae0ee;
-    --ink: #221a3d;
-    --ink-2: #463d66;
-    --ink-3: #6b6190;
-    --accent: #6a3dbd;
-    --accent-dim: #8a66cf;
-    --dot: #d01a6c;
-    --rule: #e3d8e8;
-    --rule-strong: #c9b8d6;
-    --tile: #6a3dbd;
-    --tile-weak: #d9c8ef;
-    --field: #8f80ad;
+    --bg: #fcf1f5;
+    --surface: #f8e3ec;
+    --surface-2: #f2d9e5;
+    --ink: #2b1231;
+    --ink-2: #573a5e;
+    --ink-3: #7a5a80;
+    --accent: #a3236e;
+    --accent-dim: #c05f96;
+    --dot: #c2226a;
+    --rule: #efd7e2;
+    --rule-strong: #ddb8ca;
+    --field: #a27d96;
+    --tile: #a3236e;
+    --tile-weak: #f4cfe0;
+    --mark: #ffd9ea;
+    --glow: rgb(255 150 196 / 0.45);
     color-scheme: light;
   }
 
-  /* Dark: deep indigo, lavender ink. The default. */
+  /* Night: deep plum-violet, lavender ink, orchid and hot pink. The default. */
   .dark {
-    --bg: #17142f;
-    --surface: #1f1b3d;
-    --surface-2: #28234b;
-    --ink: #efeaf8;
-    --ink-2: #c9c0e0;
-    --ink-3: #9a90bd;
-    --accent: #c4a7e7;
-    --accent-dim: #9d7cbf;
-    --dot: #ff4fa3;
-    --rule: #2f2a54;
-    --rule-strong: #463f73;
-    --tile: #c4a7e7;
-    --tile-weak: #3a3170;
-    --field: #6e64a3;
+    --bg: #1a0f2e;
+    --surface: #231538;
+    --surface-2: #2d1c47;
+    --ink: #f5edfc;
+    --ink-2: #d8c7ec;
+    --ink-3: #a893c8;
+    --accent: #d4a9f8;
+    --accent-dim: #a47cd0;
+    --dot: #ff6cb5;
+    --rule: #34224f;
+    --rule-strong: #4c3670;
+    --field: #7c65ab;
+    --tile: #d4a9f8;
+    --tile-weak: #3f2a63;
+    --mark: #5a2a6e;
+    --glow: rgb(160 70 230 / 0.30);
     color-scheme: dark;
   }
 
@@ -89,6 +107,11 @@
   body {
     font-family: var(--font-sans);
     background-color: var(--bg);
+    /* Ambience: one soft wash of the theme's hue behind the top of the page, nothing more. */
+    background-image:
+      radial-gradient(64rem 34rem at 88% -8%, var(--glow), transparent 70%),
+      radial-gradient(40rem 28rem at -10% 18%, var(--glow), transparent 70%);
+    background-repeat: no-repeat;
     color: var(--ink);
     font-size: 1rem;
     line-height: 1.6;
@@ -202,66 +225,6 @@
   /* Taller hit area without pushing the following punctuation away. */
   .note-ref a { padding: 0.35em 0 0.35em 0.15em; margin-right: -0.05em; text-decoration: none; }
 
-  /* HTML from the post editor. Preflight strips everything, so restore prose styling here. */
-  .post-body a {
-    color: var(--ink);
-    text-decoration: underline;
-    text-decoration-color: var(--accent-dim);
-    text-underline-offset: 0.22em;
-  }
-  .post-body a:hover { color: var(--accent); }
-  .post-body p + p { margin-top: 1.1em; }
-  .post-body strong, .post-body b { font-weight: 600; color: var(--ink); }
-  .post-body ul { list-style: disc; padding-left: 1.5rem; margin: 1em 0; }
-  .post-body ol { list-style: decimal; padding-left: 1.5rem; margin: 1em 0; }
-  .post-body li + li { margin-top: 0.35em; }
-  .post-body li::marker { color: var(--ink-3); }
-  .post-body h1, .post-body h2 { font-size: 1.875rem; line-height: 1.2; color: var(--ink); margin: 1.6em 0 0.6em; }
-  .post-body h3, .post-body h4 { font-size: 1.4375rem; line-height: 1.25; color: var(--ink); margin: 1.4em 0 0.5em; }
-  .post-body blockquote {
-    border-left: 2px solid var(--accent);
-    padding-left: 1.5rem;
-    margin: 1.5em 0;
-    font-style: italic;
-    color: var(--ink);
-  }
-  .post-body :not(pre) > code {
-    font-family: var(--font-mono);
-    font-size: 0.85em;
-    background: var(--surface);
-    padding: 0.1em 0.3em;
-    border-radius: 3px;
-  }
-  .post-body pre {
-    font-family: var(--font-mono);
-    font-size: 0.875rem;
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-    padding: 1rem;
-    overflow-x: auto;
-    margin: 1.5em 0;
-  }
-  .post-body img { max-width: 100%; height: auto; border-radius: 3px; }
-  .post-body table { border-collapse: collapse; margin: 1.5em 0; font-family: var(--font-sans); font-size: 0.9375rem; }
-  .post-body th, .post-body td { border-bottom: 1px solid var(--rule); padding: 0.4em 0.8em; text-align: left; }
-
-  /* Kept for the blog and admin screens. */
-  .glass-card {
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 6px;
-  }
-  .tech-tag {
-    display: inline-flex;
-    padding: 0.125rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8125rem;
-    background: var(--surface);
-    color: var(--ink-2);
-    border: 1px solid var(--rule);
-  }
-  .gradient-text { color: var(--ink); }
 }
 
 /* One orchestrated moment: the hero settles in once on load. */
@@ -272,14 +235,3 @@
 .rise {
   animation: rise 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
-
-/* Jodit / Quill overrides for the admin editor */
-.quill-container .ql-toolbar {
-  background: var(--surface);
-  border-color: var(--rule) !important;
-}
-.quill-container .ql-container {
-  border-color: var(--rule) !important;
-  font-family: inherit;
-}
-.quill-container .ql-editor { min-height: 60vh; font-size: 1.125rem; }

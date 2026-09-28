@@ -7,11 +7,13 @@ export const person = {
   email: 'pundarikaksh.dev@gmail.com',
   resume: '/resume/Pundarikaksh_NT_Resume.pdf',
   location: 'Lucknow, India',
+  lab: { name: 'Quiet Intelligence', url: 'https://quietintelligence.org' },
   updated: 'September 2026',
 };
 
 export const socialLinks = [
   { id: 'github', label: 'GitHub', url: 'https://github.com/PundarikakshNTripathi' },
+  { id: 'lab', label: 'Quiet Intelligence', url: 'https://quietintelligence.org' },
   { id: 'linkedin', label: 'LinkedIn', url: 'https://linkedin.com/in/pundarikakshnarayantripathi' },
   { id: 'x', label: 'X (Twitter)', url: 'https://x.com/PundarikakshNT' },
   { id: 'huggingface', label: 'Hugging Face', url: 'https://huggingface.co/Pundarikaksh' },
@@ -20,10 +22,10 @@ export const socialLinks = [
 
 export const hero = {
   lead:
-    "I'm a final-year computer science student and an independent researcher. I work on the layer of machine learning that most people never have to look at: the kernels, the memory traffic, and the systems that decide whether a model is fast enough to be useful.",
+    "I'm a final-year computer science student and an independent researcher. I work on the layer of machine learning that most people never have to look at: the kernels, the memory traffic, and the systems that decide whether a model is fast enough, and safe enough, to be useful.",
   now: [
-    { label: 'Working', text: 'ML engineering intern at FlyRank, on search ranking.' },
-    { label: 'Building', text: 'TernixEngine, an inference engine for ternary LLMs.' },
+    { label: 'Working', text: 'ML engineering intern at FlyRank AI, on ranking and causal inference.' },
+    { label: 'Building', text: 'Aegis and TernixEngine, at my research lab, Quiet Intelligence.' },
     { label: 'Studying', text: 'B.Tech CSE (AI) at BBDU, Lucknow. Graduating in 2027.' },
   ],
 };
@@ -33,18 +35,22 @@ export const story = {
   paragraphs: [
     "I learn things by building a smaller version of them. When I wanted to understand how distributed training moves data between machines, I wrote nanoDist in plain NumPy, derived every backward pass by hand, and simulated the all-reduce one step at a time. When the 1.58-bit papers came out{note:ternary}, I wanted to know how fast a ternary model could actually run on an ordinary CPU, so I wrote the kernels myself in C++ and AVX2.",
     "Somewhere along the way I realized that the parts of AI I cared about most sat underneath the model definitions: where the memory goes, why a kernel is slow, what the GPU is actually waiting on. My coursework mostly stops at calling the library, and I kept wanting to know what the library was doing.",
-    "Being independent means I don't have a lab or an advisor handing me problems. I pick questions I can't stop thinking about, build until I can measure something, and write down what I find. Lately that's efficient inference, small and state-space models, and mechanistic interpretability, which is the other half of the same curiosity: how a trained network works on the inside.",
+    "Being independent means nobody hands me problems. I pick questions I can't stop thinking about, build until I can measure something, and write down what I find. In July I gave that work a home and a name, Quiet Intelligence{note:qi}, a small research lab with three threads: the systems that run models, the models themselves, and interpretability, which is the other half of the same curiosity: how a trained network works on the inside.",
+    "This year also pulled me somewhere I didn't expect. At FlyRank AI I learned that a model can tell you who will leave and still have nothing useful to say about what to do, and I've been reading causal inference ever since. And after watching coding agents get tricked into doing things no single permission would have allowed, I started building Aegis, which watches what an agent does in the kernel and learns what normal looks like.",
     "I graduate in 2027. After that I'd like to be somewhere the systems people and the modeling people sit in the same room{note:room}, because the most interesting problems I've found live between them.",
   ],
   notes: {
     ternary:
       '1.58 is log₂3. Every weight is −1, 0 or +1, so a matrix multiply becomes additions, subtractions and skips.',
+    qi: 'The name is the philosophy: signal over noise. Results, working systems and careful math, without the hype.',
     room: 'Figuratively. I would also take a shared Slack channel.',
   },
 };
 
 export const interests = [
   'Inference optimization and low-bit quantization',
+  'Causal inference and counterfactual reasoning',
+  'Security and oversight for autonomous agents',
   'Small language models and state-space models',
   'Vision-language and audio models',
   'World models',
@@ -55,8 +61,9 @@ export const interests = [
 export const toolbox = [
   { group: 'Languages', items: 'C, C++17/20, CUDA C++, Triton, Python, Go, SQL' },
   { group: 'ML', items: 'PyTorch, JAX, ONNX, scikit-learn, XGBoost, LightGBM, Hugging Face, OpenCV' },
-  { group: 'Systems', items: 'SIMD and AVX2 intrinsics, GPU programming, memory management, CMake, Linux' },
-  { group: 'Infrastructure', items: 'Docker, Kubernetes, gRPC, Kafka, Spark, Redis, PostgreSQL, Elasticsearch' },
+  { group: 'Causal and RL', items: 'EconML, DoWhy, double machine learning, LinUCB contextual bandits, process reward models' },
+  { group: 'Systems', items: 'SIMD and AVX2 intrinsics, GPU programming, eBPF and Linux security modules, AWS Cedar, CMake' },
+  { group: 'Data and infrastructure', items: 'DuckDB, Apache Arrow, Docker, Kubernetes, gRPC, FastAPI, Kafka, Spark, Redis, PostgreSQL' },
   { group: 'Experiments', items: 'Weights & Biases, MLflow, Optuna, Prometheus, AWS SageMaker, PyTorch DDP' },
 ];
 
@@ -64,25 +71,31 @@ export const work = [
   {
     id: 'flyrank',
     role: 'Machine Learning Engineering Intern',
-    org: 'FlyRank',
-    url: 'https://flyrank.com',
+    org: 'FlyRank AI',
+    url: 'https://flyrank.ai',
     where: 'Remote',
     period: 'July 2026 – present',
     body: [
-      "I'm building a ranking pipeline over multi-gigabyte enterprise search datasets with DuckDB and scikit-learn. The aim is to predict which content people will actually find.",
-      "Much of the work is evaluation. Getting train and test splits that don't leak took longer than the models did. It ends in a reproducible recommendation system that anyone can run.",
+      "FlyRank AI runs its internship as a structured, project-based program, and mine is about recommendation. I built a ranking pipeline over more than 79 million interaction records in DuckDB and scikit-learn, with features for how discoverable a piece of content is and how engagement with it changes over time.",
+      "The part that changed how I think was causal inference. User behavior is full of confounders, so I used leakage-safe train and test splits and causal methods to separate what people did because of the content from what they would have done anyway.",
+      "The program sets a target, and I hit it: Precision@50 went from 0.24 for the heuristic baselines to 0.74, a 208% relative improvement, once I had a proper framework for evaluating which features actually mattered.",
     ],
   },
 ];
 
 export const research = {
   intro:
-    "I haven't published anything yet. These are the questions I'm working on right now. Notes and papers will show up here as they're ready.",
+    "I haven't published a paper yet. Most of what I'm working on lives at Quiet Intelligence, and these are the questions behind it. Notes and papers will show up here as they're ready.",
   questions: [
     {
       q: 'How far can low-bit inference go on hardware people already own?',
       a: 'Ternary weights remove the multiply. TernixEngine is my test bed for how much of that saving survives contact with a real CPU: memory bandwidth, register pressure and unpacking cost.',
       project: 'ternix-engine',
+    },
+    {
+      q: 'Can an agent sandbox learn what normal behavior looks like?',
+      a: 'Static sandboxes allow or deny single actions, but the attacks that worry me are sequences of individually allowed steps. Aegis tests whether a behavior graph built from kernel events, plus a bandit that tunes its own thresholds, can catch those sequences without getting in the way of honest work.',
+      project: 'aegis',
     },
     {
       q: 'What does memory-saving parallelism cost at small scale?',
@@ -95,6 +108,59 @@ export const research = {
 // Numbers come from the benchmark tables in each repo's README; `setup` says what they were measured on.
 // Featured projects get a schematic figure (see ProjectFigure.jsx) with a caption.
 export const projects = [
+  {
+    id: 'aegis',
+    title: 'Aegis',
+    status: 'Active research',
+    summary: 'A kernel-level security and memory layer for autonomous coding agents.',
+    body: "Aegis started with a real vulnerability, in which a prompt-injected agent used perfectly legitimate git commands to escape its workspace. No single step was forbidden; the sequence was the attack. eBPF hooks in the Linux Security Module layer stream every file open, connection and exec into a Go daemon that builds a temporal graph of what the agent is doing. Sequences it has judged before are recalled from a local vector memory, new ones go to a pluggable LLM adjudicator, and a LinUCB bandit tunes how sensitive the scorer is. Hard rules are written in AWS Cedar and compiled straight into kernel maps.",
+    results: [
+      ['Sustained event rate, no drops', '5,120 events/s'],
+      ['Pipeline latency, p50 / p99', '0.045 / 0.42 ms'],
+      ['Cedar policy compile', '15.4 µs'],
+      ['Honest multi-step tasks not falsely blocked', '90%'],
+    ],
+    setup: "From the repo's automated benchmark and trajectory evals, 20 adversarial runs.",
+    stack: 'Go, eBPF, SQLite, AWS Cedar',
+    figure: 'layers',
+    caption: 'Syscalls cross the kernel boundary into a behavior graph. Allowed steps pass; the sequence that adds up to an attack is stopped at the hook.',
+    link: 'https://github.com/Quiet-Intelligence/aegis',
+    featured: true,
+  },
+  {
+    id: 'ternix-engine',
+    title: 'TernixEngine',
+    status: 'Active research',
+    summary: 'A dependency-free C++20 and CUDA inference engine for 1.58-bit ternary LLMs.',
+    body: "With ternary weights you never need to multiply. On the CPU, TernixEngine unpacks the weights inside registers and turns matrix products into branchless AVX2 adds and subtracts, using sign instructions so the branch predictor never has to guess. The CUDA path streams weights into shared memory with cp.async and reduces across each warp with shuffles. A 32-byte-aligned allocator keeps every load aligned, and PyBind11 exposes the whole thing to Python.",
+    results: [
+      ['Scalar, branching on each weight', '122.4 ms'],
+      ['AVX2, tiled and branchless', '15.0 ms (8.2×)'],
+    ],
+    setup: '512×512 ternary matrix multiply on an Intel i7‑14650HX.',
+    stack: 'C++20, AVX2, PyBind11, CMake',
+    figure: 'ternary',
+    caption: 'A ternary weight matrix. Every entry is +1, −1 or 0, so each output is a sum of some activations minus others.',
+    link: 'https://github.com/Quiet-Intelligence/TernixEngine',
+    featured: true,
+  },
+  {
+    id: 'causal-dml',
+    title: 'Causal-DML',
+    summary: 'A causal inference engine that estimates what a retention offer would actually do for each user.',
+    body: "A churn model can tell you a user is 90% likely to leave. It can't tell you whether a discount would change that, or whether you'd be paying someone who was staying anyway. Causal-DML answers the second question on KKBox streaming logs: DuckDB aggregates the raw data, double machine learning in EconML and DoWhy strips out confounders like listening history, and a FastAPI service with a Streamlit dashboard lets you simulate the counterfactual for any user.",
+    results: [
+      ['Users in the training sample', '100,000'],
+      ['Average treatment effect on churn', '−1.74 × 10⁻³'],
+      ['Final-stage orthogonal loss (MSE)', '0.060'],
+    ],
+    setup: 'LinearDML with random-forest nuisance models, chosen for sub-millisecond serving.',
+    stack: 'Python, EconML, DoWhy, DuckDB, FastAPI, Streamlit',
+    figure: 'dag',
+    caption: 'Listening history drives both who gets the offer and who churns. Double ML regresses it out of both before estimating the effect.',
+    link: 'https://github.com/PundarikakshNTripathi/Causal-DML',
+    featured: true,
+  },
   {
     id: 'voltasplat',
     title: 'VoltaSplat',
@@ -111,23 +177,6 @@ export const projects = [
     figure: 'tiles',
     caption: 'The screen is cut into 16×16-pixel tiles. Each shaded tile keeps a list of the splats that touch it.',
     link: 'https://github.com/PundarikakshNTripathi/VoltaSplat',
-    featured: true,
-  },
-  {
-    id: 'ternix-engine',
-    title: 'TernixEngine',
-    status: 'Active research',
-    summary: 'A dependency-free C++20 inference engine for 1.58-bit ternary LLMs, CPU first, with a CUDA path in progress.',
-    body: "With ternary weights you never need to multiply. TernixEngine unpacks the weights inside registers and turns matrix products into branchless AVX2 integer adds and subtracts. A 32-byte-aligned allocator keeps every load aligned, and PyBind11 exposes the engine to Python.",
-    results: [
-      ['Scalar, branching on each weight', '122.4 ms'],
-      ['AVX2, tiled and branchless', '15.0 ms (8.2×)'],
-    ],
-    setup: '512×512 ternary matrix multiply on an Intel i7‑14650HX.',
-    stack: 'C++20, AVX2, PyBind11, CMake',
-    figure: 'ternary',
-    caption: 'A ternary weight matrix. Every entry is +1, −1 or 0, so each output is a sum of some activations minus others.',
-    link: 'https://github.com/PundarikakshNTripathi/TernixEngine',
     featured: true,
   },
   {
@@ -172,8 +221,13 @@ export const projects = [
 export const timeline = [
   {
     when: 'Jul 2026',
-    title: 'Started at FlyRank',
+    title: 'Started at FlyRank AI',
     text: 'Machine learning engineering internship, remote.',
+  },
+  {
+    when: 'Jul 2026',
+    title: 'Started Quiet Intelligence',
+    text: 'An independent research lab for my systems, modeling and interpretability work.',
   },
   {
     when: '2025',
@@ -202,5 +256,6 @@ export const navItems = [
   { id: 'work', label: 'Work' },
   { id: 'research', label: 'Research' },
   { id: 'projects', label: 'Projects' },
+  { id: 'writing', label: 'Writing' },
   { id: 'contact', label: 'Contact' },
 ];

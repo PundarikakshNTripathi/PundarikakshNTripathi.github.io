@@ -1,151 +1,106 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import DOMPurify from 'dompurify';
-import 'katex/dist/katex.min.css';
-import { findPost, postDate } from '../lib/posts';
+import ArticleBody from './ArticleBody';
+import { findPublished, formatDate, readingMinutes } from '../lib/posts';
+import { person } from '../data/content';
 
-// Post HTML comes from the editor. Sanitize it before it touches the DOM. DOMPurify drops `target`,
-// so links in posts open in the same tab and can't be used for reverse tabnabbing.
-const clean = (html) => ({ __html: DOMPurify.sanitize(html || '', { USE_PROFILES: { html: true } }) });
+// Plain share links: no third-party scripts, nothing loads until someone clicks.
+function ShareRow({ post }) {
+  const [copied, setCopied] = useState(false);
+  const url = `https://pundarikakshntripathi.github.io/blog/${post.slug}`;
+  const text = encodeURIComponent(post.title);
+  return (
+    <div className="meta mt-14 flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-6">
+      <span className="text-text-secondary">Share</span>
+      <button
+        type="button"
+        className="link cursor-pointer py-1"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+          } catch {
+            window.prompt('Copy this link', url);
+          }
+        }}
+      >
+        {copied ? 'Link copied' : 'Copy link'}
+      </button>
+      <a className="link py-1" target="_blank" rel="noopener noreferrer" href={`https://x.com/intent/post?text=${text}&url=${encodeURIComponent(url)}`}>
+        X
+      </a>
+      <a className="link py-1" target="_blank" rel="noopener noreferrer" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}>
+        LinkedIn
+      </a>
+      <a className="link py-1 sm:ml-auto" href="/feed.xml">
+        RSS
+      </a>
+    </div>
+  );
+}
 
-// Only http(s) and same-site image URLs; blocks javascript: and friends.
-const safeUrl = (url) => {
-  try {
-    const u = new URL(url, window.location.origin);
-    return u.protocol === 'https:' || u.protocol === 'http:' ? u.href : '';
-  } catch {
-    return '';
-  }
-};
-
-const Block = ({ block }) => {
-  switch (block.type) {
-    case 'header': {
-      const Tag = block.level === 'h3' ? 'h3' : 'h2';
-      return (
-        <Tag
-          id={`heading-${block.id}`}
-          className={`blog-header scroll-mt-24 font-serif text-text-primary ${
-            Tag === 'h2' ? 'mt-12 text-[1.875rem]' : 'mt-8 text-[1.4375rem]'
-          } leading-tight`}
-        >
-          {block.content}
-        </Tag>
-      );
-    }
-    case 'text':
-      return <div className="post-body" dangerouslySetInnerHTML={clean(block.content)} />;
-    case 'image': {
-      const src = safeUrl(block.url);
-      if (!src) return null;
-      const align = block.align === 'left' ? 'items-start' : block.align === 'right' ? 'items-end' : 'items-center';
-      return (
-        <figure className={`my-10 flex flex-col ${align}`}>
-          <img src={src} alt={block.alt || block.caption || ''} loading="lazy" referrerPolicy="no-referrer" className="max-h-[600px] w-auto rounded-[3px] border border-border" />
-          {block.caption && <figcaption className="meta mt-3 max-w-[36rem]">{block.caption}</figcaption>}
-        </figure>
-      );
-    }
-    case 'list': {
-      const Tag = block.listType === 'ol' ? 'ol' : 'ul';
-      return (
-        <Tag className={`post-body my-6 space-y-2 pl-6 ${Tag === 'ol' ? 'list-decimal' : 'list-disc'} marker:text-text-muted`}>
-          {block.items?.map((item, i) => (
-            <li key={i} dangerouslySetInnerHTML={clean(item)} />
-          ))}
-        </Tag>
-      );
-    }
-    case 'quote':
-      return (
-        <blockquote className="my-10 border-l-2 border-accent pl-6 font-serif text-[1.375rem] italic leading-snug text-text-primary">
-          {block.content}
-          {block.author && <footer className="meta mt-3 not-italic">{block.author}</footer>}
-        </blockquote>
-      );
-    case 'code':
-      return (
-        <figure className="my-8 overflow-hidden rounded-[3px] border border-border bg-surface">
-          <figcaption className="meta border-b border-border px-4 py-2">{block.language || 'code'}</figcaption>
-          <pre className="overflow-x-auto p-4 text-[0.875rem] leading-relaxed">
-            <code className="font-mono text-text-primary">{block.content}</code>
-          </pre>
-        </figure>
-      );
-    case 'divider':
-      return <hr className="my-12 border-border" />;
-    default:
-      return null;
-  }
-};
-
-export default function BlogView() {
-  const { id } = useParams();
-  const post = useMemo(() => findPost(id), [id]);
-  const [activeId, setActiveId] = useState('');
+// A published post. Also used by the editor's preview through `post` + `preview`.
+export function ArticleView({ post, preview = false }) {
+  const [toc, setToc] = useState([]);
+  const [active, setActive] = useState('');
+  const onToc = useCallback((items) => setToc(items), []);
 
   useEffect(() => {
-    if (!post) return undefined;
+    if (!toc.length) return undefined;
     const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && setActiveId(e.target.id)),
+      (entries) => entries.forEach((e) => e.isIntersecting && setActive(e.target.id)),
       { rootMargin: '-20% 0px -75% 0px' }
     );
-    document.querySelectorAll('.blog-header').forEach((h) => observer.observe(h));
+    toc.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
     return () => observer.disconnect();
-  }, [post]);
-
-  useEffect(() => {
-    document.title = post ? `${post.title} | Pundarikaksh Narayan Tripathi` : 'Post not found';
-    return () => {
-      document.title = 'Pundarikaksh Narayan Tripathi';
-    };
-  }, [post]);
-
-  if (!post) {
-    return (
-      <section className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
-        <h1 className="display text-5xl">Post not found.</h1>
-        <p className="prose-serif mt-6">
-          It may have been renamed or unpublished. <Link to="/#writing" className="link">See all writing</Link>.
-        </p>
-      </section>
-    );
-  }
-
-  const toc = post.blocks.filter((b) => b.type === 'header');
+  }, [toc]);
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-x-16 px-5 pb-24 pt-12 sm:px-8 lg:grid-cols-[minmax(0,42rem)_14rem]">
+    <div className="mx-auto grid max-w-6xl gap-x-16 px-5 pb-24 pt-10 sm:px-8 lg:grid-cols-[minmax(0,42rem)_13rem]">
       <article className="min-w-0">
-        <Link to="/#writing" className="link meta">All writing</Link>
-        <h1 className="display mt-8 text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05]">{post.title}</h1>
-        <p className="meta mt-4">
-          {postDate(post)}
-          {post.draft && <span className="ml-3 text-dot">Draft, visible only on this device</span>}
+        {!preview && (
+          <Link to="/#writing" className="link meta">
+            All writing
+          </Link>
+        )}
+        {post.tags?.length > 0 && <p className="meta mt-8 text-accent">{post.tags.join(', ')}</p>}
+        <h1 className={`display text-[clamp(2.25rem,5vw,3.5rem)] leading-[1.05] ${post.tags?.length ? 'mt-2' : 'mt-8'}`}>
+          {post.title || 'Untitled'}
+        </h1>
+        {post.subtitle && (
+          <p className="mt-4 font-serif text-[1.375rem] italic leading-snug text-text-secondary">{post.subtitle}</p>
+        )}
+        <p className="meta mt-6 border-b border-border pb-6">
+          {person.name}. {formatDate(post.date)}. {readingMinutes(post.html)} min read.
         </p>
-        <div className="prose-serif mt-10 space-y-5">
-          {post.blocks.map((block) => (
-            <Block key={block.id} block={block} />
-          ))}
-        </div>
+        {post.cover?.src && (
+          <figure className="mt-10">
+            <img src={post.cover.src} alt={post.cover.alt || ''} className="w-full rounded-[3px] border border-border" />
+            {post.cover.caption && <figcaption className="meta mt-2">{post.cover.caption}</figcaption>}
+          </figure>
+        )}
+        <ArticleBody html={post.html} onToc={onToc} className="mt-10" />
+        {!preview && <ShareRow post={post} />}
       </article>
 
-      {toc.length > 0 && (
+      {toc.length > 1 && (
         <nav aria-label="On this page" className="hidden lg:block">
-          <div className="sticky top-24 pt-24">
-            <p className="mb-3 text-[0.875rem] font-medium text-text-primary">On this page</p>
+          <div className="sticky top-24 pt-40">
+            <p className="subhead mb-3 text-[1rem]">On this page</p>
             <ul className="border-l border-border text-[0.875rem]">
               {toc.map((h) => (
                 <li key={h.id}>
                   <a
-                    href={`#heading-${h.id}`}
+                    href={`#${h.id}`}
                     className={`-ml-px block border-l py-1 transition-colors ${h.level === 'h3' ? 'pl-7' : 'pl-4'} ${
-                      activeId === `heading-${h.id}`
-                        ? 'border-accent text-text-primary'
-                        : 'border-transparent text-text-muted hover:text-text-primary'
+                      active === h.id ? 'border-accent text-text-primary' : 'border-transparent text-text-muted hover:text-text-primary'
                     }`}
                   >
-                    {h.content}
+                    {h.text}
                   </a>
                 </li>
               ))}
@@ -155,4 +110,32 @@ export default function BlogView() {
       )}
     </div>
   );
+}
+
+export default function BlogView() {
+  const { id } = useParams();
+  const post = findPublished(id);
+
+  useEffect(() => {
+    document.title = post ? `${post.title} | ${person.name}` : 'Post not found';
+    return () => {
+      document.title = person.name;
+    };
+  }, [post]);
+
+  if (!post) {
+    return (
+      <section className="mx-auto max-w-6xl px-5 py-24 sm:px-8">
+        <h1 className="display text-5xl">Post not found.</h1>
+        <p className="prose-serif mt-6">
+          It may have been renamed or unpublished.{' '}
+          <Link to="/#writing" className="link">
+            See all writing
+          </Link>
+          .
+        </p>
+      </section>
+    );
+  }
+  return <ArticleView post={post} />;
 }

@@ -25,3 +25,6 @@ dist-ssr
 
 debugging/
 implementation.md
+
+# Playwright MCP session artifacts
+.playwright-mcp/

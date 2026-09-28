@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import About from './components/About';
@@ -10,11 +10,11 @@ import Writing from './components/Writing';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import ErrorBoundary from './components/ErrorBoundary';
-import { allPosts } from './lib/posts';
 
 // The post reader and the editor pull in KaTeX and Jodit; keep them out of the home page bundle.
 const BlogView = lazy(() => import('./components/BlogView'));
-const BlogAdmin = lazy(() => import('./components/BlogAdmin'));
+const WriterHome = lazy(() => import('./writer/WriterHome'));
+const Writer = lazy(() => import('./writer/Writer'));
 
 // On route change: go to the #section if there is one, otherwise to the top.
 const ScrollManager = () => {
@@ -51,29 +51,41 @@ const Home = () => (
     <Work />
     <Research />
     <Projects />
-    {allPosts().length > 0 && <Writing />}
+    <Writing />
     <Contact />
   </>
 );
+
+// The editor is a distraction-free page with its own header, like Substack's.
+const Chrome = ({ children }) => {
+  const { pathname } = useLocation();
+  return /^\/write\/.+/.test(pathname) ? null : children;
+};
 
 function App() {
   return (
     <Router>
       <ScrollManager />
-      <Navbar />
+      <Chrome>
+        <Navbar />
+      </Chrome>
       <main id="main">
         <RouteBoundary>
           <Suspense fallback={<div className="min-h-[60vh]" />}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/blog/:id" element={<BlogView />} />
-              <Route path="/admin" element={<BlogAdmin />} />
+              <Route path="/write" element={<WriterHome />} />
+              <Route path="/write/:id" element={<Writer />} />
+              <Route path="/admin" element={<Navigate to="/write" replace />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </RouteBoundary>
       </main>
-      <Footer />
+      <Chrome>
+        <Footer />
+      </Chrome>
     </Router>
   );
 }

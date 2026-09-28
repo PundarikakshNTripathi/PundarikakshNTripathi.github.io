@@ -1,15 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, Moon, Sun, X } from 'lucide-react';
-import { navItems as baseItems, person } from '../data/content';
-import { allPosts } from '../lib/posts';
+import { navItems, person } from '../data/content';
 import { getTheme, setTheme } from '../lib/theme';
 import Logo from './Logo';
-
-// "Writing" joins the nav once there's at least one post, just before Contact.
-const navItems = allPosts().length
-  ? [...baseItems.slice(0, -1), { id: 'writing', label: 'Writing' }, ...baseItems.slice(-1)]
-  : baseItems;
 
 const useActiveSection = (enabled) => {
   const [active, setActive] = useState('');
@@ -83,7 +77,7 @@ const Navbar = () => {
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8" aria-label="Primary">
         <Link to="/" onClick={() => setOpen(false)} className="flex items-center gap-3" aria-label={`${person.name}, home`}>
           <Logo size={28} />
-          <span className="hidden font-serif text-[1.0625rem] text-text-primary sm:inline">P. N. Tripathi</span>
+          <span className="font-serif text-[1.0625rem] text-text-primary">Pundarikaksh N. Tripathi</span>
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">

@@ -1,55 +1,94 @@
 import published from '../data/posts.json';
 
-// Published posts ship with the site (src/data/posts.json). Drafts written in /admin live in this
-// browser's localStorage only, so they're visible on the device that wrote them and nowhere else.
-// To publish, export from /admin and commit the file as src/data/posts.json.
-const DRAFTS_KEY = 'portfolio_blogs';
+// Published posts ship with the site in src/data/posts.json. Drafts live in the author's browser
+// (see lib/drafts.js) and only reach this file when they're published from /write.
+//
+// Post shape:
+//   { id, slug, title, subtitle, description, tags[], date (ISO), updated, pinned,
+//     cover: { src, alt, caption } | null, html }
 
-export function readDrafts() {
-  try {
-    const parsed = JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]');
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
+const escapeHtml = (s = '') => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+// Posts from the old block editor stored `blocks`; convert them to HTML once.
+function blocksToHtml(blocks = []) {
+  return blocks
+    .map((b) => {
+      switch (b.type) {
+        case 'header': {
+          const tag = ['h2', 'h3', 'h4'].includes(b.level) ? b.level : 'h2';
+          return `<${tag}>${escapeHtml(b.content)}</${tag}>`;
+        }
+        case 'text':
+          return b.content || '';
+        case 'image':
+          return `<figure data-type="figure" data-width="normal"><img src="${escapeHtml(b.url)}" alt="${escapeHtml(b.alt || '')}"><figcaption>${escapeHtml(b.caption || '')}</figcaption></figure>`;
+        case 'list': {
+          const tag = b.listType === 'ol' ? 'ol' : 'ul';
+          return `<${tag}>${(b.items || []).map((i) => `<li><p>${i}</p></li>`).join('')}</${tag}>`;
+        }
+        case 'quote':
+          return `<blockquote><p>${escapeHtml(b.content)}</p></blockquote>`;
+        case 'code':
+          return `<pre><code class="language-${escapeHtml(b.language || 'plaintext')}">${escapeHtml(b.content)}</code></pre>`;
+        case 'divider':
+          return '<hr>';
+        default:
+          return '';
+      }
+    })
+    .join('');
 }
 
-export function writeDrafts(posts) {
-  localStorage.setItem(DRAFTS_KEY, JSON.stringify(posts));
+export function normalisePost(post) {
+  const p = { ...post };
+  if (!p.html && p.blocks) p.html = blocksToHtml(p.blocks);
+  if (!p.html && typeof p.content === 'string') p.html = p.content;
+  if (!p.date) p.date = new Date(Number(p.id) || Date.now()).toISOString();
+  if (!p.slug) p.slug = slugify(p.title) || String(p.id);
+  delete p.blocks;
+  delete p.content;
+  return p;
 }
 
-// Old posts stored a single markdown/HTML string; newer ones store blocks.
-export function normalise(post) {
-  if (post.blocks) return post;
-  return { ...post, blocks: [{ id: 'legacy', type: 'text', content: post.content || '' }] };
-}
-
-export function allPosts() {
-  const byId = new Map(published.map((p) => [String(p.id), { ...normalise(p), draft: false }]));
-  readDrafts().forEach((p) => {
-    if (!byId.has(String(p.id))) byId.set(String(p.id), { ...normalise(p), draft: true });
+export function publishedPosts() {
+  return published.map(normalisePost).sort((a, b) => {
+    if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+    return new Date(b.date) - new Date(a.date);
   });
-  return [...byId.values()].sort((a, b) => {
-    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
-    return Number(b.id) - Number(a.id);
-  });
 }
 
-export function findPost(id) {
-  return allPosts().find((p) => String(p.id) === String(id)) || null;
+export function findPublished(slugOrId) {
+  return publishedPosts().find((p) => p.slug === slugOrId || String(p.id) === String(slugOrId)) || null;
 }
 
-// Plain-text excerpt. DOMParser documents are inert: no scripts run and no resources load.
+export function slugify(title = '') {
+  return title
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+}
+
+// Plain text from post HTML. DOMParser documents are inert: no scripts run and no resources load.
+export function textOf(html = '') {
+  const spaced = html.replace(/<\/(p|li|h\d|blockquote|div|figcaption|pre)>/gi, ' $&');
+  return (new DOMParser().parseFromString(spaced, 'text/html').body.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+export function wordCount(html) {
+  const text = textOf(html);
+  return text ? text.split(' ').length : 0;
+}
+
+export const readingMinutes = (html) => Math.max(1, Math.round(wordCount(html) / 230));
+
 export function excerpt(post, length = 180) {
-  const html = post.blocks
-    .filter((b) => b.type === 'text')
-    .map((b) => b.content)
-    .join(' ');
-  const spaced = html.replace(/<\/(p|li|h\d|blockquote|div)>/gi, ' $&');
-  const text = new DOMParser().parseFromString(spaced, 'text/html').body.textContent || '';
-  const clean = text.replace(/\s+/g, ' ').trim();
-  return clean.length > length ? `${clean.slice(0, length).replace(/\s\S*$/, '')}…` : clean;
+  if (post.description) return post.description;
+  const text = textOf(post.html);
+  return text.length > length ? `${text.slice(0, length).replace(/\s\S*$/, '')}…` : text;
 }
 
-export const postDate = (post) =>
-  new Date(Number(post.id)).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+export const formatDate = (iso) =>
+  new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
