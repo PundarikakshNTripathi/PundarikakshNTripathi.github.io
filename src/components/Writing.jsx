@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom';
-import { excerpt, formatDate, publishedPosts, readingMinutes } from '../lib/posts';
+import { excerpt, formatDate, readingMinutes } from '../lib/posts';
+import { usePublishedPosts } from '../lib/usePosts';
 import Section from './Section';
 
 const Writing = () => {
-  const posts = publishedPosts();
+  const posts = usePublishedPosts();
   return (
     <Section id="writing" title="Writing">
       {posts.length === 0 ? (

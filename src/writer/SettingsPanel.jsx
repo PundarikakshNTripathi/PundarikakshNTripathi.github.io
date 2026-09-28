@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
-import { imageToDataUrl, pickFile } from './media';
+import { pickFile } from './media';
+import { mode } from './store';
 import { isHttpUrl } from '../lib/embeds';
 import { slugify } from '../lib/posts';
 
 // Post settings: URL, SEO description, tags, date, pinning and the cover image.
-export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, flash }) {
+export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, flash, uploadImage }) {
   const ref = useRef(null);
   const [tags, setTags] = useState((draft.tags || []).join(', '));
   const [coverUrl, setCoverUrl] = useState('');
@@ -65,7 +66,7 @@ export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, f
                   const file = await pickFile('image/png,image/jpeg,image/webp,image/gif,image/avif');
                   if (!file) return;
                   try {
-                    setCover({ src: await imageToDataUrl(file) });
+                    setCover({ src: await uploadImage(file) });
                   } catch (err) {
                     flash(err.message, 'error');
                   }
@@ -124,7 +125,11 @@ export default function SettingsPanel({ draft, onChange, onClose, onUnpublish, f
         {onUnpublish && (
           <section>
             <h3>Unpublish</h3>
-            <p className="writer-dialog-text">Removes this post from src/data/posts.json. The draft stays here.</p>
+            <p className="writer-dialog-text">
+              {mode === 'cloud'
+                ? 'Takes the post off the site. Your draft stays, and you can publish it again later.'
+                : 'Removes this post from src/data/posts.json. The draft stays here.'}
+            </p>
             <button type="button" className="is-quiet" onClick={onUnpublish}>
               Unpublish post
             </button>

@@ -16,33 +16,44 @@ Components only decide how it looks.
 
 ## Writing posts
 
-The site has its own editor, built on TipTap (ProseMirror). It runs only on your machine: start
-`npm run dev` and open <http://localhost:5173/write>. It isn't part of the production build, so nothing on
-the public site can reach it. It works like Substack's or Medium's:
+The site has its own editor at `/write`, built on TipTap (ProseMirror). It works like Substack's or Medium's:
 
 - **Formatting**: a toolbar plus a menu on selected text for headings, bold, italic, underline,
   strikethrough, inline code, highlight, links (Ctrl K), sub/superscript, alignment, lists, quotes,
-  pull quotes, callouts and drop caps. Markdown shortcuts work as you type (`##`, `-`, `>`, ```` ``` ````, `---`).
-- **Blocks**: type `/` for the block menu. It has equations (KaTeX, inline and display, with a live
-  preview), syntax-highlighted code blocks, images and GIFs with captions, alt text and width, uploaded
-  video, tables, footnotes, buttons and dividers.
+  pull quotes, callouts and drop caps. Markdown shortcuts work as you type (`#`, `-`, `>`, ```` ``` ````, `---`).
+- **Blocks**: type `/` for the block menu. It has equations (KaTeX, with a live preview), highlighted
+  code, images and GIFs, video, tables, footnotes, buttons and dividers.
 - **Embeds or links**: paste a URL and choose how it shows. It can be a live player (YouTube, Vimeo,
-  Spotify, Loom, CodePen), a link card, or a plain link. Image and video URLs show inline.
+  Spotify, Loom, CodePen), a link card, or a plain link.
 - **Post settings**: cover image, URL slug, description, tags, publish date and pinning.
 - **Preview** uses the same renderer as the public post page.
 
-Drafts save automatically to the browser's IndexedDB as you type. To publish:
+### On the web (Supabase)
 
-1. Click **Publish → Write to the site folder** in Chrome or Edge, and pick this repository once.
-   Only `src/data` and `public/blog/media` are remembered, never the whole folder.
-   That updates `src/data/posts.json` and saves images and videos to `public/blog/media/`.
-   In other browsers, **Download posts.json** and replace `src/data/posts.json` with it.
-2. Commit and push. GitHub Pages rebuilds the site, and the post also shows up in `/feed.xml` (RSS).
+With `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` set (GitHub Actions secrets, or `.env.local`):
+
+- **Sign-in:** `/write` asks for email, password and a TOTP code.
+- **Storage:** drafts autosave to Postgres, media goes to Supabase Storage, and publishing is instant.
+- **Readers:** they fetch published posts from the `public_posts` view.
+- **Build:** each build snapshots the published posts into `src/data/posts.json` for the RSS feed and
+  first paint. A scheduled deploy refreshes the snapshot every 6 hours.
+
+**Security.** Everything is enforced in the database (`supabase/schema.sql`):
+- Only users in `blog_admins`, signed in with two-factor (`aal2`), can write or upload.
+- The public can read only the published copy of published posts.
+- The media bucket accepts raster images and video only.
+
+The writer's session is kept in `sessionStorage`.
+
+### Locally, without Supabase
+
+`npm run dev` and open <http://localhost:5173/write>. Drafts save to IndexedDB, and **Publish → Write to
+the site folder** (Chrome/Edge) updates `src/data/posts.json` and `public/blog/media/`. Commit and push to
+put it live. A build without Supabase settings leaves the writer out entirely.
 
 Post HTML is sanitized with DOMPurify before it's rendered. Iframes are limited to the embed providers
 listed in `src/lib/embeds.js`, and the same list drives the Content-Security-Policy. Inline styles are
-limited to alignment and embed sizing. Uploaded SVGs are converted to PNG, and only raster images and
-video files are ever written to `public/blog/media`.
+limited to alignment and embed sizing, and uploaded SVGs are converted to PNG.
 
 ## Running it
 

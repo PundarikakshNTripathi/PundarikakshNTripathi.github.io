@@ -28,3 +28,8 @@ implementation.md
 
 # Playwright MCP session artifacts
 .playwright-mcp/
+
+# Local environment files (never commit keys)
+.env
+.env.*
+!.env.example

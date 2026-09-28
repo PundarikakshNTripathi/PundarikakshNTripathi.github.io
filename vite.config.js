@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
-import { defineConfig } from 'vite'
+import process from 'node:process'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { FRAME_ORIGINS } from './src/lib/embeds.js'
@@ -8,7 +9,7 @@ import { FRAME_ORIGINS } from './src/lib/embeds.js'
 // GitHub Pages can't send response headers, so the Content-Security-Policy ships as a <meta> tag.
 // Inline scripts (the theme bootstrap in index.html) are allowed by hash, computed at build time.
 // Dev mode is left alone because Vite's HMR needs inline scripts.
-const csp = () => ({
+const csp = (supabaseUrl) => ({
   name: 'inject-csp',
   apply: 'build',
   transformIndexHtml: {
@@ -23,7 +24,8 @@ const csp = () => ({
         "img-src 'self' data: blob: https:",
         "media-src 'self' data: blob: https:",
         "font-src 'self' data:",
-        "connect-src 'self' https://api.emailjs.com",
+        // The blog reads and the writer writes through this one Supabase project, if configured.
+        `connect-src 'self' https://api.emailjs.com${supabaseUrl ? ` ${supabaseUrl}` : ''}`,
         // Only the embed providers the editor supports (src/lib/embeds.js).
         `frame-src ${FRAME_ORIGINS.join(' ')}`,
         "object-src 'none'",
@@ -84,7 +86,12 @@ ${items.join('\n')}
 })
 
 // https://vite.dev/config/
-export default defineConfig({
-  base: '/',
-  plugins: [react(), tailwindcss(), csp(), rss()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), 'VITE_')
+  const url = (env.VITE_SUPABASE_URL || '').replace(/\/+$/, '')
+  const supabaseUrl = /^https:\/\/[a-z0-9-]+\.supabase\.co$/.test(url) ? url : ''
+  return {
+    base: '/',
+    plugins: [react(), tailwindcss(), csp(supabaseUrl), rss()],
+  }
 })

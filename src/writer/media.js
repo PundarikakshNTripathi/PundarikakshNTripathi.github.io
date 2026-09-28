@@ -48,9 +48,13 @@ function drawScaled(bitmap, type, w = bitmap.width, h = bitmap.height) {
   return canvas.toDataURL(type, 0.86);
 }
 
-export async function videoToDataUrl(file) {
+export function assertVideo(file) {
   if (!VIDEO_TYPES.includes(file.type)) throw new Error('Use an MP4, WebM, Ogg or MOV video.');
   if (file.size > LIMITS.video) throw new Error(`That video is ${(file.size / 1048576).toFixed(1)} MB. The limit is 60 MB; for longer videos, upload to YouTube or Vimeo and embed the link.`);
+}
+
+export async function videoToDataUrl(file) {
+  assertVideo(file);
   return readAsDataUrl(file);
 }
 
@@ -67,7 +71,7 @@ export const pickFile = (accept) =>
 const EXT = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/gif': 'gif', 'image/webp': 'webp', 'image/avif': 'avif', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov', 'video/ogg': 'ogv' };
 
 // Decoded by hand rather than with fetch(), so the site's CSP never has to allow data: connections.
-function dataUrlToBlob(dataUrl) {
+export function dataUrlToBlob(dataUrl) {
   const [head, body] = dataUrl.split(',', 2);
   const type = (head.match(/^data:([^;,]+)/) || [])[1] || 'application/octet-stream';
   const bytes = head.includes(';base64') ? Uint8Array.from(atob(body), (c) => c.charCodeAt(0)) : new TextEncoder().encode(decodeURIComponent(body));

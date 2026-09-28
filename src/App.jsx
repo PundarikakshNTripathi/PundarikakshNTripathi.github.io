@@ -13,10 +13,10 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // The post reader and the editor pull in KaTeX and Jodit; keep them out of the home page bundle.
 const BlogView = lazy(() => import('./components/BlogView'));
-// The writer only exists on the local dev server (its own origin). Publishing writes into the repo on
-// disk, so there's nothing for it to do on the public site, and keeping it out of the production
-// bundle means nothing on the shared github.io origin can drive it.
-const WRITER = import.meta.env.DEV;
+// The writer ships when Supabase is configured (sign-in plus two-factor, enforced by the database) or in
+// local dev. A build without Supabase settings leaves it out of the bundle entirely.
+// Compile-time constant (Vite inlines env), so an unconfigured build drops the writer chunks entirely.
+const WRITER = import.meta.env.DEV || !!import.meta.env.VITE_SUPABASE_URL;
 const WriterHome = WRITER ? lazy(() => import('./writer/WriterHome')) : null;
 const Writer = WRITER ? lazy(() => import('./writer/Writer')) : null;
 

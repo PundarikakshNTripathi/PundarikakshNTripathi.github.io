@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ArticleBody from './ArticleBody';
-import { findPublished, formatDate, readingMinutes } from '../lib/posts';
+import { formatDate, readingMinutes } from '../lib/posts';
+import { usePublishedPost } from '../lib/usePosts';
 import { person } from '../data/content';
 
 // Plain share links: no third-party scripts, nothing loads until someone clicks.
@@ -114,15 +115,17 @@ export function ArticleView({ post, preview = false }) {
 
 export default function BlogView() {
   const { id } = useParams();
-  const post = findPublished(id);
+  const post = usePublishedPost(id);
 
   useEffect(() => {
+    if (post === undefined) return undefined;
     document.title = post ? `${post.title} | ${person.name}` : 'Post not found';
     return () => {
       document.title = person.name;
     };
   }, [post]);
 
+  if (post === undefined) return <div className="min-h-[60vh]" aria-busy="true" />;
   if (!post) {
     return (
       <section className="mx-auto max-w-6xl px-5 py-24 sm:px-8">

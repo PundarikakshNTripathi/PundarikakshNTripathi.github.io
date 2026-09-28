@@ -300,3 +300,10 @@
 .writer-shortcuts table { width: 100%; border-collapse: collapse; font-size: 0.8125rem; }
 .writer-shortcuts th, .writer-shortcuts td { text-align: left; padding: 0.35rem 0; border-bottom: 1px solid var(--rule); color: var(--ink-2); font-weight: 400; vertical-align: top; }
 .writer-shortcuts kbd { font-family: var(--font-mono); font-size: 0.75rem; background: var(--surface); border: 1px solid var(--rule-strong); border-radius: 3px; padding: 0.05rem 0.35rem; color: var(--ink); }
+
+/* Sign-in and two-factor */
+.writer-gate { min-height: 80vh; display: grid; place-items: center; padding: 3rem 1.25rem; }
+.writer-gate-card { width: min(26rem, 100%); font-family: var(--font-sans); }
+.writer-gate-card h1 { font-family: var(--font-serif); font-size: 2rem; line-height: 1.15; color: var(--ink); margin: 0.25rem 0 1.25rem; }
+.writer-gate-card .writer-primary { margin-top: 0.5rem; }
+.writer-qr { width: 11rem; height: 11rem; background: #fff; border-radius: 6px; padding: 0.5rem; margin: 0.5rem 0 0.75rem; }

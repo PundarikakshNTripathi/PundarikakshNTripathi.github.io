@@ -2,6 +2,11 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ['main']
+  # Rebuild a few times a day so the RSS feed and the page snapshot pick up newly published posts.
+  # (Posts show on the site immediately anyway; this only refreshes the static copies.)
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
 
 # Nothing runs with more access than it needs; the deploy job gets Pages/OIDC rights only.
 permissions:
@@ -31,8 +36,16 @@ jobs:
         run: npm audit signatures
       - name: Audit production dependencies
         run: npm audit --omit=dev --audit-level=high
+      - name: Snapshot published posts
+        run: node scripts/snapshot-posts.mjs
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - name: Build
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3.0.1
         with:

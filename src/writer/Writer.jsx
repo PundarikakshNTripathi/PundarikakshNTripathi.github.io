@@ -25,12 +25,13 @@ import { CodeBlock, CtaButton, DropCap, Embed, Figure, Footnote, LinkCard, PullQ
 import { lowlight } from './lowlight';
 import { SlashCommand } from './slash';
 import { HashHeading, SafeTypography, WriterLink, insertBlock } from './extensions';
-import { imageToDataUrl, pickFile, videoToDataUrl } from './media';
+import { pickFile } from './media';
 import { canWriteToFolder, downloadPostsJson, publishToFolder, unpublishFromFolder } from './publish';
 import { CtaDialog, EmbedDialog, LinkDialog, MathDialog, MediaUrlDialog, Modal, ShortcutsDialog, TextDialog } from './dialogs';
 import SettingsPanel from './SettingsPanel';
-import { getDraft, newDraft, saveDraft } from '../lib/drafts';
-import { findPublished, readingMinutes, slugify } from '../lib/posts';
+import WriterGate from './WriterGate';
+import { imageSrc, loadPost, mode, savePost, videoSrc } from './store';
+import { readingMinutes, slugify } from '../lib/posts';
 import { hostOf } from '../lib/embeds';
 import { ArticleView } from '../components/BlogView';
 
@@ -249,21 +250,24 @@ const autosize = (el) => {
 // They read them from this object when they fire. Only one editor is mounted at a time.
 const bus = { actions: {}, commands: [] };
 
-function useAutosave(draft, html) {
+function useAutosave(draft, html, onError) {
   const [status, setStatus] = useState('saved');
   const first = useRef(true);
   const latest = useRef({ draft, html });
+  const onErrorRef = useRef(onError);
   useEffect(() => {
     latest.current = { draft, html };
-  }, [draft, html]);
+    onErrorRef.current = onError;
+  }, [draft, html, onError]);
 
   const saveNow = useCallback(async () => {
     setStatus('saving');
     try {
-      await saveDraft({ ...latest.current.draft, html: latest.current.html });
+      await savePost({ ...latest.current.draft, html: latest.current.html });
       setStatus('saved');
-    } catch {
+    } catch (err) {
       setStatus('error');
+      onErrorRef.current?.(err.message);
     }
   }, []);
 
@@ -287,7 +291,11 @@ function Editor({ initial }) {
   const [preview, setPreview] = useState(false);
   const [settings, setSettings] = useState(false);
   const [notice, setNotice] = useState(null);
-  const [status, saveNow] = useAutosave(draft, html);
+  const flash = (text, tone = 'ok') => {
+    setNotice({ text, tone });
+    setTimeout(() => setNotice(null), tone === 'error' ? 8000 : 4000);
+  };
+  const [status, saveNow] = useAutosave(draft, html, (message) => flash(message, 'error'));
   const titleRef = useRef(null);
   const slugTouched = useRef(!!initial.slug && initial.slug !== slugify(initial.title));
 
@@ -298,10 +306,6 @@ function Editor({ initial }) {
       return next;
     });
 
-  const flash = (text, tone = 'ok') => {
-    setNotice({ text, tone });
-    setTimeout(() => setNotice(null), tone === 'error' ? 8000 : 4000);
-  };
 
   const extensions = useMemo(
     () => [
@@ -363,12 +367,12 @@ function Editor({ initial }) {
   const insertFile = useCallback(async (editor, file, pos) => {
     try {
       if (file.type.startsWith('image/')) {
-        const src = await imageToDataUrl(file);
+        const src = await imageSrc(file);
         const node = { type: 'figure', attrs: { src, alt: '', caption: '', width: 'normal' } };
         if (pos != null) editor.chain().focus().insertContentAt(pos, node).run();
         else insertBlock(editor, node);
       } else if (file.type.startsWith('video/')) {
-        const src = await videoToDataUrl(file);
+        const src = await videoSrc(file);
         insertBlock(editor, { type: 'video', attrs: { src, caption: '', width: 'normal' } });
       }
     } catch (err) {
@@ -461,7 +465,7 @@ function Editor({ initial }) {
 
   const words = useEditorState({ editor, selector: ({ editor: e }) => e?.storage.characterCount.words() ?? 0 });
 
-  const publish = async (mode) => {
+  const publish = async (how) => {
     await saveNow();
     const post = { ...draft, html, slug: draft.slug || slugify(draft.title) || draft.id };
     if (!post.title.trim()) {
@@ -469,7 +473,12 @@ function Editor({ initial }) {
       return;
     }
     try {
-      if (mode === 'folder') {
+      if (how === 'cloud') {
+        const { publishPost } = await import('./cloud');
+        const slug = await publishPost(post);
+        setDraft((d) => ({ ...d, slug, isPublished: true, hasUnpublishedChanges: false }));
+        flash(`${draft.isPublished ? 'Updated' : 'Published'}. It's live at /blog/${slug}.`);
+      } else if (how === 'folder') {
         const r = await publishToFolder(post);
         flash(`Published to ${r.folder}/src/data/posts.json${r.mediaCount ? ` with ${r.mediaCount} media file${r.mediaCount > 1 ? 's' : ''}` : ''}. Commit and push to put it live.`);
       } else {
@@ -483,6 +492,12 @@ function Editor({ initial }) {
 
   const unpublish = async () => {
     try {
+      if (mode === 'cloud') {
+        await (await import('./cloud')).unpublishPost(draft.id);
+        setDraft((d) => ({ ...d, isPublished: false }));
+        flash('Unpublished. The post is back to being a draft.');
+        return;
+      }
       await unpublishFromFolder(draft.id);
       flash('Removed from posts.json. Commit and push to take it down.');
     } catch (err) {
@@ -518,7 +533,7 @@ function Editor({ initial }) {
               <span className="hidden sm:inline">Settings</span>
             </button>
             <button type="button" className="writer-primary" onClick={() => setDialog({ type: 'publish' })}>
-              Publish
+              {mode === 'cloud' && draft.isPublished ? 'Update' : 'Publish'}
             </button>
           </div>
         </div>
@@ -605,7 +620,8 @@ function Editor({ initial }) {
             setSettings(false);
             editor.commands.focus();
           }}
-          onUnpublish={canWriteToFolder() ? unpublish : null}
+          onUnpublish={mode === 'cloud' ? (draft.isPublished ? unpublish : null) : canWriteToFolder() ? unpublish : null}
+          uploadImage={imageSrc}
           flash={flash}
         />
       )}
@@ -749,6 +765,7 @@ function Editor({ initial }) {
       {dialog?.type === 'shortcuts' && <ShortcutsDialog onClose={close} />}
       {dialog?.type === 'publish' && (
         <PublishDialog
+          isPublished={draft.isPublished}
           onClose={close}
           onPublish={(mode) => {
             close();
@@ -760,8 +777,27 @@ function Editor({ initial }) {
   );
 }
 
-function PublishDialog({ onPublish, onClose }) {
+function PublishDialog({ onPublish, onClose, isPublished }) {
   const folder = canWriteToFolder();
+  if (mode === 'cloud') {
+    return (
+      <Modal title={isPublished ? 'Update the live post' : 'Publish'} onClose={onClose}>
+        <p className="writer-dialog-text">
+          {isPublished
+            ? 'Readers will see this version straight away. Autosave keeps changing only your draft until you update again.'
+            : "The post goes live on the site straight away and joins the Writing list. The RSS feed picks it up at the next scheduled rebuild."}
+        </p>
+        <div className="writer-dialog-actions">
+          <button type="button" className="is-quiet" onClick={onClose}>
+            Not yet
+          </button>
+          <button type="submit" data-autofocus onClick={() => onPublish('cloud')}>
+            {isPublished ? 'Update post' : 'Publish now'}
+          </button>
+        </div>
+      </Modal>
+    );
+  }
   return (
     <Modal title="Publish" onClose={onClose}>
       <p className="writer-dialog-text">
@@ -789,7 +825,7 @@ function PublishDialog({ onPublish, onClose }) {
 
 /* ---------- Route: load (or create) the draft, then show the editor ---------- */
 
-export default function Writer() {
+function WriterRoute() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [draft, setDraft] = useState(null);
@@ -798,22 +834,17 @@ export default function Writer() {
   useEffect(() => {
     let alive = true;
     (async () => {
-      if (id === 'new') {
-        const d = newDraft();
-        await saveDraft(d);
+      let d;
+      try {
+        d = await loadPost(id);
+      } catch {
+        d = null;
+      }
+      if (!alive) return;
+      if (id === 'new' && d) {
         navigate(`/write/${d.id}`, { replace: true });
         return;
       }
-      let d = await getDraft(id);
-      if (!d) {
-        // Editing a published post: start a draft from it, with the same id so publishing replaces it.
-        const p = findPublished(id);
-        if (p) {
-          d = { ...newDraft(), ...p, id: String(p.id) };
-          await saveDraft(d);
-        }
-      }
-      if (!alive) return;
       if (d) setDraft(d);
       else setMissing(true);
     })();
@@ -834,11 +865,22 @@ export default function Writer() {
       <section className="mx-auto max-w-3xl px-5 py-24">
         <h1 className="display text-4xl">That draft isn't here.</h1>
         <p className="prose-serif mt-4">
-          Drafts are stored in the browser they were written in. <Link to="/write" className="link">See your posts</Link>.
+          {mode === 'cloud'
+            ? 'It may have been deleted, or your session ended.'
+            : 'Drafts are stored in the browser they were written in.'}{' '}
+          <Link to="/write" className="link">See your posts</Link>.
         </p>
       </section>
     );
   }
   if (!draft) return <div className="min-h-[60vh]" />;
   return <Editor key={draft.id} initial={draft} />;
+}
+
+export default function Writer() {
+  return (
+    <WriterGate>
+      <WriterRoute />
+    </WriterGate>
+  );
 }

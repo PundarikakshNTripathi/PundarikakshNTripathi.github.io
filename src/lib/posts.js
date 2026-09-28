@@ -50,11 +50,16 @@ export function normalisePost(post) {
   return p;
 }
 
-export function publishedPosts() {
-  return published.map(normalisePost).sort((a, b) => {
+export const sortPosts = (posts) =>
+  [...posts].sort((a, b) => {
     if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
     return new Date(b.date) - new Date(a.date);
   });
+
+// The snapshot bundled at build time (src/data/posts.json). With Supabase configured, the build refreshes
+// it from the database, and the live pages then update from the database directly (lib/usePosts.js).
+export function publishedPosts() {
+  return sortPosts(published.map(normalisePost));
 }
 
 export function findPublished(slugOrId) {
