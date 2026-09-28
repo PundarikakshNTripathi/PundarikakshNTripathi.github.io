@@ -13,8 +13,12 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // The post reader and the editor pull in KaTeX and Jodit; keep them out of the home page bundle.
 const BlogView = lazy(() => import('./components/BlogView'));
-const WriterHome = lazy(() => import('./writer/WriterHome'));
-const Writer = lazy(() => import('./writer/Writer'));
+// The writer only exists on the local dev server (its own origin). Publishing writes into the repo on
+// disk, so there's nothing for it to do on the public site, and keeping it out of the production
+// bundle means nothing on the shared github.io origin can drive it.
+const WRITER = import.meta.env.DEV;
+const WriterHome = WRITER ? lazy(() => import('./writer/WriterHome')) : null;
+const Writer = WRITER ? lazy(() => import('./writer/Writer')) : null;
 
 // On route change: go to the #section if there is one, otherwise to the top.
 const ScrollManager = () => {
@@ -75,9 +79,9 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/blog/:id" element={<BlogView />} />
-              <Route path="/write" element={<WriterHome />} />
-              <Route path="/write/:id" element={<Writer />} />
-              <Route path="/admin" element={<Navigate to="/write" replace />} />
+              {WRITER && <Route path="/write" element={<WriterHome />} />}
+              {WRITER && <Route path="/write/:id" element={<Writer />} />}
+              {WRITER && <Route path="/admin" element={<Navigate to="/write" replace />} />}
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

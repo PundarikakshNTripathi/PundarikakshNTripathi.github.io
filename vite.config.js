@@ -44,15 +44,20 @@ const rss = () => ({
   apply: 'build',
   generateBundle() {
     const posts = JSON.parse(readFileSync('src/data/posts.json', 'utf8'))
-      .filter((p) => p.title && p.html)
+      .filter((p) => p.title && p.html && /^[a-z0-9-]+$/.test(p.slug || ''))
       .sort((a, b) => new Date(b.date) - new Date(a.date))
     const items = posts.map((p) => {
       const url = `${SITE}/blog/${p.slug}`
-      const html = p.html.replace(/(src|href)="\//g, `$1="${SITE}/`).replaceAll(']]>', ']]]]><![CDATA[>')
+      const html = p.html
+        .replace(/<iframe[\s\S]*?<\/iframe>/gi, '')
+        .replace(/\s(href|src)="(?!https?:|\/|mailto:)[^"]*"/gi, '')
+        .replace(/\son\w+="[^"]*"/gi, '')
+        .replace(/(src|href)="\//g, `$1="${SITE}/`)
+        .replaceAll(']]>', ']]]]><![CDATA[>')
       return `    <item>
       <title>${xml(p.title)}</title>
-      <link>${url}</link>
-      <guid isPermaLink="true">${url}</guid>
+      <link>${xml(url)}</link>
+      <guid isPermaLink="true">${xml(url)}</guid>
       <pubDate>${new Date(p.date).toUTCString()}</pubDate>
       ${p.description || p.subtitle ? `<description>${xml(p.description || p.subtitle)}</description>` : ''}
       ${(p.tags || []).map((t) => `<category>${xml(t)}</category>`).join('')}

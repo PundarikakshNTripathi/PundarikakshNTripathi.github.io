@@ -418,7 +418,7 @@ function Editor({ initial }) {
     footnote: () => setDialog({ type: 'footnote', note: '' }),
     cta: () => setDialog({ type: 'cta', label: 'Read more', href: '' }),
     image: async () => {
-      const file = await pickFile('image/png,image/jpeg,image/webp,image/gif,image/avif,image/svg+xml');
+      const file = await pickFile('image/png,image/jpeg,image/webp,image/gif,image/avif');
       if (file) insertFile(editor, file);
     },
     gif: () => setDialog({ type: 'gif' }),

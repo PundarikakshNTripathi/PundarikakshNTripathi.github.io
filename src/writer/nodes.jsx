@@ -2,7 +2,11 @@
 import { Extension, Node, mergeAttributes } from '@tiptap/core';
 import { NodeViewContent, NodeViewWrapper, ReactNodeViewRenderer } from '@tiptap/react';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { hostOf } from '../lib/embeds';
+import { hostOf, isAllowedFrameSrc, isHttpUrl } from '../lib/embeds';
+
+// Links in buttons and cards must be web, same-site or mail links; anything else (javascript:, data:) is dropped.
+const safeHref = (href = '') => (isHttpUrl(href) || /^\/(?!\/)/.test(href) || /^mailto:/i.test(href) ? href : '');
+const SANDBOX = 'allow-scripts allow-same-origin allow-popups allow-presentation';
 import { LANGUAGES } from './lowlight';
 
 // Node views ask the Writer to open a dialog through a window event, so dialogs live in one place.
@@ -150,7 +154,17 @@ const EmbedView = ({ node, updateAttributes, selected, deleteNode }) => (
   <NodeViewWrapper as="figure" data-type="embed" data-provider={node.attrs.provider} className={selected ? 'is-selected' : ''}>
     <div className="writer-media" contentEditable={false} data-drag-handle>
       <div className="embed-frame" style={frameStyle(node.attrs)}>
-        <iframe src={node.attrs.src} title={`${node.attrs.provider} embed`} style={{ pointerEvents: selected ? 'auto' : 'none' }} allow="fullscreen; picture-in-picture" />
+        {isAllowedFrameSrc(node.attrs.src) ? (
+          <iframe
+            src={node.attrs.src}
+            title={`${node.attrs.provider} embed`}
+            sandbox={SANDBOX}
+            style={{ pointerEvents: selected ? 'auto' : 'none' }}
+            allow="fullscreen; picture-in-picture"
+          />
+        ) : (
+          <p className="writer-media-note">This embed isn't from a supported provider and won't be published.</p>
+        )}
       </div>
       {selected && (
         <div className="writer-media-bar">
@@ -185,8 +199,10 @@ export const Embed = Node.create({
         priority: 1000,
         getAttrs: (el) => {
           const frame = el.querySelector('.embed-frame');
+          const src = el.querySelector('iframe')?.getAttribute('src') || '';
+          if (!isAllowedFrameSrc(src)) return false;
           return {
-            src: el.querySelector('iframe')?.getAttribute('src'),
+            src,
             url: el.getAttribute('data-url'),
             provider: el.getAttribute('data-provider') || '',
             aspect: frame?.style.aspectRatio || null,
@@ -260,7 +276,7 @@ export const LinkCard = Node.create({
         tag: 'a[data-type="link-card"]',
         priority: 1000,
         getAttrs: (el) => ({
-          url: el.getAttribute('href'),
+          url: safeHref(el.getAttribute('href') || ''),
           title: el.querySelector('.link-card-title')?.textContent || '',
           description: el.querySelector('.link-card-desc')?.textContent || '',
           image: el.querySelector('img')?.getAttribute('src') || '',
@@ -272,7 +288,7 @@ export const LinkCard = Node.create({
     const { url, title, description, image } = node.attrs;
     return [
       'a',
-      { 'data-type': 'link-card', class: 'link-card', href: url },
+      { 'data-type': 'link-card', class: 'link-card', href: safeHref(url) },
       [
         'span',
         { class: 'link-card-text' },
@@ -404,12 +420,12 @@ export const CtaButton = Node.create({
       {
         tag: 'p[data-type="cta"]',
         priority: 1000,
-        getAttrs: (el) => ({ href: el.querySelector('a')?.getAttribute('href') || '', label: el.textContent.trim() }),
+        getAttrs: (el) => ({ href: safeHref(el.querySelector('a')?.getAttribute('href') || ''), label: el.textContent.trim() }),
       },
     ];
   },
   renderHTML({ node }) {
-    return ['p', { 'data-type': 'cta', class: 'cta' }, ['a', { href: node.attrs.href, class: 'cta-button' }, node.attrs.label]];
+    return ['p', { 'data-type': 'cta', class: 'cta' }, ['a', { href: safeHref(node.attrs.href), class: 'cta-button' }, node.attrs.label]];
   },
   addCommands() {
     return { setCtaButton: (attrs) => ({ commands }) => commands.insertContent({ type: this.name, attrs }) };

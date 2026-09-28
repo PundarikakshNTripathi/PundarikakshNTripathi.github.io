@@ -38,7 +38,7 @@ const ArticleBody = ({ html, onToc, className = '' }) => {
       const bar = document.createElement('div');
       bar.className = 'code-bar';
       const label = document.createElement('span');
-      label.textContent = lang && lang !== 'plaintext' ? LANGUAGE_NAMES[lang] || lang : 'Code';
+      label.textContent = lang && lang !== 'plaintext' ? (Object.hasOwn(LANGUAGE_NAMES, lang) ? LANGUAGE_NAMES[lang] : lang) : 'Code';
       const copy = document.createElement('button');
       copy.type = 'button';
       copy.textContent = 'Copy';

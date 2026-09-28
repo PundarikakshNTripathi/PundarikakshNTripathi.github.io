@@ -16,7 +16,9 @@ Components only decide how it looks.
 
 ## Writing posts
 
-The site has its own editor at `/write`, built on TipTap (ProseMirror). It works like Substack's or Medium's:
+The site has its own editor, built on TipTap (ProseMirror). It runs only on your machine: start
+`npm run dev` and open <http://localhost:5173/write>. It isn't part of the production build, so nothing on
+the public site can reach it. It works like Substack's or Medium's:
 
 - **Formatting**: a toolbar plus a menu on selected text for headings, bold, italic, underline,
   strikethrough, inline code, highlight, links (Ctrl K), sub/superscript, alignment, lists, quotes,
@@ -32,12 +34,15 @@ The site has its own editor at `/write`, built on TipTap (ProseMirror). It works
 Drafts save automatically to the browser's IndexedDB as you type. To publish:
 
 1. Click **Publish → Write to the site folder** in Chrome or Edge, and pick this repository once.
+   Only `src/data` and `public/blog/media` are remembered, never the whole folder.
    That updates `src/data/posts.json` and saves images and videos to `public/blog/media/`.
    In other browsers, **Download posts.json** and replace `src/data/posts.json` with it.
 2. Commit and push. GitHub Pages rebuilds the site, and the post also shows up in `/feed.xml` (RSS).
 
-Post HTML is sanitized with DOMPurify before it's rendered, and iframes are limited to the embed
-providers listed in `src/lib/embeds.js`. The same list drives the Content-Security-Policy.
+Post HTML is sanitized with DOMPurify before it's rendered. Iframes are limited to the embed providers
+listed in `src/lib/embeds.js`, and the same list drives the Content-Security-Policy. Inline styles are
+limited to alignment and embed sizing. Uploaded SVGs are converted to PNG, and only raster images and
+video files are ever written to `public/blog/media`.
 
 ## Running it
 

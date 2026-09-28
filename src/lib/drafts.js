@@ -60,7 +60,9 @@ export async function migrateLegacyDrafts(normalise) {
     return 0;
   }
   if (!Array.isArray(legacy) || legacy.length === 0) return 0;
-  for (const post of legacy) await saveDraft({ ...newDraft(), ...normalise(post), id: String(post.id) });
+  // New ids, so an imported draft can never be published over an existing post.
+  let n = 0;
+  for (const post of legacy) await saveDraft({ ...newDraft(), ...normalise(post), id: `${Date.now()}${n++}`, title: `${post.title || 'Untitled'} (imported)` });
   localStorage.removeItem('portfolio_blogs');
   return legacy.length;
 }
