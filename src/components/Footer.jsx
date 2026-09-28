@@ -16,7 +16,7 @@ const Footer = () => (
             © {new Date().getFullYear()} {person.name}
           </p>
           <p>Set in Newsreader and IBM Plex. Last updated {person.updated}.</p>
-          <p className="mt-1 max-w-[34rem]">
+          <p className="mt-1 max-w-[34rem] text-text-secondary">
             The mark is a loss surface seen from above: gradient descent zigzagging down a narrow valley to its
             minimum.
           </p>
