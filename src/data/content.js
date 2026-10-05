@@ -52,7 +52,7 @@ export const story = {
   ],
   notes: {
     ternary:
-      '1.58 is log₂3. Every weight is −1, 0 or +1, so a matrix multiply becomes additions, subtractions and skips.',
+      'BitNet b1.58 (Ma et al., 2024). Each weight is −1, 0 or +1, and three possible values carry log₂3 ≈ 1.58 bits of information, hence the name. Multiplying by such a weight means adding the input, subtracting it, or leaving it out, so a matrix multiply needs no multiplications at all.',
     qi: 'The name is the philosophy. From the manifesto: “True intelligence does not require hype; a well-designed architecture speaks entirely through its performance.”',
     room: 'Figuratively. I would also take a shared Slack channel.',
   },

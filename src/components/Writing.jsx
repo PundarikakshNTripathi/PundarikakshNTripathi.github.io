@@ -15,7 +15,7 @@ const Writing = () => {
             here as proper write-ups.
           </p>
           <p className="meta mt-4">
-            No posts yet. <a href="/feed.xml" className="link">Subscribe with RSS</a> to get them when they land.
+            No posts yet. <Link to="/subscribe" className="link">Subscribe with RSS</Link> to get them when they land.
           </p>
         </div>
       ) : (
@@ -38,7 +38,7 @@ const Writing = () => {
             </li>
           ))}
           <li className="pt-4">
-            <a href="/feed.xml" className="link meta">Subscribe with RSS</a>
+            <Link to="/subscribe" className="link meta">Subscribe with RSS</Link>
           </li>
         </ul>
       )}

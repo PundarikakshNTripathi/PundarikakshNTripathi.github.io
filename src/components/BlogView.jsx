@@ -34,9 +34,9 @@ function ShareRow({ post }) {
       <a className="link py-1" target="_blank" rel="noopener noreferrer" href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`}>
         LinkedIn
       </a>
-      <a className="link py-1 sm:ml-auto" href="/feed.xml">
-        RSS
-      </a>
+      <Link className="link py-1 sm:ml-auto" to="/subscribe">
+        Subscribe
+      </Link>
     </div>
   );
 }

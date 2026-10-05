@@ -13,6 +13,7 @@ import ErrorBoundary from './components/ErrorBoundary';
 
 // The post reader and the editor pull in KaTeX and Jodit; keep them out of the home page bundle.
 const BlogView = lazy(() => import('./components/BlogView'));
+const Subscribe = lazy(() => import('./components/Subscribe'));
 // The writer ships when Supabase is configured (sign-in plus two-factor, enforced by the database) or in
 // local dev. A build without Supabase settings leaves it out of the bundle entirely.
 // Compile-time constant from vite.config.js, so a build without a complete Supabase config drops the
@@ -81,6 +82,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/blog/:id" element={<BlogView />} />
+              <Route path="/subscribe" element={<Subscribe />} />
               {WRITER && <Route path="/write" element={<WriterHome />} />}
               {WRITER && <Route path="/write/:id" element={<Writer />} />}
               {WRITER && <Route path="/admin" element={<Navigate to="/write" replace />} />}
