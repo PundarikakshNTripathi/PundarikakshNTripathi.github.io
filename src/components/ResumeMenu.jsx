@@ -1,6 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { person } from '../data/content';
 
+// Content hashes of the PDFs, from vite.config.js.
+/* global __RESUME_VERSIONS__ */
+const versioned = (file) => (__RESUME_VERSIONS__[file] ? `${file}?v=${__RESUME_VERSIONS__[file]}` : file);
+
 // One "Résumé" control that opens a short list of role-specific versions. A disclosure (button plus
 // list of plain links) rather than an ARIA menu: each option is an ordinary link to a PDF.
 // `trigger` styles the button; `place` positions the list (the footer opens it upward).
@@ -71,7 +75,7 @@ const ResumeMenu = ({ label = 'Résumé', trigger, place = 'top-full mt-2 left-0
             {person.resumes.map((r) => (
               <li key={r.id}>
                 <a
-                  href={r.file}
+                  href={versioned(r.file)}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setOpen(false)}

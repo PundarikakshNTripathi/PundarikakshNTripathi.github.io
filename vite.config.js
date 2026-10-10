@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import process from 'node:process'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -85,6 +85,15 @@ ${items.join('\n')}
   },
 })
 
+// A short content hash per résumé PDF. Links carry it as ?v=, so a replaced PDF gets a new URL and
+// browsers (and GitHub Pages' 10-minute cache) can't keep showing the old one.
+const resumeVersions = () =>
+  Object.fromEntries(
+    readdirSync('public/resume')
+      .filter((f) => f.endsWith('.pdf'))
+      .map((f) => [`/resume/${f}`, createHash('sha256').update(readFileSync(`public/resume/${f}`)).digest('hex').slice(0, 8)])
+  )
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_')
@@ -95,7 +104,7 @@ export default defineConfig(({ mode }) => {
   const writerOn = mode === 'development' || (!!supabaseUrl && (env.VITE_SUPABASE_ANON_KEY || '').length > 20)
   return {
     base: '/',
-    define: { __WRITER__: JSON.stringify(writerOn) },
+    define: { __WRITER__: JSON.stringify(writerOn), __RESUME_VERSIONS__: JSON.stringify(resumeVersions()) },
     plugins: [react(), tailwindcss(), csp(supabaseUrl), rss()],
   }
 })
