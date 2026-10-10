@@ -165,7 +165,7 @@ export const projects = [
     title: 'Amazon ML Challenge 2026',
     status: 'Rank 3 at the last check',
     summary: 'Business entity resolution: matching the same business across three noisy directories.',
-    body: "For every business in one source, find all of its records in two others, from messy names and addresses, scored by macro F0.5. One region showed up only in the test set, with no labels at all, which was most of the difficulty. At the last check my team ranked third on both the public and private leaderboards. We didn't make the grand finale, and Amazon still hasn't published the top-50 list it said it would. I'm keeping the approach itself private.",
+    body: "For every business in one source, find all of its records in two others, from messy names and addresses, scored by macro F0.5. One region showed up only in the test set, with no labels at all, which was most of the difficulty. At the last check my team ranked third on both the public and private leaderboards. We didn't make the grand finale, and Amazon still hasn't published the top-50 list it said it would. The code and a write-up of the approach are public.",
     results: [
       ['Leaderboard rank at the last check, public and private', '3rd'],
       ['Leaderboard score', '0.991762'],
@@ -174,8 +174,7 @@ export const projects = [
     stack: 'Python, PyTorch',
     figure: 'resolve',
     caption: 'Records for one business scattered across three sources; most candidate pairs are lookalikes, not matches.',
-    link: null,
-    linkNote: 'Code is private',
+    link: 'https://github.com/PundarikakshNTripathi/present-day-ber-amlc-2026',
     featured: true,
   },
   {

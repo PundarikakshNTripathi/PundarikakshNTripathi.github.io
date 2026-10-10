@@ -190,6 +190,13 @@ math (it collides with prices like "$5").
     "provisional" wording.
 - **Left alone:** design, structure, prose voice, résumés and the writer.
 
+## Round 6: Amazon ML Challenge repository made public (October 2026)
+
+- **Goal:** the Amazon ML Challenge entry links to its repository and no longer says the code is private.
+  **Signals:** `npm run lint`, `npm run build`, the rendered entry in a production preview, and the Deploy
+  workflow on `main`.
+- **Changed:** the entry's code link and the closing sentence of its paragraph. Nothing else.
+
 ## Open items for the owner
 
 - Confirm the personal lines that aren't in the résumé:
