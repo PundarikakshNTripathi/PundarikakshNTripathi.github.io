@@ -67,7 +67,6 @@ const ResumeMenu = ({ label = 'Résumé', trigger, place = 'top-full mt-2 left-0
           style={shift ? { transform: `translateX(${shift}px)` } : undefined}
           className={`absolute z-40 w-[min(19rem,calc(100vw-2.5rem))] rounded-[3px] border border-border bg-bg-primary py-1.5 shadow-[0_10px_30px_-12px_rgb(0_0_0/0.35)] ${place}`}
         >
-          <p className="meta px-4 pb-1.5 pt-2 text-text-muted">Pick the closest fit. All PDF, one page.</p>
           <ul>
             {person.resumes.map((r) => (
               <li key={r.id}>
