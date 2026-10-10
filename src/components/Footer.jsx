@@ -1,5 +1,6 @@
 import { person, socialLinks } from '../data/content';
 import Logo from './Logo';
+import ResumeMenu from './ResumeMenu';
 
 const Footer = () => (
   <footer className="border-t border-border">
@@ -22,9 +23,7 @@ const Footer = () => (
           </li>
         ))}
         <li>
-          <a href={person.resume} target="_blank" rel="noopener noreferrer" className="link inline-block py-1.5 text-text-muted">
-            Résumé
-          </a>
+          <ResumeMenu trigger="link py-1.5 text-text-muted" place="bottom-full mb-2 left-0 md:left-auto md:right-0" />
         </li>
       </ul>
     </div>

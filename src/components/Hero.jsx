@@ -1,5 +1,6 @@
 import { hero, person, socialLinks } from '../data/content';
 import RasterPortrait from './RasterPortrait';
+import ResumeMenu from './ResumeMenu';
 
 const Hero = () => (
   <section id="top" aria-label="Introduction" className="pb-16 pt-10 sm:pb-20 sm:pt-16">
@@ -27,14 +28,7 @@ const Hero = () => (
         </dl>
 
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
-          <a
-            href={person.resume}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-[3px] bg-text-primary px-4 py-2.5 text-[0.9375rem] font-medium text-bg-primary transition-colors hover:bg-accent"
-          >
-            Résumé (PDF)
-          </a>
+          <ResumeMenu trigger="rounded-[3px] bg-text-primary px-4 py-2.5 text-[0.9375rem] font-medium text-bg-primary transition-colors hover:bg-accent" />
           <a href={`mailto:${person.email}`} className="link text-[0.9375rem]">
             {person.email}
           </a>

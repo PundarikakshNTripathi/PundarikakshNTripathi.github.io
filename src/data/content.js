@@ -5,7 +5,15 @@ export const person = {
   firstName: 'Pundarikaksh',
   lastName: 'Narayan Tripathi',
   email: 'pundarikaksh.dev@gmail.com',
-  resume: '/resume/Pundarikaksh_NT_Resume.pdf',
+  // One résumé per kind of role. The first is the default and keeps the old URL, so links shared
+  // before the split still open a current résumé.
+  resumes: [
+    { id: 'systems', label: 'ML systems and GPU', note: 'Kernels, CUDA, distributed training', file: '/resume/Pundarikaksh_NT_Resume.pdf' },
+    { id: 'research', label: 'AI research', note: 'Causal ML, differentiable rendering', file: '/resume/Pundarikaksh_NT_Resume_AI_Research.pdf' },
+    { id: 'engineering', label: 'AI engineering', note: 'Agent security, serving, federated learning', file: '/resume/Pundarikaksh_NT_Resume_AI_Engineering.pdf' },
+    { id: 'data', label: 'Data science', note: 'Causal inference, evaluation, experiments', file: '/resume/Pundarikaksh_NT_Resume_Data_Science.pdf' },
+    { id: 'swe', label: 'Software engineering', note: 'Systems, infrastructure, testing', file: '/resume/Pundarikaksh_NT_Resume_Software_Engineering.pdf' },
+  ],
   location: 'Lucknow, India',
   lab: {
     name: 'Quiet Intelligence',
