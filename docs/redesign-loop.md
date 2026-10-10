@@ -172,6 +172,24 @@ the editor's document model and an end-to-end publish test.
 embeds (they need third-party scripts, which the CSP blocks by design), and single-dollar `$…$` inline
 math (it collides with prices like "$5").
 
+## Round 5: content audit against the repositories (October 2026)
+
+- **Goal:** every number and claim on the site matches the current `main` of the repository it describes.
+  **Signals:** each project's README benchmark table, `npm run lint`, `npm run build`, `npm audit` on
+  production dependencies, a Playwright MCP pass over the production preview (full-page render at 1280 px,
+  console clean), and the Deploy workflow on `main`.
+- **Fixed:**
+  - Aegis, TernixEngine and VoltaSplat result tables were from before those repositories were repaired and
+    measured. They now carry the measured figures and the setup they came from.
+  - Removed claims the code doesn't support: an aligned allocator and warp-shuffle reductions in
+    TernixEngine, and Weights & Biases and Optuna sweeps in HiveTorch.
+  - Causal-DML now says its treatment is synthetic and the result is a null-recovery check.
+  - The FlyRank paragraph uses the measured Precision@50 (0.56 to 0.70 on a client-grouped holdout, and a
+    0.24 gap against a random split). The internship is shown as finished in September 2026.
+  - Amazon ML Challenge 2026: third on both leaderboards at the last check, not a finalist, with no
+    "provisional" wording.
+- **Left alone:** design, structure, prose voice, résumés and the writer.
+
 ## Open items for the owner
 
 - Confirm the personal lines that aren't in the résumé:
