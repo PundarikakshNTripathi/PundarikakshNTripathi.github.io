@@ -34,7 +34,11 @@ jobs:
         run: npm ci --ignore-scripts
       - name: Verify registry signatures
         run: npm audit signatures
+      # Blocks pushes. The scheduled rebuilds only refresh posts and the feed with the same lockfile,
+      # so a newly published advisory there is reported (Dependabot alerts, and a warning on the run)
+      # instead of stopping every rebuild until a dependency is bumped.
       - name: Audit production dependencies
+        continue-on-error: ${{ github.event_name == 'schedule' }}
         run: npm audit --omit=dev --audit-level=high
       - name: Snapshot published posts
         run: node scripts/snapshot-posts.mjs
